@@ -1,5 +1,12 @@
-import express from "express";
 import path from "node:path";
+
+import { createApp } from "./app";
+import { loadConfig, type AppConfig } from "./config/env";
+import { openDatabase } from "./db/client";
+import { runMigrations } from "./db/migrate";
+import { GoogleAuthLibraryTokenVerifier } from "./features/auth/ports/google-token-verifier";
+import { ConsoleMailer } from "./features/auth/ports/mailer";
+import { systemClock } from "./shared/clock";
 
 if (typeof process.loadEnvFile === "function") {
   const possibleEnvPaths = [
@@ -17,28 +24,28 @@ if (typeof process.loadEnvFile === "function") {
   }
 }
 
-const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN ?? "http://localhost:3000";
-
-const app = express();
-app.use(express.json());
-
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", FRONTEND_ORIGIN);
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  if (req.method === "OPTIONS") {
-    res.sendStatus(204);
-    return;
+function loadConfigOrExit(): AppConfig {
+  try {
+    return loadConfig(process.env);
+  } catch (error) {
+    console.error(`Invalid configuration: ${error instanceof Error ? error.message : String(error)}`);
+    process.exit(1);
   }
-  next();
+}
+
+const config = loadConfigOrExit();
+
+const { db } = openDatabase(config.databasePath);
+runMigrations(db);
+
+const app = createApp({
+  config,
+  db,
+  clock: systemClock,
+  mailer: new ConsoleMailer(),
+  googleTokenVerifier: new GoogleAuthLibraryTokenVerifier(config.googleClientId),
 });
 
-app.get("/health", (req, res) => {
-  res.json({ status: "ok", message: "ok" });
-});
-
-const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
-
-app.listen(PORT, () => {
-  console.log(`Backend listening on port ${PORT}`);
+app.listen(config.port, () => {
+  console.log(`Backend listening on port ${config.port}`);
 });

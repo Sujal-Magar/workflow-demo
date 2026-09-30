@@ -40,7 +40,7 @@ The developer decides which Phase to execute based on available session tokens a
   The developer selects this when remaining session token budget is low or when focusing exclusively on API/database delivery. Execute directly as a single focused Backend agent (without spawning subagents). Execute only Backend tasks, modifying only files under `backend/` and `packages/contracts/`.
 
 - **`"Integration"`**:
-  Executed after both frontend and backend are complete. Replaces frontend mock data with real API calls using `@expense-tracker/contracts`, connects form submissions/mutations, and cleans up mock files.
+  Executed after both frontend and backend are complete. Replaces frontend mock data with real API calls using `@workflow-demo/contracts`, connects form submissions/mutations, and cleans up mock files.
 
 For each item: implement it, then run the project linter, type-checker, and relevant tests. Fix errors with up to 3 attempts per item; stop if still failing.
 

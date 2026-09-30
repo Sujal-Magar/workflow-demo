@@ -214,7 +214,7 @@ Before choosing the workflow depth for a feature, classify it:
 | **Team/agent separation**     | Single developer or agent        | Two, loosely coordinated      | Dedicated frontend + backend roles       |
 
 - **Score 0–2**: Use simplified two-mode flow (inline tests, no staged phases).
-- **Score 3–4**: Hybrid — adopt Approval Gate; keep per-task testing.
+- **Score 3–4**: Use the full Multi-Agent pipeline (Phases 0–9, including Plan Fragments → Synthesizer so a `contract.md` exists for Build). Phases 1, 5 and 8 may run each layer/scope individually instead of `Phase = Both`.
 - **Score 5–6**: Use full Staged Dual-Validation flow (or full Multi-Agent pipeline).
 
 ---
@@ -244,17 +244,17 @@ features/<feature-id>/
 
 All artifacts of one plan version live together in `features/<feature-id>/plans/v<version>/`. `<version>` is the `version` declared in `fds.md` frontmatter.
 
-| Artifact | Path (inside `plans/`) | Written by |
-| :--- | :--- | :--- |
-| Implementation plan | `v<version>/plan.md` | Plan Synthesizer / Plan Mode |
-| API contract | `v<version>/contract.md` | Plan Synthesizer |
-| Latest plan review | `v<version>/review.md` | Plan Review |
-| Earlier plan reviews | `v<version>/reviews/r<N>.md` | Plan Review (archiving step) |
-| Revision directives (developer decisions) | `v<version>/directives.md` | Developer, optionally drafted from the review's Suggested Next Step |
-| Frontend / backend fragments | `v<version>/fragments/frontend.md`, `v<version>/fragments/backend.md` | Plan Fragments |
-| Test defect files | `v<version>/defects-unit-api.md`, `v<version>/defects-ui-e2e.md` | Test Build Mode |
-| Diagnosis report | `v<version>/diagnosis.md` | Diagnosis Mode |
-| Audit trail | `activity-log.md` (one per feature, not per version) | every planning phase |
+| Artifact                                  | Path (inside `plans/`)                                                | Written by                                                          |
+| :---------------------------------------- | :-------------------------------------------------------------------- | :------------------------------------------------------------------ |
+| Implementation plan                       | `v<version>/plan.md`                                                  | Plan Synthesizer / Plan Mode                                        |
+| API contract                              | `v<version>/contract.md`                                              | Plan Synthesizer                                                    |
+| Latest plan review                        | `v<version>/review.md`                                                | Plan Review                                                         |
+| Earlier plan reviews                      | `v<version>/reviews/r<N>.md`                                          | Plan Review (archiving step)                                        |
+| Revision directives (developer decisions) | `v<version>/directives.md`                                            | Developer, optionally drafted from the review's Suggested Next Step |
+| Frontend / backend fragments              | `v<version>/fragments/frontend.md`, `v<version>/fragments/backend.md` | Plan Fragments                                                      |
+| Test defect files                         | `v<version>/defects-unit-api.md`, `v<version>/defects-ui-e2e.md`      | Test Build Mode                                                     |
+| Diagnosis report                          | `v<version>/diagnosis.md`                                             | Diagnosis Mode                                                      |
+| Audit trail                               | `activity-log.md` (one per feature, not per version)                  | every planning phase                                                |
 
 Rules:
 
@@ -262,7 +262,7 @@ Rules:
 2. **Fixed filenames.** Versioned plan artifacts are never written directly under `plans/`, and the version is never repeated in a filename (no `plan-v1.0.0.md`). Agents create `v<version>/` and its subdirectories when absent.
 3. **Revisions stay in place.** When Plan Review returns `CHANGES REQUIRED`, the unfrozen `plan.md` and `contract.md` are revised in place in the same version directory (via the Plan Synthesizer or by editing the fragments and re-synthesizing). The version is not bumped; a new version directory is only for a new FDS version. Developer decisions that steer a revision are written to `v<version>/directives.md` in the repository (never a scratchpad), and the agents read it; starred decisions also go into the plan's Decision Log.
 4. **Review archiving.** `review.md` is always the latest review. Before writing a new review, Plan Review moves the existing `review.md` to `reviews/r<N>.md`, where `N` is 1 plus the number of files already in `reviews/`. Reviewers never read `reviews/`, so every review is independent of earlier ones.
-5. **Superseded fragments.** Once `plan.md` exists, fragments are history, not inputs to later phases. If `plan.md` or `contract.md` is edited afterward without regenerating from the fragments, both fragments get a banner as their first line after the title: `> **SUPERSEDED.** Stale after revision <N>. Kept as an audit trail only; do not use as synthesis input. The authoritative sources are `../plan.md` and `../contract.md`.`
+5. **Superseded fragments.** Once `plan.md` exists, fragments are history, not inputs to later phases. If `plan.md` or `contract.md` is edited afterward without regenerating from the fragments, both fragments get a banner as their first line after the title: `> **SUPERSEDED.** Stale after revision <N>. Kept as an audit trail only; do not use as synthesis input. The authoritative sources are `../plan.md`and`../contract.md`.`
 6. **Audit trail.** `activity-log.md` is append-only. Each entry's `output:` path is relative to `plans/` (for example `v1.0.0/plan.md`). Existing entries are never rewritten, even when the layout changes; a legend line is appended instead.
 7. **Freeze.** At the Developer Approval Gate, `v<version>/plan.md` and `v<version>/contract.md` are frozen (see §4 for amendments).
 
@@ -287,8 +287,8 @@ All `fds.md` files MUST declare:
 
 Two named profiles must be configured before first use:
 
-| Profile                  | Used In                     | Coverage Threshold                                 | Other Rules                                                 |
-| :----------------------- | :-------------------------- | :------------------------------------------------- | :---------------------------------------------------------- |
+| Profile                  | Used In                      | Coverage Threshold                                 | Other Rules                                                 |
+| :----------------------- | :--------------------------- | :------------------------------------------------- | :---------------------------------------------------------- |
 | **Static Analysis Gate** | Code Validation 1 (Phase 7b) | Disabled (zero tests exist)                        | Bugs, vulnerabilities, code smells, complexity, duplication |
 | **Full Quality Gate**    | Code Validation 2 (Phase 8c) | Enabled (per `coverage_target` in FDS frontmatter) | All Static Analysis Gate rules + coverage                   |
 

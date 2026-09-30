@@ -418,7 +418,7 @@ git commit -m "feat(expense-crud): backend build complete"
 
 Can be executed as soon as Frontend Build is complete, without waiting for Backend Build (since the frontend runs on mocks):
 
-1. Start frontend dev server (`pnpm --filter @expense-tracker/frontend dev`) and inspect the feature pages.
+1. Start frontend dev server (`pnpm --filter @workflow-demo/frontend dev`) and inspect the feature pages.
 2. Verify visual styling, responsive design, modals, form states, and empty states against visual specs.
 3. Once verified, freeze UI and complete the Frontend commit shown above.
 
@@ -442,7 +442,7 @@ Runs sequentially after both Frontend and Backend are committed.
 
 ### What Happens:
 
-- Replaces frontend mock data with real API calls using the `@expense-tracker/contracts` ts-rest client.
+- Replaces frontend mock data with real API calls using the `@workflow-demo/contracts` ts-rest client.
 - Connects React Hook Form submissions, TanStack Query mutations, and error toasts.
 - Purges mock data files from production paths.
 
@@ -691,20 +691,20 @@ Use the complexity scoring rubric in `rules/workflow.md §5` to select the workf
   - Plan: `.ai/prompts/plan-mode.md`
   - Build: `.ai/prompts/build-mode.md` (`Phase = Frontend` → `Backend` → `Integration` sequentially)
   - Validate: `.ai/prompts/validation-prompt.md`
-- **Medium complexity (Score 3–4)**: Adopt Plan Review (`plan-review.md`) and parallel Testing (`test-build-mode.md` with `Phase = Both`), but keep Build sequential.
+- **Medium complexity (Score 3–4)**: Full multi-agent pipeline detailed above (plan fragments, synthesizer, plan review, build, test build). Plan Fragments, Build and Test Build may run each layer/scope individually (the Pragmatic Choice) instead of `Phase = Both`.
 - **High complexity (Score 5–6)**: Full multi-agent pipeline detailed above with parallel plan fragments, plan review, parallel builds (`Phase = Both`), and parallel test execution.
 
 ---
 
 ## Summary of All AI Prompts
 
-| File                                           | Role                                                                                                   |
-| :--------------------------------------------- | :----------------------------------------------------------------------------------------------------- |
-| `.ai/prompts/plan/plan-fragments.md`           | Unified fragment prompt supporting `Phase: "Frontend"` \| `"Backend"` \| `"Both"` (parallel subagents) |
-| `.ai/prompts/plan/plan-synthesizer.md`         | Synthesizes fragments into `v<version>/plan.md` and `v<version>/contract.md`                           |
-| `.ai/prompts/plan/plan-review.md`              | Independent pre-approval review of plan and API contract                                               |
-| `.ai/prompts/plan-mode.md`                     | Baseline single-agent plan mode for simple path / low-complexity features                              |
-| `.ai/prompts/build-mode.md`                    | Unified build prompt supporting `Phase: "Frontend"` \| `"Backend"` \| `"Both"` \| `"Integration"`      |
-| `.ai/prompts/test-build-mode.md`               | Unified test prompt supporting `Phase: "UnitAPI"` \| `"UIE2E"` \| `"Both"` (parallel subagents)         |
-| `.ai/prompts/diagnosis-mode.md`                | Classifies test/validation failures into 6 categories with concrete routing                            |
-| `.ai/prompts/validation-prompt.md`             | Baseline validation prompt used for Phase 9 final audit and compliance report                          |
+| File                                   | Role                                                                                                   |
+| :------------------------------------- | :----------------------------------------------------------------------------------------------------- |
+| `.ai/prompts/plan/plan-fragments.md`   | Unified fragment prompt supporting `Phase: "Frontend"` \| `"Backend"` \| `"Both"` (parallel subagents) |
+| `.ai/prompts/plan/plan-synthesizer.md` | Synthesizes fragments into `v<version>/plan.md` and `v<version>/contract.md`                           |
+| `.ai/prompts/plan/plan-review.md`      | Independent pre-approval review of plan and API contract                                               |
+| `.ai/prompts/plan-mode.md`             | Baseline single-agent plan mode for simple path / low-complexity features                              |
+| `.ai/prompts/build-mode.md`            | Unified build prompt supporting `Phase: "Frontend"` \| `"Backend"` \| `"Both"` \| `"Integration"`      |
+| `.ai/prompts/test-build-mode.md`       | Unified test prompt supporting `Phase: "UnitAPI"` \| `"UIE2E"` \| `"Both"` (parallel subagents)        |
+| `.ai/prompts/diagnosis-mode.md`        | Classifies test/validation failures into 6 categories with concrete routing                            |
+| `.ai/prompts/validation-prompt.md`     | Baseline validation prompt used for Phase 9 final audit and compliance report                          |

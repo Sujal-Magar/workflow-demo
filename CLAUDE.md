@@ -2,7 +2,7 @@
 
 This project uses the **Staged Dual-Validation Workflow** with Multi-Agent Parallel Execution. All AI agents must read this file first before doing anything.
 
-Detailed operations are documented in [WORKFLOW_PLAYBOOK.md](file:///home/sujal/programming/work/expense-tracker/WORKFLOW_PLAYBOOK.md). When Diagnosis Mode (Phase 8b) surfaces a finding, see [defect-scenarios-playbook.md](file:///home/sujal/programming/work/expense-tracker/defect-scenarios-playbook.md) for exactly what to do next.
+Detailed operations are documented in [WORKFLOW_PLAYBOOK.md](WORKFLOW_PLAYBOOK.md). When Diagnosis Mode (Phase 8b) surfaces a finding, see [defect-scenarios-playbook.md](defect-scenarios-playbook.md) for exactly what to do next.
 
 ---
 
@@ -10,21 +10,21 @@ Detailed operations are documented in [WORKFLOW_PLAYBOOK.md](file:///home/sujal/
 
 ### Multi-Agent Pipeline (Default for Medium & High Complexity)
 
-| Phase                               | When                             | System Prompt / Action                                                                                             |
-| :---------------------------------- | :------------------------------- | :----------------------------------------------------------------------------------------------------------------- |
-| **0 — Spec & Catalog Registration** | Before planning begins           | Author FDS, behavior, visual specs; run `pnpm index:sync` & `pnpm index:verify`                                    |
-| **1 — Plan Fragments (Parallel)**   | Before any code is written       | `.ai/prompts/plan/plan-fragments.md` (`Phase = Both`, or individual `Frontend` / `Backend`)                        |
-| **2 — Plan Synthesizer**            | After both fragments exist       | `.ai/prompts/plan/plan-synthesizer.md`                                                                             |
-| **3 — Plan Review**                 | Before developer approval        | `.ai/prompts/plan/plan-review.md`                                                                                  |
-| **4 — Developer Approval Gate**     | After plan review passes         | Human reviews & freezes `v<version>/plan.md` and `v<version>/contract.md`                                          |
-| **5 — Build Mode (Parallel)**       | After approval gate              | `.ai/prompts/build-mode.md` (`Phase = Both`, or individual `Frontend` / `Backend`)                                 |
-| **6 — UI Review & Freeze**          | After frontend build completes   | Human confirms UI against visual specs; freezes UI                                                                 |
-| **7 — Integration Build Mode**      | After both build sessions commit | `.ai/prompts/build-mode.md` with `Phase = Integration`                                                             |
-| **7b — Code Validation 1**          | After integration commits        | SonarQube Static Analysis Gate (no coverage threshold)                                                             |
-| **8 — Test Build Mode (Parallel)**  | Post-integration spec tests      | `.ai/prompts/test-build-mode.md` (`Phase = Both`, or individual `UnitAPI` / `UIE2E`)                               |
-| **8b — Diagnosis & Fix Loop**       | On unresolved test/gate failures | `.ai/prompts/diagnosis-mode.md`                                                                                    |
-| **8c — Code Validation 2**          | After tests pass                 | SonarQube Full Quality Gate (static analysis + coverage target)                                                    |
-| **9 — Validation Mode**             | Final compliance audit           | `.ai/prompts/validation-prompt.md`                                                                                 |
+| Phase                               | When                             | System Prompt / Action                                                                      |
+| :---------------------------------- | :------------------------------- | :------------------------------------------------------------------------------------------ |
+| **0 — Spec & Catalog Registration** | Before planning begins           | Author FDS, behavior, visual specs; run `pnpm index:sync` & `pnpm index:verify`             |
+| **1 — Plan Fragments (Parallel)**   | Before any code is written       | `.ai/prompts/plan/plan-fragments.md` (`Phase = Both`, or individual `Frontend` / `Backend`) |
+| **2 — Plan Synthesizer**            | After both fragments exist       | `.ai/prompts/plan/plan-synthesizer.md`                                                      |
+| **3 — Plan Review**                 | Before developer approval        | `.ai/prompts/plan/plan-review.md`                                                           |
+| **4 — Developer Approval Gate**     | After plan review passes         | Human reviews & freezes `v<version>/plan.md` and `v<version>/contract.md`                   |
+| **5 — Build Mode (Parallel)**       | After approval gate              | `.ai/prompts/build-mode.md` (`Phase = Both`, or individual `Frontend` / `Backend`)          |
+| **6 — UI Review & Freeze**          | After frontend build completes   | Human confirms UI against visual specs; freezes UI                                          |
+| **7 — Integration Build Mode**      | After both build sessions commit | `.ai/prompts/build-mode.md` with `Phase = Integration`                                      |
+| **7b — Code Validation 1**          | After integration commits        | SonarQube Static Analysis Gate (no coverage threshold)                                      |
+| **8 — Test Build Mode (Parallel)**  | Post-integration spec tests      | `.ai/prompts/test-build-mode.md` (`Phase = Both`, or individual `UnitAPI` / `UIE2E`)        |
+| **8b — Diagnosis & Fix Loop**       | On unresolved test/gate failures | `.ai/prompts/diagnosis-mode.md`                                                             |
+| **8c — Code Validation 2**          | After tests pass                 | SonarQube Full Quality Gate (static analysis + coverage target)                             |
+| **9 — Validation Mode**             | Final compliance audit           | `.ai/prompts/validation-prompt.md`                                                          |
 
 ### Simple / Sequential Baseline Prompts (Low Complexity)
 
@@ -123,12 +123,12 @@ User message  : Feature = profile
 
 ## Project Rules (Read Before Any Task)
 
-| Rule File                                                                                            | Summary & Critical Sections                                                                                                                                                           |
-| :--------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [`rules/workflow.md`](file:///home/sujal/programming/work/expense-tracker/rules/workflow.md)         | Full 10-phase workflow, Rollback Decision Tree (§3), Change Classification (§4), Complexity Scoring (§5), Living Specs (§6), SonarQube Profiles (§7), Bounded Retry Policy (§8)       |
-| [`rules/architecture.md`](file:///home/sujal/programming/work/expense-tracker/rules/architecture.md) | Layer hierarchy: Presentation → Service → Repository → Database (`data/app.db`); shared ts-rest contracts under `packages/contracts`; frontend Next.js 14 + TanStack Query + Tailwind |
-| [`rules/tech-stack.md`](file:///home/sujal/programming/work/expense-tracker/rules/tech-stack.md)     | Next.js 14, Tailwind CSS, Radix UI, TanStack Query, Express.js, Drizzle ORM, better-sqlite3, ts-rest, Zod, Vitest, Playwright (No AWS SES)                                            |
-| [`rules/conventions.md`](file:///home/sujal/programming/work/expense-tracker/rules/conventions.md)   | Naming conventions, strict typing without `any`, structured domain error handling, and test design                                                                                    |
+| Rule File                                        | Summary & Critical Sections                                                                                                                                                           |
+| :----------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [`rules/workflow.md`](rules/workflow.md)         | Full 10-phase workflow, Rollback Decision Tree (§3), Change Classification (§4), Complexity Scoring (§5), Living Specs (§6), SonarQube Profiles (§7), Bounded Retry Policy (§8)       |
+| [`rules/architecture.md`](rules/architecture.md) | Layer hierarchy: Presentation → Service → Repository → Database (`data/app.db`); shared ts-rest contracts under `packages/contracts`; frontend Next.js 14 + TanStack Query + Tailwind |
+| [`rules/tech-stack.md`](rules/tech-stack.md)     | Next.js 14, Tailwind CSS, Radix UI, TanStack Query, Express.js, Drizzle ORM, better-sqlite3, ts-rest, Zod, Vitest, Playwright (No AWS SES)                                            |
+| [`rules/conventions.md`](rules/conventions.md)   | Naming conventions, strict typing without `any`, structured domain error handling, and test design                                                                                    |
 
 ---
 
@@ -158,15 +158,15 @@ features/
 
 Kept in sync with `features/index.json`; workflow stage is derived from each feature's `plans/` contents.
 
-| Feature        | FDS                             | Status                                               |
-| :------------- | :------------------------------ | :---------------------------------------------------- |
-| `auth`         | `features/auth/fds.md`          | active — plan approved (v1.0.0 PASS), awaiting build |
-| `profile`      | `features/profile/fds.md`       | active — awaiting-plan                               |
-| `transactions` | `features/transactions/fds.md`  | active — awaiting-plan                               |
-| `budget`       | `features/budget/fds.md`        | active — awaiting-plan                               |
-| `goals`        | `features/goals/fds.md`         | active — awaiting-plan                               |
-| `reports`      | `features/reports/fds.md`       | active — awaiting-plan                               |
-| `dashboard`    | `features/dashboard/fds.md`     | active — awaiting-plan                               |
+| Feature        | FDS                            | Status                 |
+| :------------- | :----------------------------- | :--------------------- |
+| `auth`         | `features/auth/fds.md`         | active — awaiting-plan |
+| `profile`      | `features/profile/fds.md`      | active — awaiting-plan |
+| `transactions` | `features/transactions/fds.md` | active — awaiting-plan |
+| `budget`       | `features/budget/fds.md`       | active — awaiting-plan |
+| `goals`        | `features/goals/fds.md`        | active — awaiting-plan |
+| `reports`      | `features/reports/fds.md`      | active — awaiting-plan |
+| `dashboard`    | `features/dashboard/fds.md`    | active — awaiting-plan |
 
 ---
 

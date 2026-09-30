@@ -143,7 +143,7 @@ Encapsulate all Drizzle ORM operations within repositories.
 Maintain consistent import order:
 
 1. External packages (e.g., `react`, `express`, `zod`)
-2. Workspace packages (e.g., `@expense-tracker/contracts`)
+2. Workspace packages (e.g., `@workflow-demo/contracts`)
 3. Internal application modules (absolute or path-aliased)
 4. Relative imports (`./`, `../`)
 

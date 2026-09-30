@@ -88,7 +88,7 @@ Approved for `auth`, see `features/auth/fds.md` §2.
 
 ## Package
 
-- `@expense-tracker/contracts` (located in `packages/contracts`)
+- `@workflow-demo/contracts` (located in `packages/contracts`)
 
 ## Definition
 

@@ -19,6 +19,15 @@ const config: Config = {
           muted: "#6b7280",
           subtle: "#9ca3af",
         },
+        brand: {
+          teal: {
+            DEFAULT: "#00B894",
+            dark: "#009F80",
+          },
+          "gradient-from": "#4ACFAC",
+          "gradient-to": "#1B5E52",
+          ink: "#2D2D2D",
+        },
       },
       borderRadius: {
         md: "8px",
@@ -26,6 +35,17 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        display: ["var(--font-poppins)", "system-ui", "sans-serif"],
+      },
+      keyframes: {
+        shake: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "20%, 60%": { transform: "translateX(-6px)" },
+          "40%, 80%": { transform: "translateX(6px)" },
+        },
+      },
+      animation: {
+        shake: "shake 400ms ease-in-out",
       },
     },
   },

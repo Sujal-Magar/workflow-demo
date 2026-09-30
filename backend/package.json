@@ -1,0 +1,29 @@
+{
+  "name": "@expense-tracker/backend",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "@expense-tracker/contracts": "workspace:*",
+    "@ts-rest/express": "^3.51.0",
+    "better-sqlite3": "^11.0.0",
+    "drizzle-orm": "^0.33.0",
+    "express": "^4.21.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.0",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "drizzle-kit": "^0.24.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}

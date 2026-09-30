@@ -1,0 +1,27 @@
+{
+  "name": "expense-tracker",
+  "private": true,
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "test:coverage": "pnpm -r test:coverage",
+    "test:e2e": "playwright test",
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "index:sync": "node --experimental-strip-types scripts/sync-feature-index.ts && prettier --write features/index.json",
+    "index:verify": "node --experimental-strip-types scripts/verify-feature-index.ts",
+    "sonar:fetch": "node --experimental-strip-types scripts/sonar-fetch.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "@vitest/coverage-v8": "^2.1.9",
+    "eslint": "^9.0.0",
+    "prettier": "^3.3.0",
+    "typescript": "^5.6.0"
+  }
+}

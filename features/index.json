@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "project": "expense-tracker",
+  "last_updated": "2026-09-22",
+  "summary": {
+    "total_features": 7,
+    "active": 7,
+    "archived": 0
+  },
+  "active_features": {
+    "auth": {
+      "id": "auth",
+      "title": "Authentication and Identity",
+      "domain": "security",
+      "status": "active",
+      "version": "1.0.0",
+      "path": "features/auth/fds.md",
+      "behavior_spec": "features/auth/behavior.md",
+      "visual_spec": ["features/auth/visuals/auth-signin-page.png", "features/auth/visuals/auth-signup-page.png"],
+      "owner": "security-team",
+      "dependencies": []
+    },
+    "profile": {
+      "id": "profile",
+      "title": "User Profile and Preferences",
+      "domain": "user-management",
+      "status": "active",
+      "version": "1.0.0",
+      "path": "features/profile/fds.md",
+      "behavior_spec": "features/profile/behavior.md",
+      "visual_spec": ["features/profile/visuals/profile-page.png"],
+      "owner": "user-platform-team",
+      "dependencies": ["auth"]
+    },
+    "transactions": {
+      "id": "transactions",
+      "title": "Transactions Management",
+      "domain": "finance",
+      "status": "active",
+      "version": "1.0.0",
+      "path": "features/transactions/fds.md",
+      "behavior_spec": "features/transactions/behavior.md",
+      "visual_spec": [
+        "features/transactions/visuals/transactions-page.png",
+        "features/transactions/visuals/transaction-add-modal.png",
+        "features/transactions/visuals/transaction-edit-modal.png",
+        "features/transactions/visuals/transaction-delete-modal.png",
+        "features/transactions/visuals/transaction-toast-success.png",
+        "features/transactions/visuals/transaction-toast-error.png"
+      ],
+      "owner": "core-finance-team",
+      "dependencies": ["auth", "profile"]
+    },
+    "budget": {
+      "id": "budget",
+      "title": "Budget Planner",
+      "domain": "planning",
+      "status": "active",
+      "version": "1.0.0",
+      "path": "features/budget/fds.md",
+      "behavior_spec": "features/budget/behavior.md",
+      "visual_spec": [
+        "features/budget/visuals/budget-page.png",
+        "features/budget/visuals/budget-add-modal.png",
+        "features/budget/visuals/budget-edit-modal.png",
+        "features/budget/visuals/budget-delete-modal.png",
+        "features/budget/visuals/budget-toast-success.png",
+        "features/budget/visuals/budget-toast-error.png"
+      ],
+      "owner": "planning-team",
+      "dependencies": ["auth", "profile", "transactions"]
+    },
+    "goals": {
+      "id": "goals",
+      "title": "Financial Goals",
+      "domain": "planning",
+      "status": "active",
+      "version": "1.0.0",
+      "path": "features/goals/fds.md",
+      "behavior_spec": "features/goals/behavior.md",
+      "visual_spec": [
+        "features/goals/visuals/goals-page.png",
+        "features/goals/visuals/goal-add-modal.png",
+        "features/goals/visuals/goal-toast-success.png",
+        "features/goals/visuals/goal-toast-error.png"
+      ],
+      "owner": "planning-team",
+      "dependencies": ["auth", "profile", "transactions"]
+    },
+    "reports": {
+      "id": "reports",
+      "title": "Reports and Analytics",
+      "domain": "analytics",
+      "status": "active",
+      "version": "1.0.0",
+      "path": "features/reports/fds.md",
+      "behavior_spec": "features/reports/behavior.md",
+      "visual_spec": ["features/reports/visuals/reports-page.png"],
+      "owner": "analytics-team",
+      "dependencies": ["auth", "profile", "transactions", "budget"]
+    },
+    "dashboard": {
+      "id": "dashboard",
+      "title": "Dashboard Overview",
+      "domain": "analytics",
+      "status": "active",
+      "version": "1.0.0",
+      "path": "features/dashboard/fds.md",
+      "behavior_spec": "features/dashboard/behavior.md",
+      "visual_spec": ["features/dashboard/visuals/dashboard-page.png"],
+      "owner": "analytics-team",
+      "dependencies": ["auth", "profile", "transactions", "budget", "goals", "reports"]
+    }
+  },
+  "archived_features": {}
+}

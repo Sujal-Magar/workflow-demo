@@ -1,0 +1,14 @@
+- Plan: Frontend Fragment | 2026-09-24 16:28 | output: plan-v1.0.0-fragment-frontend.md | result: done
+- Plan: Backend Fragment | 2026-09-24 16:28 | output: plan-v1.0.0-fragment-backend.md | result: done
+- Plan: Synthesis | 2026-09-24 16:36 | output: plan-v1.0.0.md, contract-v1.0.0.md | result: done
+- Plan Review | 2026-09-24 16:45 | output: plan-v1.0.0-review.md | verdict: CHANGES REQUIRED
+- Plan: Frontend Fragment (revision 1, review findings B-2/B-3/B-4 + advisories) | 2026-09-25 | output: plan-v1.0.0-fragment-frontend.md | result: done
+- Plan: Backend Fragment (revision 1, review findings B-1/B-2/B-3 + advisories) | 2026-09-25 | output: plan-v1.0.0-fragment-backend.md | result: done
+- Plan: Synthesis (revision 1, cycle 1; answers plan-v1.0.0-review.md B-1..B-4 and advisories 1..14) | 2026-09-25 | output: plan-v1.0.0.md, contract-v1.0.0.md | result: done
+- Plan Review | 2026-09-25 | output: plan-v1.0.0-review.md | verdict: CHANGES REQUIRED
+- Plan: Synthesis (revision 2, cycle 2; answers re-review B-1 and A-1..A-8) | 2026-09-25 | output: plan-v1.0.0.md, contract-v1.0.0.md | result: done
+- Plan Review | 2026-09-25 | output: plan-v1.0.0-review.md | verdict: CHANGES REQUIRED
+- Plan: Synthesis (revision 3, cycle 3; answers re-review 3 B-1, B-2 and A-1..A-8) | 2026-09-25 | output: plan-v1.0.0.md, contract-v1.0.0.md | result: done
+- Plan Review | 2026-09-25 | output: plan-v1.0.0-review.md | verdict: PASS
+- Layout | 2026-09-25 | plan artifacts moved into per-version directories (rules/workflow.md §6). Legend for entries above: plan-v1.0.0.md -> v1.0.0/plan.md; contract-v1.0.0.md -> v1.0.0/contract.md; plan-v1.0.0-review.md -> v1.0.0/review.md (earlier rounds: v1.0.0/reviews/r1..r3.md); plan-v1.0.0-fragment-{frontend,backend}.md -> v1.0.0/fragments/{frontend,backend}.md | result: done
+- Directives | 2026-09-25 | revision-cycle-1 developer decisions archived to v1.0.0/directives.md | result: done

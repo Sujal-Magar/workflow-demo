@@ -4,12 +4,13 @@ import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 
+import type { NewPasswordFields } from "@workflow-demo/contracts";
+
 import { useToast } from "@/components/ui/toast";
 
 import { resetPassword } from "../api/auth-api";
 import { PASSWORD_UPDATED_TOAST } from "../lib/auth-copy";
 import type { AuthFailure } from "../lib/auth-error";
-import type { NewPasswordFields } from "../mocks/auth-types.mock";
 import { useAuth } from "../session/use-auth";
 
 /**

@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
+import { signUpRequestSchema, type SignUpRequest } from "@workflow-demo/contracts";
+
 import { Button } from "@/components/ui/button";
 import { IconInput } from "@/components/ui/icon-input";
 import { MailIcon, UserIcon } from "@/components/ui/icons";
@@ -24,12 +26,10 @@ import {
   SIGN_UP_FAILED_TOAST,
   SIGN_UP_TITLE,
 } from "../lib/auth-copy";
-import { signUpRequestSchema, type SignUpFormValues } from "../mocks/auth-form-schemas.mock";
-import type { SignUpRequest } from "../mocks/auth-types.mock";
 import { GoogleSignInButton } from "./google-sign-in-button";
 
 const SIGN_UP_FIELDS = ["name", "email", "password", "confirmPassword"] as const;
-const EMPTY_SIGN_UP_VALUES: SignUpFormValues = { name: "", email: "", password: "", confirmPassword: "" };
+const EMPTY_SIGN_UP_VALUES: SignUpRequest = { name: "", email: "", password: "", confirmPassword: "" };
 
 interface SignUpFormProps {
   /** False while the sign-in view is shown; the form is then cleared. */
@@ -46,7 +46,7 @@ export function SignUpForm({ isActive, google }: SignUpFormProps) {
     reset,
     setError,
     formState: { errors },
-  } = useForm<SignUpFormValues, unknown, SignUpRequest>({
+  } = useForm<SignUpRequest>({
     resolver: zodResolver(signUpRequestSchema),
     defaultValues: EMPTY_SIGN_UP_VALUES,
     mode: "onSubmit",

@@ -2,8 +2,9 @@
 
 import { useQuery } from "@tanstack/react-query";
 
+import type { PublicUser } from "@workflow-demo/contracts";
+
 import { getCurrentUser } from "../api/auth-api";
-import type { PublicUser } from "../mocks/auth-types.mock";
 
 export const CURRENT_USER_QUERY_KEY = ["auth", "current-user"] as const;
 

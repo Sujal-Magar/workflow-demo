@@ -1,4 +1,4 @@
-import { AUTH_ERROR_CODES, errorBodySchema, type AuthErrorCode } from "../mocks/auth-types.mock";
+import { ERROR_CODES, errorBodySchema, type ErrorCode } from "@workflow-demo/contracts";
 
 /** The eight operations of contract.md §7. */
 export type AuthOperation =
@@ -33,25 +33,22 @@ type DeclaredFailureKind = Exclude<AuthFailure["kind"], "unexpected">;
 
 interface DeclaredError {
   readonly status: number;
-  readonly code: AuthErrorCode;
+  readonly code: ErrorCode;
   readonly kind: DeclaredFailureKind;
 }
 
-const VALIDATION: DeclaredError = { status: 400, code: AUTH_ERROR_CODES.VALIDATION_ERROR, kind: "field-errors" };
+const VALIDATION: DeclaredError = { status: 400, code: ERROR_CODES.VALIDATION_ERROR, kind: "field-errors" };
 
 /** Declared error responses per operation (contract.md §6, §7). Anything else is "unexpected". */
 const DECLARED_ERRORS: Readonly<Record<AuthOperation, readonly DeclaredError[]>> = {
-  register: [VALIDATION, { status: 409, code: AUTH_ERROR_CODES.EMAIL_ALREADY_EXISTS, kind: "email-exists" }],
-  login: [VALIDATION, { status: 401, code: AUTH_ERROR_CODES.INVALID_CREDENTIALS, kind: "invalid-credentials" }],
-  googleOAuthLogin: [
-    VALIDATION,
-    { status: 401, code: AUTH_ERROR_CODES.INVALID_GOOGLE_TOKEN, kind: "invalid-google-token" },
-  ],
-  refreshSession: [{ status: 401, code: AUTH_ERROR_CODES.UNAUTHENTICATED, kind: "unauthenticated" }],
-  getCurrentUser: [{ status: 401, code: AUTH_ERROR_CODES.UNAUTHENTICATED, kind: "unauthenticated" }],
+  register: [VALIDATION, { status: 409, code: ERROR_CODES.EMAIL_ALREADY_EXISTS, kind: "email-exists" }],
+  login: [VALIDATION, { status: 401, code: ERROR_CODES.INVALID_CREDENTIALS, kind: "invalid-credentials" }],
+  googleOAuthLogin: [VALIDATION, { status: 401, code: ERROR_CODES.INVALID_GOOGLE_TOKEN, kind: "invalid-google-token" }],
+  refreshSession: [{ status: 401, code: ERROR_CODES.UNAUTHENTICATED, kind: "unauthenticated" }],
+  getCurrentUser: [{ status: 401, code: ERROR_CODES.UNAUTHENTICATED, kind: "unauthenticated" }],
   logout: [],
   requestPasswordReset: [VALIDATION],
-  resetPassword: [VALIDATION, { status: 400, code: AUTH_ERROR_CODES.INVALID_RESET_TOKEN, kind: "invalid-reset-token" }],
+  resetPassword: [VALIDATION, { status: 400, code: ERROR_CODES.INVALID_RESET_TOKEN, kind: "invalid-reset-token" }],
 };
 
 /** Form fields that can display a `fieldErrors` entry for each operation (the reset form has no `token` field). */

@@ -4,10 +4,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
+import type { PublicUser, SessionPayload } from "@workflow-demo/contracts";
+
 import { clearAccessToken, setAccessToken } from "@/lib/access-token-store";
+import { registerSessionHandlers } from "@/lib/api-client";
 
 import { logout as requestLogout } from "../api/auth-api";
-import type { PublicUser, SessionPayload } from "../mocks/auth-types.mock";
 import { refreshSessionOnce } from "./session-refresh";
 import { AuthContext, type AuthContextValue, type AuthStatus } from "./use-auth";
 
@@ -105,6 +107,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [refreshSession]);
 
   useEffect(() => cancelRenewal, [cancelRenewal]);
+
+  // Lets the API fetcher refresh and retry a protected 401, or expire the session (D-23). The returned unregister
+  // function is the cleanup, so StrictMode's double mount leaves exactly one registration.
+  useEffect(
+    () => registerSessionHandlers({ refreshSession, onSessionExpired: expireSession }),
+    [refreshSession, expireSession]
+  );
 
   const value = useMemo<AuthContextValue>(
     () => ({

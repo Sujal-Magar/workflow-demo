@@ -5,6 +5,8 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useState, type FormEvent } from "react";
 import { useForm } from "react-hook-form";
 
+import { forgotPasswordRequestSchema, type ForgotPasswordRequest } from "@workflow-demo/contracts";
+
 import { Button } from "@/components/ui/button";
 import { FormAlert } from "@/components/ui/form-alert";
 import { IconInput } from "@/components/ui/icon-input";
@@ -22,8 +24,6 @@ import {
   RESET_REQUEST_SENT,
   SEND_RESET_LINK_BUTTON,
 } from "../lib/auth-copy";
-import { forgotPasswordRequestSchema, type ForgotPasswordFormValues } from "../mocks/auth-form-schemas.mock";
-import type { ForgotPasswordRequest } from "../mocks/auth-types.mock";
 
 const FORGOT_PASSWORD_FIELDS = ["email"] as const;
 
@@ -37,7 +37,7 @@ function ForgotPasswordBody() {
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<ForgotPasswordFormValues, unknown, ForgotPasswordRequest>({
+  } = useForm<ForgotPasswordRequest>({
     resolver: zodResolver(forgotPasswordRequestSchema),
     defaultValues: { email: "" },
     mode: "onSubmit",

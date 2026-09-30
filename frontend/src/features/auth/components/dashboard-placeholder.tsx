@@ -1,8 +1,9 @@
 "use client";
 
+import type { PublicUser } from "@workflow-demo/contracts";
+
 import { useCurrentUser } from "../hooks/use-current-user";
 import { signedInAs } from "../lib/auth-copy";
-import type { PublicUser } from "../mocks/auth-types.mock";
 import { FintrackLogo } from "./fintrack-logo";
 import { SignOutButton } from "./sign-out-button";
 

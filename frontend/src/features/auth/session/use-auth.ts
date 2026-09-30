@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from "react";
 
-import type { PublicUser, SessionPayload } from "../mocks/auth-types.mock";
+import type { PublicUser, SessionPayload } from "@workflow-demo/contracts";
 
 export type AuthStatus = "loading" | "authenticated" | "unauthenticated";
 

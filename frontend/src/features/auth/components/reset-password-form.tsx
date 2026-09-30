@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, type FormEvent } from "react";
 import { useForm } from "react-hook-form";
 
+import { newPasswordFieldsSchema, type NewPasswordFields } from "@workflow-demo/contracts";
+
 import { Button } from "@/components/ui/button";
 import { FormAlert } from "@/components/ui/form-alert";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -16,8 +18,6 @@ import {
   RESET_FAILED,
   RESET_PASSWORD_BUTTON,
 } from "../lib/auth-copy";
-import { newPasswordFieldsSchema, type NewPasswordFormValues } from "../mocks/auth-form-schemas.mock";
-import type { NewPasswordFields } from "../mocks/auth-types.mock";
 
 // `password` is New Password and `confirmPassword` is Confirm New Password; a `token` field error has no field.
 const NEW_PASSWORD_FIELDS = ["password", "confirmPassword"] as const;
@@ -35,7 +35,7 @@ export function ResetPasswordForm({ token, onInvalidToken }: ResetPasswordFormPr
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<NewPasswordFormValues, unknown, NewPasswordFields>({
+  } = useForm<NewPasswordFields>({
     resolver: zodResolver(newPasswordFieldsSchema),
     defaultValues: { password: "", confirmPassword: "" },
     mode: "onSubmit",

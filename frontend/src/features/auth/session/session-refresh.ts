@@ -1,6 +1,7 @@
+import type { SessionPayload } from "@workflow-demo/contracts";
+
 import { refreshSession as requestSessionRefresh } from "../api/auth-api";
 import type { AuthResult } from "../lib/auth-error";
-import type { SessionPayload } from "../mocks/auth-types.mock";
 
 let inFlightRefresh: Promise<AuthResult<SessionPayload>> | null = null;
 

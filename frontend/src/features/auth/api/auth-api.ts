@@ -1,22 +1,8 @@
-// The single module through which every auth hook and the session layer reach the API (plan FE-05).
-// Phase 5: backed by the in-memory mock. INT-03 replaces the calls with the ts-rest client; the exported
-// signatures and the result mapping stay the same.
+// The single module through which every auth hook and the session layer reach the API (plan FE-05, INT-03).
+// Each call goes through the ts-rest client, and each response is mapped to the result union by declared status and
+// `code` (contract §6, §7).
 import type { ZodType } from "zod";
 
-import { getAccessToken } from "@/lib/access-token-store";
-
-import { toAuthFailure, type AuthOperation, type AuthResult } from "../lib/auth-error";
-import {
-  mockGetCurrentUser,
-  mockGoogleOAuthLogin,
-  mockLogin,
-  mockLogout,
-  mockRefreshSession,
-  mockRegister,
-  mockRequestPasswordReset,
-  mockResetPassword,
-  type MockResponse,
-} from "../mocks/auth-mock-api";
 import {
   currentUserResponseSchema,
   forgotPasswordAckSchema,
@@ -31,10 +17,19 @@ import {
   type SignInRequest,
   type SignUpRequest,
   type SuccessAck,
-} from "../mocks/auth-types.mock";
+} from "@workflow-demo/contracts";
+
+import { authApiClient } from "@/lib/api-client";
+
+import { toAuthFailure, type AuthOperation, type AuthResult } from "../lib/auth-error";
 
 const HTTP_OK = 200;
 const HTTP_CREATED = 201;
+
+interface RawResponse {
+  readonly status: number;
+  readonly body: unknown;
+}
 
 interface OperationSpec<T> {
   readonly operation: AuthOperation;
@@ -42,8 +37,8 @@ interface OperationSpec<T> {
   readonly successSchema: ZodType<T>;
 }
 
-async function runOperation<T>(spec: OperationSpec<T>, send: () => Promise<MockResponse>): Promise<AuthResult<T>> {
-  let response: MockResponse;
+async function runOperation<T>(spec: OperationSpec<T>, send: () => Promise<RawResponse>): Promise<AuthResult<T>> {
+  let response: RawResponse;
   try {
     response = await send();
   } catch {
@@ -62,52 +57,52 @@ async function runOperation<T>(spec: OperationSpec<T>, send: () => Promise<MockR
 
 export function register(body: SignUpRequest): Promise<AuthResult<SessionPayload>> {
   return runOperation({ operation: "register", successStatus: HTTP_CREATED, successSchema: sessionPayloadSchema }, () =>
-    mockRegister(body)
+    authApiClient.register.mutate({ body })
   );
 }
 
 export function login(body: SignInRequest): Promise<AuthResult<SessionPayload>> {
   return runOperation({ operation: "login", successStatus: HTTP_OK, successSchema: sessionPayloadSchema }, () =>
-    mockLogin(body)
+    authApiClient.login.mutate({ body })
   );
 }
 
 export function googleOAuthLogin(body: GoogleSignInRequest): Promise<AuthResult<SessionPayload>> {
   return runOperation(
     { operation: "googleOAuthLogin", successStatus: HTTP_OK, successSchema: sessionPayloadSchema },
-    () => mockGoogleOAuthLogin(body)
+    () => authApiClient.googleOAuthLogin.mutate({ body })
   );
 }
 
 export function refreshSession(): Promise<AuthResult<SessionPayload>> {
   return runOperation(
     { operation: "refreshSession", successStatus: HTTP_OK, successSchema: sessionPayloadSchema },
-    () => mockRefreshSession()
+    () => authApiClient.refreshSession.mutate()
   );
 }
 
 export function getCurrentUser(): Promise<AuthResult<CurrentUserResponse>> {
   return runOperation(
     { operation: "getCurrentUser", successStatus: HTTP_OK, successSchema: currentUserResponseSchema },
-    () => mockGetCurrentUser(getAccessToken())
+    () => authApiClient.getCurrentUser.query()
   );
 }
 
 export function logout(): Promise<AuthResult<SuccessAck>> {
   return runOperation({ operation: "logout", successStatus: HTTP_OK, successSchema: successAckSchema }, () =>
-    mockLogout()
+    authApiClient.logout.mutate()
   );
 }
 
 export function requestPasswordReset(body: ForgotPasswordRequest): Promise<AuthResult<ForgotPasswordAck>> {
   return runOperation(
     { operation: "requestPasswordReset", successStatus: HTTP_OK, successSchema: forgotPasswordAckSchema },
-    () => mockRequestPasswordReset(body)
+    () => authApiClient.requestPasswordReset.mutate({ body })
   );
 }
 
 export function resetPassword(body: ResetPasswordRequest): Promise<AuthResult<SuccessAck>> {
   return runOperation({ operation: "resetPassword", successStatus: HTTP_OK, successSchema: successAckSchema }, () =>
-    mockResetPassword(body)
+    authApiClient.resetPassword.mutate({ body })
   );
 }

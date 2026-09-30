@@ -73,3 +73,15 @@ On a revision run (Plan Review returned `CHANGES REQUIRED`), overwrite these two
 
 Before finishing, append one line to `features/<feature-id>/plans/activity-log.md` (create it if absent):
 `- Plan: Synthesis | <date/time> | output: v<version>/plan.md, v<version>/contract.md | result: <done / stopped — reason>`
+
+---
+
+## Next Step Handoff
+
+End your final response with a Next Step block in the format defined in `.ai/prompts/next-step-handoff.md`. Pick the route that matches the outcome:
+
+| Outcome                                                         | Next step                                                                                                                                                                                                                  |
+| :-------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `plan.md` and `contract.md` written (first run or revision run) | Phase 3, Plan Review: `.ai/prompts/plan/plan-review.md` with `Feature ID`. Say it must run in a new session, so the reviewer is independent of this one.                                                                   |
+| Stopped: fragments irreconcilable, or a spec ambiguity          | Before you start: the exact question, and which spec file the answer goes in. Paste block: `.ai/prompts/plan/plan-fragments.md` with `Phase` set to the side(s) whose fragment must change. After that: this prompt again. |
+| Stopped: a directive conflicts with the FDS                     | Before you start: name the directive and the FDS section it conflicts with; the developer amends `directives.md` or the FDS. Paste block: this prompt again, with the same revision-run message.                           |

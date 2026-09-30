@@ -120,3 +120,15 @@ Before finishing, append one line per fragment drafted to `features/<feature-id>
 
 - `- Plan: Frontend Fragment | <date/time> | output: v<version>/fragments/frontend.md | result: <done / stopped — reason>`
 - `- Plan: Backend Fragment | <date/time> | output: v<version>/fragments/backend.md | result: <done / stopped — reason>`
+
+---
+
+## Next Step Handoff
+
+End your final response with a Next Step block in the format defined in `.ai/prompts/next-step-handoff.md`. In `Phase = Both`, only the orchestrating agent writes it, after both subagents return. Pick the route that matches the outcome:
+
+| Outcome                                                                                              | Next step                                                                                                                                                                                                                                                                                 |
+| :--------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Both fragments now exist (this run wrote both, or wrote one and the other already exists)            | Phase 2, Plan Synthesizer: `.ai/prompts/plan/plan-synthesizer.md` with `Feature ID`. On a revision run (`directives.md` exists), add a line saying so and naming the directives section to apply.                                                                                         |
+| Individual run, and the other fragment does not exist yet                                            | Phase 1 again for the other side: `.ai/prompts/plan/plan-fragments.md` with `Phase = Frontend` or `Backend`. After that: the Synthesizer.                                                                                                                                                 |
+| Stopped on a spec ambiguity or a conflict with `rules/` (either side, including one subagent of two) | Before you start: the exact question, and which file the answer goes in (`fds.md`, `behavior.md`, or a developer decision on `rules/`). If the FDS version changes, `pnpm index:sync && pnpm index:verify`. Paste block: re-run this prompt with `Phase` set to the side(s) that stopped. |

@@ -19,3 +19,8 @@ Produce a Validation Report saved as `features/<feature>/validation-report.md`. 
 - List each FDS criterion and mark pass/fail.
 - Summarise test results (counts and pass/fail).
 - Note any deviations or known limitations.
+
+End your final response with a Next Step block in the format defined in `.ai/prompts/next-step-handoff.md`. Pick the route that matches the outcome:
+
+- **All criteria and checks pass.** Before you start: any manual UI review this report says is required; then `pnpm format && git add features/<feature>/ && git commit -m "docs(<feature>): add final validation report"`. Paste block: the next feature to plan. Take it from `features/index.json`: a feature still awaiting a plan whose dependencies are all validated. Use `.ai/prompts/plan/plan-fragments.md` with `Phase = Both` for medium or high complexity, or `.ai/prompts/plan-mode.md` for low complexity (`rules/workflow.md` §5). If no such feature exists, say so and give no paste block.
+- **Any criterion or check fails.** Paste block: `.ai/prompts/diagnosis-mode.md` with `Feature ID = <feature>`, naming this report as the trigger. After that: the batches in the diagnosis report, then this prompt again.

@@ -38,6 +38,8 @@ For low-complexity features (Score 0–2 per `rules/workflow.md §5`):
 
 ## How to Invoke AI Workflow Modes
 
+Every prompt ends its response with a **Next Step** block: the route for its outcome (continue, loop back, or escalate), with a ready-to-paste message for the next session. The format is defined in `.ai/prompts/next-step-handoff.md`.
+
 ### Phase 1: Plan Fragments (Multi-Agent Subagents & Pragmatic Choice)
 
 ```text

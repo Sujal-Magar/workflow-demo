@@ -708,3 +708,4 @@ Use the complexity scoring rubric in `rules/workflow.md §5` to select the workf
 | `.ai/prompts/test-build-mode.md`       | Unified test prompt supporting `Phase: "UnitAPI"` \| `"UIE2E"` \| `"Both"` (parallel subagents)        |
 | `.ai/prompts/diagnosis-mode.md`        | Classifies test/validation failures into 6 categories with concrete routing                            |
 | `.ai/prompts/validation-prompt.md`     | Baseline validation prompt used for Phase 9 final audit and compliance report                          |
+| `.ai/prompts/next-step-handoff.md`     | Shared format for the paste-ready Next Step block that every prompt above ends its response with       |

@@ -98,3 +98,16 @@ If you cannot confidently classify a failure without guessing at intent, mark it
 
 Before finishing, append one line to `features/<feature-id>/plans/activity-log.md` (create it if absent):
 `- Diagnosis | <date/time> | output: v<version>/diagnosis.md | findings: <n> | result: <done / stopped — reason>`
+
+---
+
+## Next Step Handoff
+
+End your final response with a Next Step block in the format defined in `.ai/prompts/next-step-handoff.md`. It turns the Batching Summary into ready-to-paste sessions, one numbered paste block per session, in run order:
+
+1. **Contract mismatch first**, when present. Put the amendment under Before you start (the developer amends `contract.md`), then give a paste block for `.ai/prompts/plan/plan-review.md` to re-review it. Say that re-approval comes before any Fix Mode session.
+2. **Fix Mode.** When Frontend and Backend defects are both present, give one block for `.ai/prompts/build-mode.md` with `Phase = Both`, `Mode = Fix`, `Findings = <all Frontend and Backend IDs>`. Alternative: one session per layer, committing in between.
+3. **Integration.** `.ai/prompts/build-mode.md` with `Phase = Integration`. Name any Integration-wiring findings in an extra line. Include this block whenever step 2 ran, even with no wiring findings.
+4. **Tests.** `.ai/prompts/test-build-mode.md`. For Bad-test findings alone, use the scope that wrote the test, name the test file and what is wrong, and skip steps 2 and 3. After any fix, use `Phase = Both`.
+
+Commit commands for each step follow `defect-scenarios-playbook.md`. FDS-ambiguity, Uncertain and Retry-budget-exceeded findings have no paste block. Put each one's exact question under Before you start, and say which later blocks must wait for its answer. After the last block: if tests pass, Phase 8c and then Validation; if not, this prompt again, which counts toward the retry budget.

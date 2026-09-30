@@ -94,3 +94,13 @@ Output a single file at `features/<feature-id>/plans/v<version>/plan.md` (where 
   - **Testing**: Unit, integration, component, E2E, and regression test requirements.
 - **Spec Traceability**: Each task MUST reference the specific Requirement ID from `fds.md` (e.g., `REQ-TXN-01` or `FDS Section 5`).
 - **No Code Output**: Describe actions concisely and objectively. Do NOT write code snippets in the plan file.
+
+---
+
+## Next Step Handoff
+
+End your final response with a Next Step block in the format defined in `.ai/prompts/next-step-handoff.md`. Pick the route that matches the outcome:
+
+- **Plan written.** Before you start: the developer reviews and approves the plan, then `git add features/<feature-id>/plans/ && git commit -m "docs(<feature-id>): add approved implementation plan"`. Paste block: `.ai/prompts/build-mode.md` with `Phase = Frontend`. After that: `Phase = Backend`, then `Phase = Integration`, then Validation (the simple path).
+- **Stopped on an ambiguity or a conflict with `rules/`.** Before you start: the exact question, and which spec file the answer goes in. Paste block: this prompt again.
+- **Archived feature (Scenario D).** No paste block. Say that no plan is produced.

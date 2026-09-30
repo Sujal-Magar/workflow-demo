@@ -1,0 +1,11 @@
+- Plan: Frontend Fragment | 2026-09-30 11:12 | output: v1.0.0/fragments/frontend.md | result: done
+- Plan: Backend Fragment | 2026-09-30 11:12 | output: v1.0.0/fragments/backend.md | result: done
+- Plan: Synthesis | 2026-09-30 11:26 | output: v1.0.0/plan.md, v1.0.0/contract.md | result: done
+- Plan Review | 2026-09-30 11:33 | output: v1.0.0/review.md | verdict: CHANGES REQUIRED
+- Plan: Synthesis | 2026-09-30 11:41 | output: v1.0.0/plan.md, v1.0.0/contract.md | result: done — revision 1 (plan.md revised in place for B-1, B-2 per directives.md, A-1–A-4; contract.md unchanged; fragments marked SUPERSEDED)
+- Plan Review | 2026-09-30 11:48 | output: v1.0.0/review.md | verdict: CHANGES REQUIRED
+- Plan: Synthesis | 2026-09-30 11:55 | output: v1.0.0/plan.md, v1.0.0/contract.md | result: done — revision 2 (plan.md revised in place for Revision 2 B-1 per directives.md (option A: D-17 removed, starred D-22, §2 Unit/API row, §8.1 harness, T-UA-01) and B-2 (TH-01, TH-02 LCOV coverage reporters); contract.md unchanged; fragment banners updated)
+- Plan Review | 2026-09-30 12:01 | output: v1.0.0/review.md | verdict: CHANGES REQUIRED
+- Plan: Synthesis | 2026-09-30 12:18 | output: v1.0.0/plan.md, v1.0.0/contract.md | result: done — revision 3 (plan.md revised in place for Revision 3 per directives.md: B-1 option A (starred D-23: registerSessionHandlers, token store moved to lib/; FE-10, INT-02, INT-03, T-UI-08, T-UI-09), B-2 (@ts-rest/core in S-01 step 4, D-20 removed), B-3 option B (starred D-24: two coverage exclusions, sonar-project.properties as S-01 sixth file, new T-UA-11 and T-UI-20, TH-01/TH-02 coverage.exclude), A-6 (D-13 starred), advisory A-1–A-5, A-7–A-9 (T-UI-19); contract.md unchanged; fragment banners updated)
+- Plan Review | 2026-09-30 12:24 | output: v1.0.0/review.md | verdict: CHANGES REQUIRED
+- Plan: Revision (developer) | 2026-09-30 12:28 | output: v1.0.0/plan.md | result: done — revision 4 (B-1 option A: BE-02 hand-adds the users CHECK constraint to the generated migration; advisories not applied; contract.md unchanged; re-review waived by the developer)

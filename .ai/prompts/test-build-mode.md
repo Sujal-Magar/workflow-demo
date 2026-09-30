@@ -15,7 +15,7 @@ The developer decides which Phase to execute based on available session tokens a
 
 - **`"Both"` (Parallel Multi-Agent / Subagent Execution)**:
   Triggers test generation across both scopes concurrently. The AI agent MUST employ a multi-agent pattern and roll up two parallel subagents, launched together in a single turn:
-  1. **Unit/API Test Subagent**: follows the "Unit/API Scope" section below. Scoped strictly to `backend/`. Must not inspect or touch frontend or e2e files.
+  1. **Unit/API Test Subagent**: follows the "Unit/API Scope" section below. Scoped strictly to `backend/`, plus test files and the Vitest config under `packages/contracts/`. Must not inspect or touch frontend or e2e files.
   2. **UI/E2E Test Subagent**: follows the "UI/End-to-End Scope" section below. Scoped strictly to `frontend/` and `e2e/`. Must not inspect or touch backend files.
 
   Rules for the orchestrating agent:
@@ -40,6 +40,7 @@ Backend and API-level tests only:
 - Unit tests for services and repositories.
 - API/integration tests against the Express routes.
 - Backend-focused regression tests.
+- Unit tests for the shared contract package, written as `packages/contracts/src/**/*.test.ts` and run by that package's own `vitest.config.ts`. You may edit that config's coverage settings. You may not change any other file under `packages/contracts/`.
 
 Do NOT write frontend component tests or E2E/Playwright specs — those belong exclusively to the UI/E2E scope. Do NOT modify any file under the frontend workspace.
 
@@ -52,7 +53,7 @@ Read `features/index.json` to locate:
 
 To minimize token usage, do not read the entire codebase. Instead:
 
-- Identify only the backend modules directly related to the feature, using the plan's Backend section to determine which files were implemented.
+- Identify only the backend and `packages/contracts/` modules directly related to the feature, using the plan's Backend section to determine which files were implemented.
 - Read only those files necessary to understand what to test and how to interact with the system.
 - Follow imports and references as needed to get just enough context, but never load unrelated parts of the project, and never read frontend source files.
 
@@ -66,18 +67,18 @@ Implement each backend/API test listed in the plan's Testing section:
 
 After all your tests are written:
 
-- Run the backend test suite only.
+- Run the backend and `packages/contracts/` test suites only.
 - If any tests fail, analyse and fix only the test code (global max 5 attempts).
 
 ### Defect Handling
 
 If a test reveals a genuine bug in production code, you may fix it, but only within backend files, and only if you have no other option. You MUST document the change in `features/<feature>/plans/v<version>/defects-unit-api.md` (create it if absent) — one entry per fix, naming the file changed and the defect it corrected. Do not write to any other defects file; the UI/E2E scope maintains its own.
 
-If fixing a defect would require changing a file that the plan's Frontend or Integration sections also depend on, STOP and record the conflict in the defects file instead of proceeding. This must be resolved by a human before either scope continues.
+If fixing a defect would require changing a file that the plan's Frontend or Integration sections also depend on, STOP and record the conflict in the defects file instead of proceeding. This must be resolved by a human before either scope continues. Non-test source under `packages/contracts/` is always such a file, because the frontend consumes it.
 
 ### Log Line
 
-`- Test: Unit/API | <date/time> | files touched: backend/** | retries: <n> | result: <done / stopped — reason>`
+`- Test: Unit/API | <date/time> | files touched: backend/**, packages/contracts/** (tests and vitest.config.ts only) | retries: <n> | result: <done / stopped — reason>`
 
 ---
 

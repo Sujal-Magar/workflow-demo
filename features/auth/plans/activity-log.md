@@ -18,3 +18,7 @@
 - Code Validation 1 | 2026-09-30 16:00 | sonar static gate: pass | result: done
 - Code Validation 2 | 2026-09-30 16:00 | sonar full gate: pass | result: done
 - Fix (developer) | 2026-10-01 09:55 | files touched: frontend/**, backend/**, e2e/**, packages/contracts/** | result: done — SonarQube findings SQ-02 to SQ-05 from validation-report.md; env.ts empty-value regression fixed; runtime pinned to Node 22 (.node-version); lint, typecheck, format, unit 508/508, E2E 26/26 pass
+- Code Validation 1 | 2026-10-01 09:58 | sonar static gate: pass | result: done
+- Code Validation 2 | 2026-10-01 09:58 | sonar full gate: pass | result: done
+- Validation | 2026-10-01 10:12 | output: validation-report.md | verdict: FAIL — SQ-02 (icon-input.tsx S3735) and SQ-03 (auth-test-harness.ts S2068/S7719) were marked false-positive on the SonarQube server at 04:12-04:15 UTC, not fixed in code, and undocumented; SQ-01 gate profiles still unconfigured
+- Developer decision | 2026-10-01 10:16 | files touched: features/auth/plans/v1.0.0/directives.md | result: done — confirmed SQ-02 and SQ-03 false-positive dismissals are intentional; justification recorded in directives.md "Post-Validation SonarQube Triage"; no code change; SQ-01 (gate profile setup) remains open, owned by a SonarQube admin

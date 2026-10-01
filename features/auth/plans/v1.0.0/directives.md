@@ -141,3 +141,32 @@ Record as a starred (★) decision in the plan's Decision Log: no
 ### Advisory items
 
 Not applied (A-1 to A-6 of review.md). They may be handled during Build or a later revision.
+
+## Post-Validation SonarQube Triage (developer, 2026-10-01), applied
+
+Not tied to a plan review round. The 2026-10-01 10:12 validation-report.md (§2.1, §6) found that two
+SonarQube findings were marked false-positive on the server (2026-10-01 04:12-04:15 UTC, right after
+commit 03e700b) rather than fixed in code, with no record of the decision. The developer confirmed
+both dismissals are intentional. This entry is that record.
+
+### SQ-02 — typescript:S3735 (CRITICAL), frontend/src/components/ui/icon-input.tsx:40
+
+Finding: `void box.offsetWidth;` is flagged for "unnecessary" use of the void operator.
+Decision: False positive, confirmed. The statement is not unnecessary — reading `offsetWidth`
+forces a synchronous layout reflow so the shake animation restarts on repeated validation errors on
+the same field. `void` only discards the read value to satisfy `no-unused-expressions`; removing the
+line would remove the reflow and break the restart behavior. The rule does not have a side-effect
+exception for this pattern.
+Apply to: no code change. Keep the server-side false-positive marking on this issue.
+
+### SQ-03 — typescript:S2068 (vulnerability) + typescript:S7719 ×2, backend/src/test-support/auth-test-harness.ts:28-29,40,44
+
+Finding: `STRONG_PASSWORD`/`OTHER_STRONG_PASSWORD` string literals flagged as hard-coded passwords.
+Decision: False positive, confirmed. These are fixture values for integration tests, not credentials
+for any real account; the file is under `backend/src/test-support/` and is imported only by
+`*.test.ts` files. The underlying scoping cause (test-support files fall under `sonar.sources` but
+not `sonar.test.inclusions`) is accepted as-is for this version rather than changed, so the same
+false-positive marking will be needed again if new files are added under `test-support/`.
+Apply to: no code change this version. A future revision may fix `sonar.test.inclusions` in
+`sonar-project.properties` to cover `**/test-support/**` and `frontend/src/test/**` so this stops
+recurring.

@@ -1,0 +1,4 @@
+# Activity Log — profile
+
+- Plan: Frontend Fragment | 2026-10-01T05:06Z | output: v1.0.0/fragments/frontend.md | result: stopped — FDS §6 acceptance criteria imply preferredCurrency/language/monthlyStartDate are user-editable, but behavior.md's "Edit Profile" dialog only covers name/email/avatar and the visual mockup renders Preferences as static text; also FDS enum `NPR|USD|EUR|GBP` conflicts with mockup's displayed "NPR (₹)"
+- Plan: Backend Fragment | 2026-10-01T05:06Z | output: v1.0.0/fragments/backend.md | result: stopped — "Change Password" is required by FDS §3 REQ-PROF-01 and behavior.md §2 (current password + new password + confirmation modal), but is entirely absent from FDS §5 API spec (only 4 endpoints listed, none for password) and FDS §4 Validation Rules (no complexity/mismatch/lockout rules); not satisfiable by the existing token-based auth reset-password flow

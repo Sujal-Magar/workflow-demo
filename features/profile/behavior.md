@@ -14,12 +14,15 @@
   - Saving updates values immediately and syncs with global user state.
 - **Change Password**:
   - Clicking **"Change Password"** opens a modal requesting current password, new password, and confirmation.
-  - Submitting successfully displays a confirmation toast: `"Password updated successfully!"`
+  - Submitting successfully updates the password, closes the modal, and displays a confirmation toast: `"Password updated successfully!"`.
+  - Submitting an incorrect current password displays an inline error: `"Incorrect current password."`.
+  - Submitting a new password that does not meet complexity requirements (minimum 8 characters, at least one number, and at least one special character) or where confirmation does not match displays corresponding inline validation errors.
+  - For Google SSO accounts without a password, an alert informs the user that no password has been set and directs them to use password recovery.
 
 ## 3. Preferences & Notification Toggling
 
 - Checking or unchecking any of the notification preferences (**Budget Limit Alerts**, **Goal Reminders**, **Weekly Summary Emails**) saves automatically or upon settings submission, updating notification triggers.
-- Adjusting **Monthly Start Date** recalculates budget monthly cycle periods application-wide.
+- In v1.0.0, **Preferred Currency** (`INR (₹)`), **Language** (`English (EN)`), and **Monthly Start Date** (`1st of every month`) are rendered as static, read-only labels based on account defaults; user editing controls for regional/cycle preferences are deferred to v1.1.0.
 
 ## 4. Data Export Flow
 

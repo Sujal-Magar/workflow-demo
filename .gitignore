@@ -12,6 +12,7 @@ dist/
 coverage/
 **/coverage/
 .sonar/
+.scannerwork/
 sonar/
 test-results/
 playwright-report/

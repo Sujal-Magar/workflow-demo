@@ -13,7 +13,8 @@
     "format:check": "prettier --check .",
     "index:sync": "node --experimental-strip-types scripts/sync-feature-index.ts && prettier --write features/index.json",
     "index:verify": "node --experimental-strip-types scripts/verify-feature-index.ts",
-    "sonar:fetch": "node --experimental-strip-types scripts/sonar-fetch.ts"
+    "sonar:fetch": "node --experimental-strip-types scripts/sonar-fetch.ts",
+    "sonar:scan": "node --experimental-strip-types scripts/sonar-scan.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.48.0",

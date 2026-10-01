@@ -23,7 +23,7 @@ interface FieldRule {
   readonly message: string;
 }
 
-const ASCII_DIGIT_PATTERN = /[0-9]/;
+const ASCII_DIGIT_PATTERN = /\d/;
 // Anything that is not an ASCII letter or digit is special, including space, underscore and "é".
 const SPECIAL_CHARACTER_PATTERN = /[^A-Za-z0-9]/;
 const emailFormatSchema = z.string().email();

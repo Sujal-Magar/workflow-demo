@@ -52,7 +52,7 @@ export function renderWithProviders(ui: ReactElement, options: RenderOptions = {
   const queryClient = options.queryClient ?? createTestQueryClient();
   const googleClientId = options.googleClientId ?? null;
 
-  function Wrapper({ children }: { children: ReactNode }) {
+  function Wrapper({ children }: Readonly<{ children: ReactNode }>) {
     return (
       <QueryClientProvider client={queryClient}>
         <ToastProvider>

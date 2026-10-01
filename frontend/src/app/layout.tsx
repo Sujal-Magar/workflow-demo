@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   description: "Expense Tracker application",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
       <body className="bg-background font-sans text-brand-ink antialiased">

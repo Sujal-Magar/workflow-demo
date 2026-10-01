@@ -35,7 +35,7 @@ const INVITES: Readonly<Record<AuthMode, InviteContent>> = {
 
 const AUTH_MODES: readonly AuthMode[] = ["signin", "signup"];
 
-export function BrandPanel({ mode, onSwitchMode, className }: BrandPanelProps) {
+export function BrandPanel({ mode, onSwitchMode, className }: Readonly<BrandPanelProps>) {
   return (
     <div
       className={cn(

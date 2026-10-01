@@ -89,10 +89,12 @@ export class AuthService {
   async login(input: LoginInput): Promise<AuthenticatedSession> {
     const { persistence, passwordHasher } = this.dependencies;
     const user = persistence.users.findByEmail(normalizeEmail(input.email));
-    if (user === null || user.passwordHash === null) {
+
+    if (user?.passwordHash == null) {
       await passwordHasher.verify(await this.getTimingGuardHash(), input.password);
       throw new InvalidCredentialsError();
     }
+
     const isPasswordValid = await passwordHasher.verify(user.passwordHash, input.password);
     if (!isPasswordValid) {
       throw new InvalidCredentialsError();

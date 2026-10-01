@@ -8,7 +8,7 @@ import { FullPageLoader } from "@/components/ui/full-page-loader";
 import { useAuth } from "../session/use-auth";
 
 /** Loader while the session restores; `/dashboard` when signed in; the children only when signed out. */
-export function GuestOnlyRoute({ children }: { children: ReactNode }) {
+export function GuestOnlyRoute({ children }: Readonly<{ children: ReactNode }>) {
   const { status } = useAuth();
   const router = useRouter();
 

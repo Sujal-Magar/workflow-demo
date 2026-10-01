@@ -37,7 +37,7 @@ interface SignUpFormProps {
   google: GoogleSignInControls;
 }
 
-export function SignUpForm({ isActive, google }: SignUpFormProps) {
+export function SignUpForm({ isActive, google }: Readonly<SignUpFormProps>) {
   const toast = useToast();
   const { submitSignUp, isPending } = useSignUp();
   const {

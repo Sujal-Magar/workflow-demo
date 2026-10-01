@@ -2,8 +2,6 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
-import { cn } from "@/lib/cn";
-
 import { CloseIcon } from "./icons";
 
 export const TOAST_DURATION_MS = 5000;
@@ -23,7 +21,7 @@ export interface ToastApi {
 
 const ToastContext = createContext<ToastApi | null>(null);
 
-export function ToastProvider({ children }: { children: ReactNode }) {
+export function ToastProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [toasts, setToasts] = useState<readonly ToastItem[]>([]);
   // Mirror of the visible toasts, so de-duplication and timers stay outside state updaters.
   const visibleToastsRef = useRef<readonly ToastItem[]>([]);
@@ -82,26 +80,43 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         aria-live="polite"
         className="pointer-events-none fixed right-4 top-4 z-[100] flex w-[calc(100%-2rem)] max-w-sm flex-col gap-2"
       >
-        {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            role={toast.variant === "error" ? "alert" : "status"}
-            className={cn(
-              "pointer-events-auto flex items-start gap-3 rounded-md px-4 py-3 text-sm text-white shadow-lg",
-              toast.variant === "error" ? "bg-red-600" : "bg-brand-teal"
-            )}
-          >
-            <p className="flex-1 leading-5">{toast.message}</p>
-            <button
-              type="button"
-              onClick={() => dismissToast(toast.id)}
-              aria-label="Dismiss notification"
-              className="-mr-1 flex h-5 w-5 shrink-0 items-center justify-center rounded text-white/80 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        {toasts.map((toast) => {
+          if (toast.variant === "error") {
+            return (
+              <div
+                key={toast.id}
+                role="alert"
+                className="pointer-events-auto flex items-start gap-3 rounded-md px-4 py-3 text-sm text-white shadow-lg bg-red-600"
+              >
+                <p className="flex-1 leading-5">{toast.message}</p>
+                <button
+                  type="button"
+                  onClick={() => dismissToast(toast.id)}
+                  aria-label="Dismiss notification"
+                  className="-mr-1 flex h-5 w-5 shrink-0 items-center justify-center rounded text-white/80 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                >
+                  <CloseIcon className="h-4 w-4" />
+                </button>
+              </div>
+            );
+          }
+          return (
+            <output
+              key={toast.id}
+              className="pointer-events-auto flex items-start gap-3 rounded-md px-4 py-3 text-sm text-white shadow-lg bg-brand-teal"
             >
-              <CloseIcon className="h-4 w-4" />
-            </button>
-          </div>
-        ))}
+              <p className="flex-1 leading-5">{toast.message}</p>
+              <button
+                type="button"
+                onClick={() => dismissToast(toast.id)}
+                aria-label="Dismiss notification"
+                className="-mr-1 flex h-5 w-5 shrink-0 items-center justify-center rounded text-white/80 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              >
+                <CloseIcon className="h-4 w-4" />
+              </button>
+            </output>
+          );
+        })}
       </div>
     </ToastContext.Provider>
   );

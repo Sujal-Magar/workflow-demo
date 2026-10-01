@@ -10,10 +10,8 @@ let inFlightRefresh: Promise<AuthResult<SessionPayload>> | null = null;
  * double effects) shares one request, because the server rotates the refresh cookie with no grace window.
  */
 export function refreshSessionOnce(): Promise<AuthResult<SessionPayload>> {
-  if (!inFlightRefresh) {
-    inFlightRefresh = requestSessionRefresh().finally(() => {
-      inFlightRefresh = null;
-    });
-  }
+  inFlightRefresh ??= requestSessionRefresh().finally(() => {
+    inFlightRefresh = null;
+  });
   return inFlightRefresh;
 }

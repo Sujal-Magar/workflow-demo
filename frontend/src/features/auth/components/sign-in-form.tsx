@@ -37,7 +37,7 @@ interface SignInFormProps {
   google: GoogleSignInControls;
 }
 
-export function SignInForm({ isActive, google }: SignInFormProps) {
+export function SignInForm({ isActive, google }: Readonly<SignInFormProps>) {
   const toast = useToast();
   const { submitSignIn, isPending } = useSignIn();
   const [isCredentialAlertVisible, setIsCredentialAlertVisible] = useState(false);

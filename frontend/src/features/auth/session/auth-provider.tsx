@@ -30,7 +30,7 @@ export function renewalDelayMs(expiresInSeconds: number): number {
   return Math.max(0, (expiresInSeconds - RENEWAL_LEAD_SECONDS) * MILLISECONDS_PER_SECOND);
 }
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children }: Readonly<{ children: ReactNode }>) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [session, setSession] = useState<SessionState>(LOADING_STATE);

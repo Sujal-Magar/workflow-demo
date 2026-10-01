@@ -142,8 +142,8 @@ describe("T-UI-08 · AuthProvider session restore", () => {
     const writtenValues = setItemSpy.mock.calls.map(([, value]) => value);
     expect(writtenValues.some((value) => value.includes(TEST_SESSION.accessToken))).toBe(false);
     expect(writtenValues.some((value) => value.includes(RENEWED_SESSION.accessToken))).toBe(false);
-    expect(window.localStorage.length).toBe(0);
-    expect(window.sessionStorage.length).toBe(0);
+    expect(window.localStorage).toHaveLength(0);
+    expect(window.sessionStorage).toHaveLength(0);
   });
 });
 

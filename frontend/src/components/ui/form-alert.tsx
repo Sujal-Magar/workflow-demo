@@ -5,7 +5,7 @@ interface FormAlertProps {
   className?: string;
 }
 
-export function FormAlert({ message, className }: FormAlertProps) {
+export function FormAlert({ message, className }: Readonly<FormAlertProps>) {
   return (
     <div
       role="alert"

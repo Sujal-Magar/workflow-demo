@@ -11,7 +11,11 @@ export interface ClientEnv {
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
+function nonEmpty(value: string | undefined): string | null {
+  return value === undefined || value === "" ? null : value;
+}
+
 export const env: ClientEnv = {
-  apiBaseUrl: apiBaseUrl ? apiBaseUrl : DEFAULT_API_BASE_URL,
-  googleClientId: googleClientId ? googleClientId : null,
+  apiBaseUrl: nonEmpty(apiBaseUrl) ?? DEFAULT_API_BASE_URL,
+  googleClientId: nonEmpty(googleClientId),
 };

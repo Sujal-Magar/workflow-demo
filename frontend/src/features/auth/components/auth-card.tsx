@@ -17,7 +17,7 @@ interface FormPanelProps {
 }
 
 /** Holds one form. Both stay mounted; the hidden one is `aria-hidden` and `inert`. */
-function FormPanel({ isActive, className, children }: FormPanelProps) {
+function FormPanel({ isActive, className, children }: Readonly<FormPanelProps>) {
   const panelRef = useRef<HTMLDivElement>(null);
   const isHidden = !isActive;
 

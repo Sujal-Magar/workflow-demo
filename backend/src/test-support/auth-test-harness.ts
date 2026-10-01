@@ -58,7 +58,7 @@ export class CapturingMailer implements Mailer {
 
   /** The raw token carried by the most recent reset URL. */
   lastToken(): string {
-    const latest = this.messages[this.messages.length - 1];
+    const latest = this.messages.at(-1)!;
     return new URL(latest.resetUrl).searchParams.get("token") as string;
   }
 }

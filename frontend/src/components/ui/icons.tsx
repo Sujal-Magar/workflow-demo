@@ -4,7 +4,7 @@ import { cn } from "@/lib/cn";
 
 export type IconProps = SVGProps<SVGSVGElement>;
 
-function StrokeIcon({ children, ...props }: IconProps) {
+function StrokeIcon({ children, ...props }: Readonly<IconProps>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -23,7 +23,7 @@ function StrokeIcon({ children, ...props }: IconProps) {
   );
 }
 
-export function UserIcon(props: IconProps) {
+export function UserIcon(props: Readonly<IconProps>) {
   return (
     <StrokeIcon {...props}>
       <circle cx="12" cy="8" r="3.5" />
@@ -32,7 +32,7 @@ export function UserIcon(props: IconProps) {
   );
 }
 
-export function MailIcon(props: IconProps) {
+export function MailIcon(props: Readonly<IconProps>) {
   return (
     <StrokeIcon {...props}>
       <rect x="3" y="5.5" width="18" height="13" rx="1.5" />
@@ -41,7 +41,7 @@ export function MailIcon(props: IconProps) {
   );
 }
 
-export function LockIcon(props: IconProps) {
+export function LockIcon(props: Readonly<IconProps>) {
   return (
     <StrokeIcon {...props}>
       <rect x="5" y="10.5" width="14" height="10" rx="1.5" />
@@ -51,7 +51,7 @@ export function LockIcon(props: IconProps) {
   );
 }
 
-export function EyeIcon(props: IconProps) {
+export function EyeIcon(props: Readonly<IconProps>) {
   return (
     <StrokeIcon {...props}>
       <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" />
@@ -60,7 +60,7 @@ export function EyeIcon(props: IconProps) {
   );
 }
 
-export function EyeOffIcon(props: IconProps) {
+export function EyeOffIcon(props: Readonly<IconProps>) {
   return (
     <StrokeIcon {...props}>
       <path d="M10.6 5.6A10 10 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-2.6 3.4" />
@@ -71,7 +71,7 @@ export function EyeOffIcon(props: IconProps) {
   );
 }
 
-export function CloseIcon(props: IconProps) {
+export function CloseIcon(props: Readonly<IconProps>) {
   return (
     <StrokeIcon {...props}>
       <path d="M6 6l12 12M18 6 6 18" />
@@ -79,7 +79,7 @@ export function CloseIcon(props: IconProps) {
   );
 }
 
-export function SpinnerIcon({ className, ...props }: IconProps) {
+export function SpinnerIcon({ className, ...props }: Readonly<IconProps>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -97,7 +97,7 @@ export function SpinnerIcon({ className, ...props }: IconProps) {
 }
 
 /** Single-colour grey "G" matching the visual references (used when Google sign-in is unavailable). */
-export function GoogleGIcon(props: IconProps) {
+export function GoogleGIcon(props: Readonly<IconProps>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

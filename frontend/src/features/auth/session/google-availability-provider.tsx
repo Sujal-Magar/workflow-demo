@@ -21,7 +21,7 @@ interface GoogleAvailabilityProviderProps {
 export function GoogleAvailabilityProvider({
   children,
   clientId = env.googleClientId,
-}: GoogleAvailabilityProviderProps) {
+}: Readonly<GoogleAvailabilityProviderProps>) {
   const [hasScriptFailed, setHasScriptFailed] = useState(false);
   const markScriptFailed = useCallback(() => setHasScriptFailed(true), []);
   const isAvailable = Boolean(clientId) && !hasScriptFailed;

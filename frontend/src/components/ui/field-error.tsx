@@ -3,7 +3,7 @@ interface FieldErrorProps {
   message?: string;
 }
 
-export function FieldError({ id, message }: FieldErrorProps) {
+export function FieldError({ id, message }: Readonly<FieldErrorProps>) {
   if (!message) {
     return null;
   }

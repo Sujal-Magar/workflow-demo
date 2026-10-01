@@ -67,9 +67,7 @@ function ForgotPasswordBody() {
   if (sentMessage) {
     return (
       <div className="mt-6 flex flex-col items-center text-center">
-        <p role="status" className="text-[15px] leading-6 text-slate-600">
-          {sentMessage}
-        </p>
+        <output className="text-[15px] leading-6 text-slate-600">{sentMessage}</output>
         <Dialog.Close asChild>
           <Button className="mt-6">{BACK_TO_SIGN_IN_BUTTON}</Button>
         </Dialog.Close>
@@ -100,7 +98,7 @@ interface ForgotPasswordDialogProps {
   triggerClassName?: string;
 }
 
-export function ForgotPasswordDialog({ triggerClassName }: ForgotPasswordDialogProps) {
+export function ForgotPasswordDialog({ triggerClassName }: Readonly<ForgotPasswordDialogProps>) {
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>

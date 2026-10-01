@@ -91,7 +91,7 @@ test.describe("T-UI-14 · sign-in and session", () => {
 
     expect(await alert.textContent()).toBe(wrongPasswordText);
     await expect(page).toHaveURL(/\/auth$/);
-    expect(refreshRequests.length).toBe(refreshesAfterRestore);
+    expect(refreshRequests).toHaveLength(refreshesAfterRestore);
   });
 
   test("reloading /dashboard keeps the session and never visits /auth", async ({ page, request }) => {

@@ -12,7 +12,7 @@ interface ResetPasswordCardProps {
   token: string | null;
 }
 
-export function ResetPasswordCard({ token }: ResetPasswordCardProps) {
+export function ResetPasswordCard({ token }: Readonly<ResetPasswordCardProps>) {
   const [isTokenRejected, setIsTokenRejected] = useState(false);
   const isLinkInvalid = !token || isTokenRejected;
 

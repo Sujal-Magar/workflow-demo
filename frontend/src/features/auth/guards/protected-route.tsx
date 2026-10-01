@@ -8,7 +8,7 @@ import { FullPageLoader } from "@/components/ui/full-page-loader";
 import { useAuth } from "../session/use-auth";
 
 /** Loader while the session restores; `/auth` when signed out; the children only when signed in. */
-export function ProtectedRoute({ children }: { children: ReactNode }) {
+export function ProtectedRoute({ children }: Readonly<{ children: ReactNode }>) {
   const { status } = useAuth();
   const router = useRouter();
 

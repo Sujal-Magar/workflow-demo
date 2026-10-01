@@ -18,7 +18,7 @@ interface GoogleOAuthProviderProps {
   onScriptLoadError?: () => void;
 }
 
-function GoogleOAuthProvider({ children, onScriptLoadError }: GoogleOAuthProviderProps) {
+function GoogleOAuthProvider({ children, onScriptLoadError }: Readonly<GoogleOAuthProviderProps>) {
   googleScript.failToLoad = () => onScriptLoadError?.();
   return <>{children}</>;
 }
@@ -28,7 +28,7 @@ interface GoogleLoginProps {
   onError?: () => void;
 }
 
-function GoogleLogin({ onSuccess, onError }: GoogleLoginProps) {
+function GoogleLogin({ onSuccess, onError }: Readonly<GoogleLoginProps>) {
   return (
     <>
       <button type="button" onClick={() => onSuccess({ credential: GOOGLE_TEST_CREDENTIAL })}>

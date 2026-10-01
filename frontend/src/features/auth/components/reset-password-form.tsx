@@ -27,7 +27,7 @@ interface ResetPasswordFormProps {
   onInvalidToken: () => void;
 }
 
-export function ResetPasswordForm({ token, onInvalidToken }: ResetPasswordFormProps) {
+export function ResetPasswordForm({ token, onInvalidToken }: Readonly<ResetPasswordFormProps>) {
   const { submitNewPassword, isPending } = useResetPassword(token);
   const [hasResetFailed, setHasResetFailed] = useState(false);
   const {

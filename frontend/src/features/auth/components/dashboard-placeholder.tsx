@@ -12,7 +12,7 @@ interface DashboardPlaceholderProps {
 }
 
 /** Minimal `/dashboard` until the `dashboard` feature replaces it (REQ-AUTH-07). */
-export function DashboardPlaceholder({ sessionUser }: DashboardPlaceholderProps) {
+export function DashboardPlaceholder({ sessionUser }: Readonly<DashboardPlaceholderProps>) {
   const { data: currentUser } = useCurrentUser(sessionUser);
 
   return (

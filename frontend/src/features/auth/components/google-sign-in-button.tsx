@@ -12,7 +12,7 @@ interface GoogleSignInButtonProps {
   controls: GoogleSignInControls;
 }
 
-export function GoogleSignInButton({ controls }: GoogleSignInButtonProps) {
+export function GoogleSignInButton({ controls }: Readonly<GoogleSignInButtonProps>) {
   const { isAvailable } = useGoogleAvailability();
 
   if (!isAvailable) {
@@ -30,10 +30,10 @@ export function GoogleSignInButton({ controls }: GoogleSignInButtonProps) {
 
   if (controls.isPending) {
     return (
-      <span role="status" aria-busy="true" className="flex h-10 w-10 items-center justify-center rounded-full">
+      <output aria-busy="true" className="flex h-10 w-10 items-center justify-center rounded-full">
         <SpinnerIcon className="h-6 w-6 text-brand-teal" />
         <span className="sr-only">{GOOGLE_BUTTON_LABEL}…</span>
-      </span>
+      </output>
     );
   }
 

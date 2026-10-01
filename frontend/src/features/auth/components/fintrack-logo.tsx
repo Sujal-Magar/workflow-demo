@@ -9,7 +9,7 @@ interface FintrackLogoProps {
 }
 
 /** Inline wordmark (D-04): no logo file is supplied. */
-export function FintrackLogo({ tone = "onDark", className }: FintrackLogoProps) {
+export function FintrackLogo({ tone = "onDark", className }: Readonly<FintrackLogoProps>) {
   const accentClass = tone === "onDark" ? "text-white" : "text-brand-teal";
   return (
     <div className={cn("flex select-none flex-col items-center leading-none", className)} aria-label="FinTrack">

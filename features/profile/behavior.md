@@ -10,7 +10,7 @@
 ## 2. Profile Details & Password Flow
 
 - **Edit Profile**:
-  - Clicking **"Edit Profile"** opens an edit dialog for display name, email, and avatar upload.
+  - Clicking **"Edit Profile"** opens an edit dialog for display name and avatar upload.
   - Saving updates values immediately and syncs with global user state.
 - **Change Password**:
   - Clicking **"Change Password"** opens a modal requesting current password, new password, and confirmation.

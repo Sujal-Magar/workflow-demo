@@ -115,7 +115,7 @@ The Profile module manages the user's account identity, regional preferences, ap
 ## 6. Acceptance Criteria
 
 - User can view their profile name, email, avatar, and preference settings (preferred currency, language, monthly start date).
-- User can update display name and avatar via the "Edit Profile" dialog with immediate UI reflection. (Note: In v1.0.0, "update profile settings" acceptance criteria refers only to name/email/avatar; preferredCurrency, language, and monthlyStartDate are read-only display values initialized from account defaults, with user editing deferred to v1.1.0).
+- User can update display name and avatar via the "Edit Profile" dialog with immediate UI reflection. (Note: In v1.0.0, "update profile settings" acceptance criteria refers only to name/avatar; preferredCurrency, language, and monthlyStartDate are read-only display values initialized from account defaults, with user editing deferred to v1.1.0).
 - User can toggle notification preferences (budget alerts, goal reminders, weekly summaries) with automatic saving and immediate reflection.
 - User can open the Change Password modal from the Profile Identity card, enter current password and new password with confirmation, and successfully change password with immediate success toast notification.
 - Submitting an invalid current password, an unmet password complexity rule, or a mismatched confirmation password displays corresponding inline validation error feedback without changing credentials.

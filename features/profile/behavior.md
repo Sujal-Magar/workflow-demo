@@ -3,6 +3,7 @@
 ## 1. Page Access & Layout
 
 - Clicking the User Profile avatar icon in the top right of the navigation header navigates to `/profile`.
+  - _Addendum (v1.0.0, directive D-16):_ The shared navigation header that hosts this avatar icon is not built by `profile` v1.0.0. It must render identically across `/dashboard`, `/transactions`, and other pages, which makes it a future cross-feature/app-shell effort rather than a `profile`-owned component. `profile` v1.0.0 assumes `/profile` is reached directly; see `plan.md` Decision Log D-13.
 - Page layout renders two primary cards side by side under the header **"My Profile"**:
   1. Profile Identity Card (Left).
   2. Preferences, Notifications, and Data Management Card (Right).
@@ -22,7 +23,7 @@
 ## 3. Preferences & Notification Toggling
 
 - Checking or unchecking any of the notification preferences (**Budget Limit Alerts**, **Goal Reminders**, **Weekly Summary Emails**) saves automatically or upon settings submission, updating notification triggers.
-- In v1.0.0, **Preferred Currency** (`INR (₹)`), **Language** (`English (EN)`), and **Monthly Start Date** (`1st of every month`) are rendered as static, read-only labels based on account defaults; user editing controls for regional/cycle preferences are deferred to v1.1.0.
+- In v1.0.0, **Preferred Currency** (`NPR (₹)`), **Language** (`English (EN)`), and **Monthly Start Date** (`1st of every month`) are rendered as static, read-only labels based on account defaults; user editing controls for regional/cycle preferences are deferred to v1.1.0.
 
 ## 4. Data Export Flow
 

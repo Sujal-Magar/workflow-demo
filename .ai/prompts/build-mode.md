@@ -74,7 +74,7 @@ When the plan conflicts with Architecture Rules, Tech Stack, or Conventions, STO
 
 ## Commit Boundary & Activity Log
 
-Your work is committed on its own, staged only from the paths your phase owns (`frontend/`; or `backend/` plus `packages/contracts/`). Do not stage or commit anything else — a parallel agent for the other layer may have unrelated, unfinished changes sitting in the same working tree at the same time. Integration is single-agent and runs only after both sides are already committed, so it may stage everything it touched.
+**Never run `git add`, `git commit`, or any other git command that stages or commits changes.** Committing is always a human action, for every phase including Integration — the agent's job ends when the work and the activity-log entry are in the working tree. Leave the changes uncommitted and tell the developer what is ready to commit and which paths it touched (`frontend/`; or `backend/` plus `packages/contracts/`; both for Integration) so they can review and commit it themselves.
 
 Before finishing, append one line to `features/<feature-id>/plans/activity-log.md` (create it if absent). In `Phase = "Both"`, only the orchestrating agent appends, once both subagents have returned:
 

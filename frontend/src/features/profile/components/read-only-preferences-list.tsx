@@ -1,4 +1,4 @@
-import type { UserProfile } from "../mocks/profile-types.mock";
+import type { UserProfile } from "@workflow-demo/contracts";
 
 const CURRENCY_SYMBOLS: Readonly<Record<UserProfile["preferredCurrency"], string>> = {
   NPR: "₹",

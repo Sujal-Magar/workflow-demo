@@ -1,4 +1,4 @@
-import type { UserProfile } from "../mocks/profile-types.mock";
+import type { UserProfile } from "@workflow-demo/contracts";
 import { DataManagementActions } from "./data-management-actions";
 import { NotificationPreferencesList } from "./notification-preferences-list";
 import { ReadOnlyPreferencesList } from "./read-only-preferences-list";

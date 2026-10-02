@@ -11,9 +11,10 @@ import { CloseIcon } from "@/components/ui/icons";
 import { PasswordInput } from "@/components/ui/password-input";
 import { useToast } from "@/components/ui/toast";
 
+import { changePasswordRequestSchema, type ChangePasswordRequest } from "@workflow-demo/contracts";
+
 import { useChangePassword } from "../hooks/use-change-password";
 import { applyFieldErrors } from "../lib/apply-field-errors";
-import { changePasswordFormSchema, type ChangePasswordFormValues } from "../mocks/profile-form-schemas.mock";
 
 const CHANGE_PASSWORD_FIELDS = ["currentPassword", "newPassword", "confirmPassword"] as const;
 const PASSWORD_UPDATED_TOAST = "Password updated successfully!";
@@ -24,7 +25,7 @@ const PASSWORD_NOT_SET_MESSAGE = "No password is set for this account. Use passw
 const RATE_LIMIT_MESSAGE = "Too many password change attempts. Please try again later.";
 const GENERIC_FAILURE_MESSAGE = "Couldn't update your password. Please try again.";
 
-const DEFAULT_VALUES: ChangePasswordFormValues = { currentPassword: "", newPassword: "", confirmPassword: "" };
+const DEFAULT_VALUES: ChangePasswordRequest = { currentPassword: "", newPassword: "", confirmPassword: "" };
 
 interface ChangePasswordBodyProps {
   onChanged: () => void;
@@ -40,14 +41,14 @@ function ChangePasswordBody({ onChanged }: Readonly<ChangePasswordBodyProps>) {
     handleSubmit,
     setError,
     formState: { errors },
-  } = useForm<ChangePasswordFormValues>({
-    resolver: zodResolver(changePasswordFormSchema),
+  } = useForm<ChangePasswordRequest>({
+    resolver: zodResolver(changePasswordRequestSchema),
     defaultValues: DEFAULT_VALUES,
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
 
-  const submitValidForm = async (values: ChangePasswordFormValues) => {
+  const submitValidForm = async (values: ChangePasswordRequest) => {
     const result = await submitChangePassword(values);
     if (result.ok) {
       toast.success(PASSWORD_UPDATED_TOAST);

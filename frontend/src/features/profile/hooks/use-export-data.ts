@@ -5,7 +5,7 @@ import { useCallback } from "react";
 
 import { exportData } from "../api/profile-api";
 import type { ProfileResult } from "../lib/profile-error";
-import type { UserProfile } from "../mocks/profile-types.mock";
+import type { UserProfile } from "@workflow-demo/contracts";
 
 /** `profile-export-<ISO-date>.json` (contract.md §2.6); the date is today's, UTC. */
 function exportFilename(): string {

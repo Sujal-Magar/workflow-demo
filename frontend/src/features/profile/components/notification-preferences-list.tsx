@@ -6,7 +6,7 @@ import {
   useToggleNotificationPreference,
   type NotificationPreferenceKey,
 } from "../hooks/use-toggle-notification-preference";
-import type { NotificationPreferences } from "../mocks/profile-types.mock";
+import type { NotificationPreferences } from "@workflow-demo/contracts";
 
 const PREFERENCE_LABELS: Readonly<Record<NotificationPreferenceKey, string>> = {
   budgetLimitAlerts: "Budget Limit Alerts",

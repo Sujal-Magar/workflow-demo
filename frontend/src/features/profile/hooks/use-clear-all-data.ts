@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { clearAllData } from "../api/profile-api";
 import type { ProfileResult } from "../lib/profile-error";
-import type { ClearAllUserDataRequest, ProfileSuccessAck, UserProfile } from "../mocks/profile-types.mock";
+import type { ClearAllUserDataRequest, ProfileSuccessAck, UserProfile } from "@workflow-demo/contracts";
 import { PROFILE_QUERY_KEY } from "./use-profile";
 
 export function useClearAllData(): {

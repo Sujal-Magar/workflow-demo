@@ -10,10 +10,11 @@ import { FieldError } from "@/components/ui/field-error";
 import { FormAlert } from "@/components/ui/form-alert";
 import { CloseIcon } from "@/components/ui/icons";
 
+import type { UserProfile } from "@workflow-demo/contracts";
+
 import { useUpdateProfile } from "../hooks/use-update-profile";
 import { applyFieldErrors } from "../lib/apply-field-errors";
-import { editProfileFormSchema, type EditProfileFormValues } from "../mocks/profile-form-schemas.mock";
-import type { UserProfile } from "../mocks/profile-types.mock";
+import { editProfileFormSchema, type EditProfileFormValues } from "../lib/profile-form-schemas";
 import { AvatarCircle } from "./avatar-circle";
 
 const EDIT_PROFILE_FIELDS = ["name", "avatarUrl"] as const;

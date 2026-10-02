@@ -1,4 +1,4 @@
-import { PROFILE_ERROR_CODES, errorBodySchema, type ProfileErrorCode } from "../mocks/profile-types.mock";
+import { ERROR_CODES, errorBodySchema, type ErrorCode } from "@workflow-demo/contracts";
 
 /** The five operations of contract.md §6. */
 export type ProfileOperation = "getProfile" | "updateProfile" | "changePassword" | "exportData" | "clearAllData";
@@ -26,11 +26,11 @@ type DeclaredFailureKind = Exclude<ProfileFailure["kind"], "unexpected">;
 
 interface DeclaredError {
   readonly status: number;
-  readonly code: ProfileErrorCode;
+  readonly code: ErrorCode;
   readonly kind: DeclaredFailureKind;
 }
 
-const VALIDATION: DeclaredError = { status: 400, code: PROFILE_ERROR_CODES.VALIDATION_ERROR, kind: "field-errors" };
+const VALIDATION: DeclaredError = { status: 400, code: ERROR_CODES.VALIDATION_ERROR, kind: "field-errors" };
 
 /** Declared error responses per operation (contract.md §5, §6). Anything else is "unexpected". */
 const DECLARED_ERRORS: Readonly<Record<ProfileOperation, readonly DeclaredError[]>> = {
@@ -38,11 +38,11 @@ const DECLARED_ERRORS: Readonly<Record<ProfileOperation, readonly DeclaredError[
   updateProfile: [VALIDATION],
   changePassword: [
     VALIDATION,
-    { status: 400, code: PROFILE_ERROR_CODES.PASSWORD_NOT_SET, kind: "password-not-set" },
-    { status: 400, code: PROFILE_ERROR_CODES.SAME_PASSWORD, kind: "same-password" },
-    { status: 400, code: PROFILE_ERROR_CODES.PASSWORDS_DO_NOT_MATCH, kind: "passwords-do-not-match" },
-    { status: 401, code: PROFILE_ERROR_CODES.INVALID_CREDENTIALS, kind: "invalid-credentials" },
-    { status: 429, code: PROFILE_ERROR_CODES.RATE_LIMIT_EXCEEDED, kind: "rate-limit-exceeded" },
+    { status: 400, code: ERROR_CODES.PASSWORD_NOT_SET, kind: "password-not-set" },
+    { status: 400, code: ERROR_CODES.SAME_PASSWORD, kind: "same-password" },
+    { status: 400, code: ERROR_CODES.PASSWORDS_DO_NOT_MATCH, kind: "passwords-do-not-match" },
+    { status: 401, code: ERROR_CODES.INVALID_CREDENTIALS, kind: "invalid-credentials" },
+    { status: 429, code: ERROR_CODES.RATE_LIMIT_EXCEEDED, kind: "rate-limit-exceeded" },
   ],
   exportData: [],
   clearAllData: [VALIDATION],
@@ -78,7 +78,7 @@ export function toProfileFailure(
     return UNEXPECTED;
   }
   const { code, fieldErrors } = parsedBody.data;
-  if (outcome.status === 401 && code === PROFILE_ERROR_CODES.UNAUTHENTICATED) {
+  if (outcome.status === 401 && code === ERROR_CODES.UNAUTHENTICATED) {
     return UNAUTHENTICATED;
   }
   const declared = DECLARED_ERRORS[operation].find((entry) => entry.status === outcome.status && entry.code === code);

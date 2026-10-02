@@ -6,7 +6,7 @@ import { useCallback } from "react";
 import { useToast } from "@/components/ui/toast";
 
 import { updateProfile } from "../api/profile-api";
-import type { NotificationPreferences, UserProfile } from "../mocks/profile-types.mock";
+import type { NotificationPreferences, UserProfile } from "@workflow-demo/contracts";
 import { PROFILE_QUERY_KEY } from "./use-profile";
 
 const NOTIFICATION_PREFERENCE_UPDATE_FAILED = "Couldn't update your notification preference. Please try again.";

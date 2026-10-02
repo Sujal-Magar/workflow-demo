@@ -1,4 +1,4 @@
-import type { UserProfile } from "../mocks/profile-types.mock";
+import type { UserProfile } from "@workflow-demo/contracts";
 import { AvatarCircle } from "./avatar-circle";
 import { ChangePasswordDialog } from "./change-password-dialog";
 import { EditProfileDialog } from "./edit-profile-dialog";

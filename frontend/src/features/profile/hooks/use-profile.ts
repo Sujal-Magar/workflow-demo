@@ -3,7 +3,7 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
 import { getProfile } from "../api/profile-api";
-import type { UserProfile } from "../mocks/profile-types.mock";
+import type { UserProfile } from "@workflow-demo/contracts";
 
 export const PROFILE_QUERY_KEY = ["profile"] as const;
 

@@ -18,6 +18,8 @@ const TEST_PROFILE: UserProfile = {
   language: "en_US",
   monthlyStartDate: 1,
   notificationPreferences: { budgetLimitAlerts: true, goalReminders: false, weeklySummaryEmails: true },
+  createdAt: "2026-01-01T00:00:00.000Z",
+  updatedAt: "2026-01-01T00:00:00.000Z",
 };
 
 describe("T-UI-05 · PreferencesCard", () => {

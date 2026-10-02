@@ -1,6 +1,8 @@
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import type { ProfileSuccessAck } from "@workflow-demo/contracts";
+
 import { createDeferred, renderWithProviders } from "@/test/render-with-providers";
 
 import { changePassword } from "../api/profile-api";
@@ -75,7 +77,7 @@ describe("T-UI-04 · ChangePasswordDialog", () => {
   });
 
   it("disables Change Password while pending and shows the success toast, closing the dialog", async () => {
-    const deferred = createDeferred<ProfileResult<{ success: true }>>();
+    const deferred = createDeferred<ProfileResult<ProfileSuccessAck>>();
     changePasswordMock.mockReturnValue(deferred.promise);
     renderWithProviders(<ChangePasswordDialog />);
     const dialog = openDialog();
@@ -90,7 +92,7 @@ describe("T-UI-04 · ChangePasswordDialog", () => {
       confirmPassword: "NewPassw0rd!",
     });
 
-    deferred.resolve({ ok: true, data: { success: true } });
+    deferred.resolve({ ok: true, data: { success: true, message: "Password updated successfully." } });
 
     expect(await screen.findByText("Password updated successfully!")).toBeInTheDocument();
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());

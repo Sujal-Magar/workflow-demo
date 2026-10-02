@@ -52,7 +52,7 @@ describe("T-UI-07 · ClearAllDataDialog", () => {
   });
 
   it("shows the exact success toast and closes the dialog on confirm", async () => {
-    const successAck: ProfileSuccessAck = { success: true };
+    const successAck: ProfileSuccessAck = { success: true, message: "All profile data has been cleared." };
     clearAllDataMock.mockResolvedValue({ ok: true, data: successAck });
     renderWithProviders(<ClearAllDataDialog />);
     const dialog = openDialog();
@@ -76,7 +76,7 @@ describe("T-UI-07 · ClearAllDataDialog", () => {
     fireEvent.click(confirmButton);
 
     await waitFor(() => expect(confirmButton).toBeDisabled());
-    deferred.resolve({ ok: true, data: { success: true } });
+    deferred.resolve({ ok: true, data: { success: true, message: "All profile data has been cleared." } });
   });
 
   it("keeps the dialog open with an inline alert on failure", async () => {

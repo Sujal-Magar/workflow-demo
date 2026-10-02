@@ -11,7 +11,12 @@ import {
   PASSWORD_CHANGE_RATE_LIMIT_THRESHOLD,
   PASSWORD_CHANGE_RATE_LIMIT_WINDOW_MINUTES,
 } from "./profile-constants";
-import { PasswordNotSetError, PasswordsDoNotMatchError, RateLimitExceededError, SamePasswordError } from "./profile-errors";
+import {
+  PasswordNotSetError,
+  PasswordsDoNotMatchError,
+  RateLimitExceededError,
+  SamePasswordError,
+} from "./profile-errors";
 import type { ProfilePatch, ProfileRecord } from "./profile-repository";
 import type { ProfilePersistence } from "./profile-persistence";
 

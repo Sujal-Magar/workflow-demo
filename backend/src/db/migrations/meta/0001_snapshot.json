@@ -53,16 +53,12 @@
       "indexes": {
         "password_reset_tokens_token_hash_unique": {
           "name": "password_reset_tokens_token_hash_unique",
-          "columns": [
-            "token_hash"
-          ],
+          "columns": ["token_hash"],
           "isUnique": true
         },
         "password_reset_tokens_user_id_idx": {
           "name": "password_reset_tokens_user_id_idx",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         }
       },
@@ -71,12 +67,8 @@
           "name": "password_reset_tokens_user_id_users_id_fk",
           "tableFrom": "password_reset_tokens",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -133,16 +125,12 @@
       "indexes": {
         "refresh_tokens_token_hash_unique": {
           "name": "refresh_tokens_token_hash_unique",
-          "columns": [
-            "token_hash"
-          ],
+          "columns": ["token_hash"],
           "isUnique": true
         },
         "refresh_tokens_user_id_idx": {
           "name": "refresh_tokens_user_id_idx",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         }
       },
@@ -151,12 +139,8 @@
           "name": "refresh_tokens_user_id_users_id_fk",
           "tableFrom": "refresh_tokens",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -227,16 +211,12 @@
       "indexes": {
         "users_email_unique": {
           "name": "users_email_unique",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": true
         },
         "users_google_id_unique": {
           "name": "users_google_id_unique",
-          "columns": [
-            "google_id"
-          ],
+          "columns": ["google_id"],
           "isUnique": true
         }
       },
@@ -272,10 +252,7 @@
       "indexes": {
         "password_change_attempts_user_id_idx": {
           "name": "password_change_attempts_user_id_idx",
-          "columns": [
-            "user_id",
-            "attempted_at"
-          ],
+          "columns": ["user_id", "attempted_at"],
           "isUnique": false
         }
       },
@@ -284,12 +261,8 @@
           "name": "password_change_attempts_user_id_users_id_fk",
           "tableFrom": "password_change_attempts",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -387,16 +360,12 @@
       "indexes": {
         "user_profiles_user_id_unique": {
           "name": "user_profiles_user_id_unique",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": true
         },
         "user_profiles_user_id_idx": {
           "name": "user_profiles_user_id_idx",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         }
       },
@@ -405,12 +374,8 @@
           "name": "user_profiles_user_id_users_id_fk",
           "tableFrom": "user_profiles",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }

@@ -8,10 +8,7 @@ export class PasswordChangeAttemptRepository {
 
   /** Records one failed `currentPassword` check (contract §5.3 step 3). */
   recordFailure(id: string, userId: string, attemptedAt: Date): void {
-    this.db
-      .insert(passwordChangeAttempts)
-      .values({ id, userId, attemptedAt: attemptedAt.toISOString() })
-      .run();
+    this.db.insert(passwordChangeAttempts).values({ id, userId, attemptedAt: attemptedAt.toISOString() }).run();
   }
 
   /** Strictly-greater-than `since` (exclusive window start boundary, D-17): a failure recorded exactly at `since` does not count. */

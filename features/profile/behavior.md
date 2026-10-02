@@ -28,15 +28,17 @@
 ## 4. Data Export Flow
 
 - Clicking the teal **"Export Data"** button initiates an asynchronous compilation of user data.
-- Once ready, the browser automatically triggers download of the compressed export archive.
+- Once ready, the browser automatically triggers download of the export archive.
 - A success toast notification is displayed: `"Your data has been exported successfully."`
+- _Addendum (v1.0.0, directive D-18):_ `transactions`, `budget`, and `goals` are not built yet (directive D-01). In v1.0.0 the exported archive contains the user's profile and account settings only (`name`, `email`, `avatarUrl`, `preferredCurrency`, `language`, `monthlyStartDate`, `notificationPreferences`); it does not yet include transaction, budget, or goal records. The archive expands to include those records once those features are built and register into this export mechanism (directive D-01).
 
 ## 5. Clear All Data Flow
 
 - Clicking the red **"Clear All Data"** button opens a high-priority destructive warning modal:
-  - Message: _"Are you sure you want to clear all data? This will permanently erase all transactions, budgets, and goals. This action cannot be undone."_
+  - Message (v1.0.0, directive D-18): _"Are you sure you want to reset your profile data? This will permanently reset your avatar and notification preferences to their defaults. This action cannot be undone."_
 - User must confirm the action.
 - On confirmation:
-  - Deletes all transaction records, budget categories, and goals associated with the account.
-  - Resets all dashboard summaries to empty baseline states.
-  - Shows an alert toast: `"All financial records have been cleared."`
+  - Resets `avatarUrl` and all three notification preferences (`budgetLimitAlerts`, `goalReminders`, `weeklySummaryEmails`) to their baseline defaults.
+  - Does not change the user's name, email, or password.
+  - Shows an alert toast: `"All profile data has been cleared."`
+- _Addendum (v1.0.0, directive D-18):_ The original copy and effects described here ("permanently erase all transactions, budgets, and goals," "deletes all transaction records, budget categories, and goals," "resets all dashboard summaries to empty baseline states") describe this action's full cross-feature behavior once `transactions`, `budget`, and `goals` exist. `transactions`, `budget`, and `goals` are not built yet (directive D-01), so in v1.0.0 "Clear All Data" resets profile-owned configuration only, as described above. This action's scope and copy expand to also wipe transaction, budget, and goal data, and reset dashboard summaries, once those features are built and hook into it (directive D-01).

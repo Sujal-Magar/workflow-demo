@@ -12,7 +12,7 @@ dependencies:
 changelog:
   - version: 1.0.0
     date: 2026-10-01
-    summary: "Specification for FinTrack user profile details, application settings, notification preferences, data export, account data wipe, and change password flow; corrected currency enum to include INR and clarified preferences editability"
+    summary: "Specification for FinTrack user profile details, application settings, notification preferences, data export, account data wipe, and change password flow; clarified preferences editability"
 ---
 
 # Feature Specification: User Profile and Preferences
@@ -23,21 +23,21 @@ The Profile module manages the user's account identity, regional preferences, ap
 
 ## 2. Data Model (`UserProfile`)
 
-| Field                                         | Type          | Required | Description                                                                      |
-| :-------------------------------------------- | :------------ | :------- | :------------------------------------------------------------------------------- |
-| `id`                                          | UUID string   | Yes      | Unique identifier (Primary Key)                                                  |
-| `name`                                        | string        | Yes      | Display name (2-100 characters, e.g., "Piyush Kumar")                            |
-| `email`                                       | string        | Yes      | Unique, valid email address                                                      |
-| `avatarUrl`                                   | string        | No       | URL or local path to profile picture asset                                       |
-| `preferredCurrency`                           | enum          | Yes      | ISO currency code (`"INR"`, `"NPR"`, `"USD"`, `"EUR"`, `"GBP"`; default `"INR"`) |
-| `language`                                    | enum          | Yes      | Language locale code (`"en_US"`, `"en_GB"`, `"es"`, `"fr"`; default `"en_US"`)   |
-| `monthlyStartDate`                            | number        | Yes      | Day of month for budget/accounting cycle start (1–28; default `1`)               |
-| `notificationPreferences`                     | object        | Yes      | Key-value settings for notification dispatch                                     |
-| `notificationPreferences.budgetLimitAlerts`   | boolean       | Yes      | Whether to dispatch budget threshold alerts (default `true`)                     |
-| `notificationPreferences.goalReminders`       | boolean       | Yes      | Whether to dispatch periodic savings goal reminders (default `true`)             |
-| `notificationPreferences.weeklySummaryEmails` | boolean       | Yes      | Whether to send weekly summary digest emails (default `true`)                    |
-| `createdAt`                                   | ISO Timestamp | Yes      | Profile record creation timestamp                                                |
-| `updatedAt`                                   | ISO Timestamp | Yes      | Last update timestamp                                                            |
+| Field                                         | Type          | Required | Description                                                                    |
+| :-------------------------------------------- | :------------ | :------- | :----------------------------------------------------------------------------- |
+| `id`                                          | UUID string   | Yes      | Unique identifier (Primary Key)                                                |
+| `name`                                        | string        | Yes      | Display name (2-100 characters, e.g., "Piyush Kumar")                          |
+| `email`                                       | string        | Yes      | Unique, valid email address                                                    |
+| `avatarUrl`                                   | string        | No       | URL or local path to profile picture asset                                     |
+| `preferredCurrency`                           | enum          | Yes      | ISO currency code (`"NPR"`, `"USD"`, `"EUR"`, `"GBP"`; default `"NPR"`)        |
+| `language`                                    | enum          | Yes      | Language locale code (`"en_US"`, `"en_GB"`, `"es"`, `"fr"`; default `"en_US"`) |
+| `monthlyStartDate`                            | number        | Yes      | Day of month for budget/accounting cycle start (1–28; default `1`)             |
+| `notificationPreferences`                     | object        | Yes      | Key-value settings for notification dispatch                                   |
+| `notificationPreferences.budgetLimitAlerts`   | boolean       | Yes      | Whether to dispatch budget threshold alerts (default `true`)                   |
+| `notificationPreferences.goalReminders`       | boolean       | Yes      | Whether to dispatch periodic savings goal reminders (default `true`)           |
+| `notificationPreferences.weeklySummaryEmails` | boolean       | Yes      | Whether to send weekly summary digest emails (default `true`)                  |
+| `createdAt`                                   | ISO Timestamp | Yes      | Profile record creation timestamp                                              |
+| `updatedAt`                                   | ISO Timestamp | Yes      | Last update timestamp                                                          |
 
 ## 3. Functional Requirements
 
@@ -51,7 +51,7 @@ The Profile module manages the user's account identity, regional preferences, ap
 ### REQ-PROF-02: Preferences and Settings Card
 
 - Displays system configuration values in label-value layout:
-  - **Preferred Currency**: Current currency formatting representation (e.g., `INR (₹)`).
+  - **Preferred Currency**: Current currency formatting representation (e.g., `NPR (₹)`).
   - **Language**: Display language code and label (e.g., `English (EN)`).
   - **Monthly Start Date**: Beginning of monthly accounting and budgeting period (e.g., `1st of every month`).
 - Note: In v1.0.0, **Preferred Currency**, **Language**, and **Monthly Start Date** are displayed in read-only label-value layout based on user defaults; user editing of these three settings is deferred to v1.1.0.
@@ -64,12 +64,14 @@ The Profile module manages the user's account identity, regional preferences, ap
 
 - Primary teal action button labeled **"Export Data"**.
 - Packages all user data (transactions, budgets, goals, profile configuration) into a downloadable bundle (JSON or CSV archive).
+- _Addendum (v1.0.0, directive D-18):_ `transactions`, `budget`, and `goals` are not built yet (directive D-01; `features/index.json` dependency order). In v1.0.0, "Export Data" packages profile configuration only (the `UserProfile` field set, §2). The archive expands to include transaction, budget, and goal records as those features are built and register into this export mechanism (directive D-01).
 
 ### REQ-PROF-04: Clear All Data (Destructive Action)
 
 - Red action button labeled **"Clear All Data"**.
 - Triggers a high-severity confirmation prompt requiring explicit user confirmation before wiping transaction history, budget limits, and tracked goals.
 - Preserves the base user profile account while resetting ledger datasets to zero.
+- _Addendum (v1.0.0, directive D-18):_ `transactions`, `budget`, and `goals` are not built yet (directive D-01). In v1.0.0, "Clear All Data" resets profile-owned configuration only (`avatarUrl` and `notificationPreferences.*` to their defaults); it does not touch `name`, `email`, or password, and there is no ledger data yet to wipe. This action's scope expands to also wipe transaction, budget, and goal data once those features are built and hook into it (directive D-01).
 
 ## 4. Validation Rules
 
@@ -97,8 +99,8 @@ The Profile module manages the user's account identity, regional preferences, ap
 | `getUserProfile`     | `GET`   | `/api/v1/profile`                 | None                                                | `200 OK` (`UserProfile` object)               | Retrieves current authenticated user profile and preferences         |
 | `updateUserProfile`  | `PATCH` | `/api/v1/profile`                 | `name`, `avatarUrl`, `notificationPreferences`      | `200 OK` (`UserProfile` object)               | Updates user personal details and notification preferences           |
 | `changePassword`     | `POST`  | `/api/v1/profile/change-password` | `currentPassword`, `newPassword`, `confirmPassword` | `200 OK` (`success: true`, `message: string`) | Authenticated endpoint allowing users to update their login password |
-| `exportUserData`     | `GET`   | `/api/v1/profile/export`          | None                                                | `200 OK` (binary downloadable blob / archive) | Exports all user financial records and preferences                   |
-| `clearAllUserData`   | `POST`  | `/api/v1/profile/clear-data`      | `confirmation: "DELETE"`                            | `200 OK` (`success: true`, `message: string`) | Clears all financial data while retaining account identity           |
+| `exportUserData`     | `GET`   | `/api/v1/profile/export`          | None                                                | `200 OK` (binary downloadable blob / archive) | Exports profile configuration and preferences (v1.0.0, D-18)         |
+| `clearAllUserData`   | `POST`  | `/api/v1/profile/clear-data`      | `confirmation: "DELETE"`                            | `200 OK` (`success: true`, `message: string`) | Clears profile data while retaining account identity (v1.0.0, D-18)  |
 
 ### Error Responses
 
@@ -120,6 +122,6 @@ The Profile module manages the user's account identity, regional preferences, ap
 - User can open the Change Password modal from the Profile Identity card, enter current password and new password with confirmation, and successfully change password with immediate success toast notification.
 - Submitting an invalid current password, an unmet password complexity rule, or a mismatched confirmation password displays corresponding inline validation error feedback without changing credentials.
 - Users with Google SSO accounts who have not set a password receive clear guidance directing them to the password reset flow.
-- Clicking "Export Data" triggers downloading an archive containing user financial history.
+- Clicking "Export Data" triggers downloading an archive. (v1.0.0, directive D-18: contains profile/account configuration only — see REQ-PROF-03 addendum; transaction, budget, and goal history is added once those features exist, directive D-01.)
 - Clicking "Clear All Data" displays a high-severity confirmation modal requiring confirmation.
-- Confirming data deletion purges transactions, budgets, and goals while keeping the user account intact.
+- Confirming data deletion resets profile configuration (avatar, notification preferences) to defaults while keeping the user account intact. (v1.0.0, directive D-18: no transaction, budget, or goal data exists yet to purge — see REQ-PROF-04 addendum; this criterion expands to cover those records once they are built, directive D-01.)

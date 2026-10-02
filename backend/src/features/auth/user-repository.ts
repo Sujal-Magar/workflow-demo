@@ -108,4 +108,9 @@ export class UserRepository {
   updatePasswordHash(userId: string, passwordHash: string, updatedAt: Date): void {
     this.db.update(users).set({ passwordHash, updatedAt: updatedAt.toISOString() }).where(eq(users.id, userId)).run();
   }
+
+  /** `profile`'s `updateUserProfile` writes the account's display name through this method (plan D-12). */
+  updateName(userId: string, name: string, updatedAt: Date): void {
+    this.db.update(users).set({ name, updatedAt: updatedAt.toISOString() }).where(eq(users.id, userId)).run();
+  }
 }

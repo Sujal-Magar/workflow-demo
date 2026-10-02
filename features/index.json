@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "project": "workflow-demo",
-  "last_updated": "2026-09-30",
+  "last_updated": "2026-10-01",
   "summary": {
     "total_features": 7,
     "active": 7,

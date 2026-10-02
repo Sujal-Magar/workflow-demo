@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { users } from "../../db/schema";
+import { userProfiles, users } from "../../db/schema";
 import { STRONG_PASSWORD, createAuthTestContext, type AuthTestContext } from "../../test-support/auth-test-harness";
 import { EmailAlreadyExistsError, InvalidCredentialsError } from "./auth-errors";
 
@@ -56,13 +56,10 @@ describe("AuthService.register (T-UA-04)", () => {
     expect(stored?.expiresAt).toEqual(new Date(context.clock.now().getTime() + 604_800_000));
   });
 
-  it("creates no profile row", async () => {
+  it("creates no profile row (`profile`'s own getOrCreateProfile is lazy, D-11)", async () => {
     await register("jane@example.com");
-    const tables = context.database.connection
-      .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name LIKE '%profile%'")
-      .all();
-    expect(tables).toEqual([]);
     expect(context.database.db.select().from(users).all()).toHaveLength(1);
+    expect(context.database.db.select().from(userProfiles).all()).toHaveLength(0);
   });
 
   it("rejects a duplicate email with the same case", async () => {

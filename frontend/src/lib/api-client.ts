@@ -3,7 +3,7 @@
 import { tsRestFetchApi, type ApiFetcherArgs, type AppRoute } from "@ts-rest/core";
 import { initTsrReactQuery } from "@ts-rest/react-query/v5";
 
-import { authContract, ERROR_CODES, errorBodySchema } from "@workflow-demo/contracts";
+import { authContract, ERROR_CODES, errorBodySchema, profileContract } from "@workflow-demo/contracts";
 
 import { getAccessToken } from "./access-token-store";
 import { env } from "./env";
@@ -92,6 +92,14 @@ async function authAwareFetcher(args: ApiFetcherArgs): Promise<FetcherResponse> 
 
 /** Base URL is the API origin only: the contract's routes already carry `/api/v1/auth` (BE-03). */
 export const authApiClient = initTsrReactQuery(authContract, {
+  baseUrl: env.apiBaseUrl,
+  baseHeaders: {},
+  credentials: "include",
+  api: authAwareFetcher,
+});
+
+/** Every `profile` route requires auth, so none belongs in `UNRETRIED_ROUTES` (plan INT-01). */
+export const profileApiClient = initTsrReactQuery(profileContract, {
   baseUrl: env.apiBaseUrl,
   baseHeaders: {},
   credentials: "include",

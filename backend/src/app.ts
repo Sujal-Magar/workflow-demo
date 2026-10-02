@@ -14,6 +14,9 @@ import { Argon2PasswordHasher } from "./features/auth/ports/password-hasher";
 import { CryptoTokenGenerator } from "./features/auth/ports/token-generator";
 import { createRequireAuth } from "./features/auth/require-auth";
 import { SessionIssuer } from "./features/auth/session-issuer";
+import { ProfilePersistence } from "./features/profile/profile-persistence";
+import { createProfileRouter } from "./features/profile/profile-router";
+import { ProfileService } from "./features/profile/profile-service";
 import type { Clock } from "./shared/clock";
 import { errorHandler, notFoundHandler } from "./shared/errors/error-handler";
 
@@ -74,6 +77,14 @@ export function createApp(dependencies: AppDependencies): Express {
     frontendOrigin: config.frontendOrigin,
   });
 
+  const profilePersistence = new ProfilePersistence(db);
+  const profileService = new ProfileService({
+    profilePersistence,
+    authPersistence: persistence,
+    passwordHasher,
+    clock,
+  });
+
   const app = express();
   app.use(createCorsMiddleware(config.frontendOrigin));
   app.use(express.json({ limit: JSON_BODY_LIMIT }));
@@ -89,6 +100,12 @@ export function createApp(dependencies: AppDependencies): Express {
       passwordResetService,
       requireAuth: createRequireAuth(accessTokenSigner),
       isSecureCookie: config.isProduction,
+    })
+  );
+  app.use(
+    createProfileRouter({
+      profileService,
+      requireAuth: createRequireAuth(accessTokenSigner),
     })
   );
 

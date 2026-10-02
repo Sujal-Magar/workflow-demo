@@ -10,6 +10,10 @@ export const ERROR_CODES = {
   EMAIL_ALREADY_EXISTS: "EMAIL_ALREADY_EXISTS",
   NOT_FOUND: "NOT_FOUND",
   INTERNAL_ERROR: "INTERNAL_ERROR",
+  PASSWORD_NOT_SET: "PASSWORD_NOT_SET",
+  SAME_PASSWORD: "SAME_PASSWORD",
+  PASSWORDS_DO_NOT_MATCH: "PASSWORDS_DO_NOT_MATCH",
+  RATE_LIMIT_EXCEEDED: "RATE_LIMIT_EXCEEDED",
 } as const;
 
 export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
@@ -24,6 +28,10 @@ export const ERROR_MESSAGES: Readonly<Record<ErrorCode, string>> = {
   EMAIL_ALREADY_EXISTS: "An account with this email already exists.",
   NOT_FOUND: "Route not found.",
   INTERNAL_ERROR: "An unexpected error occurred.",
+  PASSWORD_NOT_SET: "No password is set for this account. Use password recovery instead.",
+  SAME_PASSWORD: "New password must be different from your current password.",
+  PASSWORDS_DO_NOT_MATCH: "New password and confirmation do not match.",
+  RATE_LIMIT_EXCEEDED: "Too many password change attempts. Please try again later.",
 };
 
 /**

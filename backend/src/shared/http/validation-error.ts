@@ -5,12 +5,20 @@ import type { ZodError } from "zod";
 
 const HTTP_BAD_REQUEST = 400;
 
-/** Keeps the first message reported for each top-level body field (the first failing rule). */
+/**
+ * Keeps the first message reported for each body field (the first failing rule). Nested paths
+ * are dot-joined (e.g. `notificationPreferences.budgetLimitAlerts`, contract §5.2); an issue with
+ * no path (an object-level refinement, e.g. "at least one field required") is dropped, leaving
+ * `fieldErrors` empty for that case.
+ */
 export function toFieldErrors(error: ZodError | null): FieldErrors {
   const fieldErrors: FieldErrors = {};
   for (const issue of error?.issues ?? []) {
-    const field = issue.path[0];
-    if (typeof field === "string" && !(field in fieldErrors)) {
+    if (issue.path.length === 0) {
+      continue;
+    }
+    const field = issue.path.join(".");
+    if (!(field in fieldErrors)) {
       fieldErrors[field] = issue.message;
     }
   }

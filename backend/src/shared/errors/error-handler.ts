@@ -14,6 +14,10 @@ export const ERROR_STATUS: Readonly<Record<ErrorCode, number>> = {
   EMAIL_ALREADY_EXISTS: 409,
   NOT_FOUND: 404,
   INTERNAL_ERROR: 500,
+  PASSWORD_NOT_SET: 400,
+  SAME_PASSWORD: 400,
+  PASSWORDS_DO_NOT_MATCH: 400,
+  RATE_LIMIT_EXCEEDED: 429,
 };
 
 const JSON_PARSE_FAILURE_TYPE = "entity.parse.failed";

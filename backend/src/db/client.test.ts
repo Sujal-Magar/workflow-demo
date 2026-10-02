@@ -61,7 +61,7 @@ describe("openDatabase (T-UA-11)", () => {
 });
 
 describe("runMigrations (T-UA-11)", () => {
-  it("creates users, refresh_tokens and password_reset_tokens on a fresh database", () => {
+  it("creates every auth and profile table on a fresh database", () => {
     const { db, connection } = open(IN_MEMORY_DATABASE_PATH);
 
     runMigrations(db);
@@ -73,7 +73,13 @@ describe("runMigrations (T-UA-11)", () => {
       .all()
       .map((row) => (row as { name: string }).name)
       .sort();
-    expect(tables).toEqual(["password_reset_tokens", "refresh_tokens", "users"]);
+    expect(tables).toEqual([
+      "password_change_attempts",
+      "password_reset_tokens",
+      "refresh_tokens",
+      "user_profiles",
+      "users",
+    ]);
   });
 
   it("is idempotent when run twice", () => {

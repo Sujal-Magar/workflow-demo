@@ -88,3 +88,16 @@
   - `plan.md` §6.2 task `T-UI-07`: toast text.
   - `plan.md` line 8: provenance line narrative for Round 3 (D-18) and Round 4 (B-1 fix).
   - `fds.md` §5: update API table description column for `exportUserData` and `clearAllUserData` to profile-only scope (closing Advisory finding A-1).
+
+## Post-Validation SonarQube Triage
+
+### Phase 8c (Full Quality Gate) accepted on the built-in "Sonar way" gate, named profiles still missing
+
+- **Context / Finding**: `validation-report.md` (run against `00138ca`) found the local SonarQube server unreachable, blocking Phase 8c entirely. The developer then started the server (fresh containers, empty database) and ran a scan. The scan succeeded and the project now exists in SonarQube with clean results, but two gaps from `rules/workflow.md` §7 remain on this fresh instance: (1) only the built-in "Sonar way" quality gate exists — the two project-specific "Static Analysis Gate" / "Full Quality Gate" profiles were never created (`qualitygates/list` returns one gate, `actions.create: false`); (2) the `admin` token in `.env.sonar.local`, despite being in the `sonar-administrators` group, returns "Insufficient privileges" on `components/show` and `hotspots/search` and cannot create quality gates — a permissions gap on the fresh instance, not a code issue.
+- **Evidence (fetched directly via the SonarQube API, `00138ca`)**: `qualitygates/project_status` → `status: OK` (0 `new_violations` against the `PREVIOUS_VERSION` baseline, zero ignored conditions). `measures/component` → 0 bugs, 0 vulnerabilities, 0 code smells, 97.7% overall coverage, 0.3% duplication — all project-wide, which includes `profile`'s backend/frontend/contracts code. This is the same shape of gap as `auth`'s SQ-01 (`features/auth/plans/v1.0.0/directives.md`), now with actual clean scan data behind it instead of an unreachable server.
+- **Options Considered**:
+  - **Option A**: Block sign-off until the admin token's permissions are fixed and the two named profiles are created and assigned, then re-run the fetch under the correct named "Full Quality Gate" profile.
+  - **Option B**: Accept the current clean "Sonar way" results as sufficient evidence for Phase 8c, matching the precedent already set for `auth`'s SQ-01, and record the missing named profiles / token permissions as an open infrastructure item for a SonarQube admin to resolve independent of any feature's sign-off. (Approved)
+- **Decision**: Option B. Phase 8c is treated as satisfied for `profile` v1.0.0 based on the clean, directly-verified SonarQube metrics (0 bugs/vulnerabilities/code smells, 97.7% coverage, gate status OK). The missing named quality-gate profiles and the admin token's incomplete permissions remain open, tracked alongside `auth`'s SQ-01, and are not specific to `profile`.
+- **Apply to**: `validation-report.md` §2.4 and verdict (PASS, with this item noted as an accepted known limitation).
+- **Record as a starred (★) decision in the plan's Decision Log**: N/A — post-validation, no plan.md change required.

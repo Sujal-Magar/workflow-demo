@@ -4,7 +4,7 @@ title: Transactions Management
 status: active
 version: 1.0.0
 owner: core-finance-team
-last_updated: 2026-09-22
+last_updated: 2026-10-02
 coverage_target: 90
 compliance_relevant: false
 dependencies:
@@ -13,7 +13,7 @@ dependencies:
 changelog:
   - version: 1.0.0
     date: 2026-09-22
-    summary: "Initial specification for FinTrack Transactions ledger, pagination, filtering, and CRUD operations"
+    summary: "Initial specification for FinTrack Transactions ledger, pagination, filtering, and CRUD operations; clarified timeframe filter as a closed set of labelled presets (not a startDate/endDate range)"
 ---
 
 # Feature Specification: Transactions Management
@@ -75,6 +75,7 @@ The Transactions module provides the core financial ledger for the FinTrack appl
 - Renders transaction rows with Date, Category, Description, Amount, Type badge, and Actions.
 - Supports filtering by Timeframe, Category, and Type, alongside Newest/Oldest sorting.
 - Includes pagination navigation controls ("Prev", numbered pages, "Next").
+- _Addendum (clarification):_ `Timeframe` is a closed set of labelled presets — `"this_week"`, `"this_month"`, `"this_year"`, `"all_time"` — selected via a dropdown the same way as the `Category` and `Type` filters, not an explicit `startDate`/`endDate` range. It defaults to `"this_month"`, matching `behavior.md` §1's default view ("This Month"). The `§6` acceptance criterion's "date range" wording describes the effect of this preset filter, not a separate date-range input.
 
 ## 4. UI Feedback & Notification Patterns
 
@@ -89,6 +90,8 @@ The Transactions module provides the core financial ledger for the FinTrack appl
 | API / Operation Name | Method   | Endpoint                   | Query / Body Params                                             | Success Status / Response                         | Description                                        |
 | :------------------- | :------- | :------------------------- | :-------------------------------------------------------------- | :------------------------------------------------ | :------------------------------------------------- |
 | `getTransactions`    | `GET`    | `/api/v1/transactions`     | Query: `page`, `limit`, `category`, `type`, `timeframe`, `sort` | `200 OK` (`data: Transaction[]`, `total: number`) | Returns paginated and filtered transactions ledger |
+
+_Addendum (clarification):_ `timeframe` accepts one of `"this_week"`, `"this_month"`, `"this_year"`, `"all_time"` (default `"this_month"`). It is a labelled preset, not a pair of explicit `startDate`/`endDate` query params — see the `REQ-TXN-04` addendum.
 | `createTransaction`  | `POST`   | `/api/v1/transactions`     | Body: `date`, `description`, `category`, `type`, `amount`       | `201 Created` (`Transaction` object)              | Creates a new income or expense transaction        |
 | `updateTransaction`  | `PUT`    | `/api/v1/transactions/:id` | Body: `date`, `description`, `category`, `type`, `amount`       | `200 OK` (`Transaction` object)                   | Updates an existing transaction by ID              |
 | `deleteTransaction`  | `DELETE` | `/api/v1/transactions/:id` | Path: `id`                                                      | `200 OK` (`success: true`, `id: string`)          | Permanently deletes a transaction by ID            |

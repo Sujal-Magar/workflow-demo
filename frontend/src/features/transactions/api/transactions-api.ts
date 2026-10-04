@@ -42,8 +42,6 @@ export interface TransactionListQuery {
 
 export type CreateTransactionRequest = Pick<Transaction, "title" | "description" | "category" | "type" | "amount">;
 
-export type UpdateTransactionRequest = CreateTransactionRequest;
-
 const HTTP_OK = 200;
 const HTTP_CREATED = 201;
 

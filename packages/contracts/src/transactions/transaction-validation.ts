@@ -40,59 +40,55 @@ function asText(value: unknown): string {
 }
 
 /** Rule set `Title` (contract §4). */
-export const transactionTitleSchema = z.custom<unknown>().transform((value, context): string => {
+export const transactionTitleSchema = z.custom<unknown>().superRefine((value, context) => {
   const text = asText(value).trim();
+
   if (text.length === 0) {
     context.addIssue({ code: z.ZodIssueCode.custom, message: TRANSACTION_VALIDATION_MESSAGES.TITLE_REQUIRED });
-    return text;
+    return;
   }
   if (text.length > TITLE_MAX_LENGTH) {
     context.addIssue({ code: z.ZodIssueCode.custom, message: TRANSACTION_VALIDATION_MESSAGES.TITLE_TOO_LONG });
-    return text;
   }
-  return text;
 });
 
 /** Rule set `Description` (contract §4). */
-export const transactionDescriptionSchema = z.custom<unknown>().transform((value, context): string => {
+export const transactionDescriptionSchema = z.custom<unknown>().superRefine((value, context) => {
   const text = asText(value).trim();
+
   if (text.length === 0) {
     context.addIssue({ code: z.ZodIssueCode.custom, message: TRANSACTION_VALIDATION_MESSAGES.DESCRIPTION_REQUIRED });
-    return text;
+    return;
   }
   if (text.length > DESCRIPTION_MAX_LENGTH) {
     context.addIssue({ code: z.ZodIssueCode.custom, message: TRANSACTION_VALIDATION_MESSAGES.DESCRIPTION_TOO_LONG });
-    return text;
   }
-  return text;
 });
 
 /** Rule set `Category` (contract §4): required. */
-export const transactionCategorySchema = z.custom<unknown>().transform((value, context): string => {
+export const transactionCategorySchema = z.custom<unknown>().superRefine((value, context) => {
   const text = asText(value);
+
   if (text.length === 0) {
     context.addIssue({ code: z.ZodIssueCode.custom, message: TRANSACTION_VALIDATION_MESSAGES.CATEGORY_REQUIRED });
-    return text;
+    return;
   }
   if (!(TRANSACTION_CATEGORIES as readonly string[]).includes(text)) {
     context.addIssue({ code: z.ZodIssueCode.custom, message: TRANSACTION_VALIDATION_MESSAGES.CATEGORY_INVALID });
-    return text;
   }
-  return text;
 });
 
 /** Rule set `Type` (contract §4): required. */
-export const transactionTypeSchema = z.custom<unknown>().transform((value, context): string => {
+export const transactionTypeSchema = z.custom<unknown>().transform((value, context) => {
   const text = asText(value);
+
   if (text.length === 0) {
     context.addIssue({ code: z.ZodIssueCode.custom, message: TRANSACTION_VALIDATION_MESSAGES.TYPE_REQUIRED });
-    return text;
+    return;
   }
   if (!(TRANSACTION_TYPES as readonly string[]).includes(text)) {
     context.addIssue({ code: z.ZodIssueCode.custom, message: TRANSACTION_VALIDATION_MESSAGES.TYPE_INVALID });
-    return text;
   }
-  return text;
 });
 
 /** Rule set `Amount` (contract §4): always positive (D-03). */
@@ -109,7 +105,7 @@ export const transactionAmountSchema = z.custom<unknown>().transform((value, con
 });
 
 function parsePositiveInteger(value: unknown): number | null {
-  if (value === undefined) {
+  if (typeof value !== "string" && typeof value !== "number") {
     return null;
   }
   const text = typeof value === "string" ? value : String(value);

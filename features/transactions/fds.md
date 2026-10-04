@@ -27,17 +27,17 @@ The Transactions module provides the core financial ledger for the FinTrack appl
 
 ## 2. Data Model (`Transaction`)
 
-| Field         | Type            | Required | Description                                                                                                                                                                                        |
-| :------------ | :-------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`          | UUID string     | Yes      | Unique identifier (Primary Key)                                                                                                                                                                    |
+| Field         | Type            | Required | Description                                                                                                                                                                                                                      |
+| :------------ | :-------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`          | UUID string     | Yes      | Unique identifier (Primary Key)                                                                                                                                                                                                  |
 | `title`       | string          | Yes      | Short name of the transaction (1–100 characters, e.g., `"Dinner out"`). When the column is added via migration, existing records populate `title` from the first 100 characters of `description` (`SUBSTR(description, 1, 100)`) |
-| `date`        | ISO Date string | Yes      | Date of transaction (`YYYY-MM-DD`, e.g., `"2025-10-17"`). Set by the server to the current calendar date in UTC when the transaction is created; never supplied by the client and never changed on update |
-| `description` | string          | Yes      | Transaction details/memo (1–255 characters)                                                                                                                                                        |
-| `category`    | enum            | Yes      | `"food_and_dining"`, `"salary"`, `"transportation"`, `"shopping"`, `"investment"`, `"freelance_work"`, `"bills_and_utilities"`, `"health_and_fitness"`, `"savings_account"`, `"others"`            |
-| `type`        | enum            | Yes      | Direction of transaction: `"income"` or `"expense"`                                                                                                                                                |
-| `amount`      | number          | Yes      | Positive decimal amount displayed with localized currency symbol (`₹`)                                                                                                                             |
-| `createdAt`   | ISO Timestamp   | Yes      | Record creation timestamp                                                                                                                                                                          |
-| `updatedAt`   | ISO Timestamp   | Yes      | Record last updated timestamp                                                                                                                                                                      |
+| `date`        | ISO Date string | Yes      | Date of transaction (`YYYY-MM-DD`, e.g., `"2025-10-17"`). Set by the server to the current calendar date in UTC when the transaction is created; never supplied by the client and never changed on update                        |
+| `description` | string          | Yes      | Transaction details/memo (1–255 characters)                                                                                                                                                                                      |
+| `category`    | enum            | Yes      | `"food_and_dining"`, `"salary"`, `"transportation"`, `"shopping"`, `"investment"`, `"freelance_work"`, `"bills_and_utilities"`, `"health_and_fitness"`, `"savings_account"`, `"others"`                                          |
+| `type`        | enum            | Yes      | Direction of transaction: `"income"` or `"expense"`                                                                                                                                                                              |
+| `amount`      | number          | Yes      | Positive decimal amount displayed with localized currency symbol (`₹`)                                                                                                                                                           |
+| `createdAt`   | ISO Timestamp   | Yes      | Record creation timestamp                                                                                                                                                                                                        |
+| `updatedAt`   | ISO Timestamp   | Yes      | Record last updated timestamp                                                                                                                                                                                                    |
 
 ## 3. Functional Requirements
 
@@ -91,12 +91,12 @@ The Transactions module provides the core financial ledger for the FinTrack appl
 
 ### Transaction Endpoints
 
-| API / Operation Name | Method   | Endpoint                   | Query / Body Params                                             | Success Status / Response                         | Description                                                            |
-| :------------------- | :------- | :------------------------- | :-------------------------------------------------------------- | :------------------------------------------------ | :--------------------------------------------------------------------- |
-| `getTransactions`    | `GET`    | `/api/v1/transactions`     | Query: `page`, `limit`, `category`, `type`, `timeframe`, `sort` | `200 OK` (`data: Transaction[]`, `total: number`) | Returns paginated and filtered transactions ledger                     |
+| API / Operation Name | Method   | Endpoint                   | Query / Body Params                                             | Success Status / Response                         | Description                                                                     |
+| :------------------- | :------- | :------------------------- | :-------------------------------------------------------------- | :------------------------------------------------ | :------------------------------------------------------------------------------ |
+| `getTransactions`    | `GET`    | `/api/v1/transactions`     | Query: `page`, `limit`, `category`, `type`, `timeframe`, `sort` | `200 OK` (`data: Transaction[]`, `total: number`) | Returns paginated and filtered transactions ledger                              |
 | `createTransaction`  | `POST`   | `/api/v1/transactions`     | Body: `title`, `description`, `category`, `type`, `amount`      | `201 Created` (`Transaction` object)              | Creates a new income or expense transaction, dated today (in UTC) by the server |
-| `updateTransaction`  | `PUT`    | `/api/v1/transactions/:id` | Body: `title`, `description`, `category`, `type`, `amount`      | `200 OK` (`Transaction` object)                   | Updates an existing transaction by ID; its `date` is unchanged         |
-| `deleteTransaction`  | `DELETE` | `/api/v1/transactions/:id` | Path: `id`                                                      | `200 OK` (`success: true`, `id: string`)          | Permanently deletes a transaction by ID                                |
+| `updateTransaction`  | `PUT`    | `/api/v1/transactions/:id` | Body: `title`, `description`, `category`, `type`, `amount`      | `200 OK` (`Transaction` object)                   | Updates an existing transaction by ID; its `date` is unchanged                  |
+| `deleteTransaction`  | `DELETE` | `/api/v1/transactions/:id` | Path: `id`                                                      | `200 OK` (`success: true`, `id: string`)          | Permanently deletes a transaction by ID                                         |
 
 _Addendum (clarification):_ `timeframe` accepts one of `"this_week"`, `"this_month"`, `"this_year"`, `"all_time"` (default `"this_month"`). It is a labelled preset, not a pair of explicit `startDate`/`endDate` query params — see the `REQ-TXN-04` addendum.
 

@@ -1,6 +1,6 @@
 # Frontend Fragment: `transactions` v1.1.0
 
-> **SUPERSEDED.** Stale after revision 4. Kept as an audit trail only; do not use as synthesis input. The authoritative sources are `../plan.md` and `../contract.md`.
+> **SUPERSEDED.** Stale after revision 5. Kept as an audit trail only; do not use as synthesis input. The authoritative sources are `../plan.md` and `../contract.md`.
 
 **Author**: Frontend Plan Fragment subagent (Phase 1, `Phase = Both`, fresh run; no `v1.1.0/directives.md` exists)
 **Inputs read**: `features/transactions/fds.md` (v1.1.0, incl. changelog), `features/transactions/behavior.md`, `features/transactions/visuals/*.png` (all six), `rules/architecture.md`, `rules/conventions.md`, `rules/tech-stack.md`, `features/index.json`, the frozen `v1.0.0/plan.md` (its Decision Log, for decisions this version carries forward), the superseded `v1.0.0/fragments/frontend.md`, and the built `frontend/src/features/transactions/**` tree from plan v1.0.0.

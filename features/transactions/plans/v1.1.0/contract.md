@@ -5,7 +5,8 @@
 - **Produced by:** Plan Synthesizer, from `fragments/frontend.md` §5 and `fragments/backend.md` §5–§6
 - **Supersedes:** `../v1.0.0/contract.md` (frozen, built through Integration). That file stays as history. This file is complete on its own: it restates every operation, not only the changed ones. §8 lists what changed.
 - **Status:** Draft. Frozen at the Developer Approval Gate (Phase 4). After that, Backend Build, Frontend Build and Integration build against this file as written. Neither side may edit it.
-- **Revision:** 1 (2026-10-04), after Plan Review returned CHANGES REQUIRED. §2.3 gains the note on pre-1.1.0 rows dated after today (`directives.md` B-2; `plan.md` D-30). No operation, shape, status, rule set or error code changed.
+- **Revision:** 2 (2026-10-04), after the second Plan Review returned CHANGES REQUIRED. §4 `Title` rule 1 now covers a present but non-string value (review A-8), matching how `Description` is built. No operation, shape, status or error code changed.
+- **Revision 1** (2026-10-04), after the first Plan Review returned CHANGES REQUIRED. §2.3 gains the note on pre-1.1.0 rows dated after today (`directives.md` B-2; `plan.md` D-30). No operation, shape, status, rule set or error code changed.
 - **Companion plan:** `plan.md` (same directory)
 
 This document is the only source of truth for the Frontend/Backend interface of `transactions`. It is plain language on purpose and does not assume any framework. Updating the project's typed contract package to match it is a Backend Build task (`plan.md`, task BE-08).
@@ -122,19 +123,19 @@ Every operation may also return `500 INTERNAL_ERROR`; it is not repeated per ope
 
 Each rule set runs its checks in order and reports the first that fails, with the exact message shown.
 
-| Rule set         | Field(s)      | Rules in order → message                                                                                                                                                                  |
-| :--------------- | :------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Title`          | `title`       | **New.** Trim leading/trailing whitespace first. 1. empty after trim (or missing) → `Title is required.` 2. more than 100 characters after trim → `Title must be at most 100 characters.` |
-| `Description`    | `description` | 1. empty after trim → `Description is required.` 2. more than 255 characters after trim → `Description must be at most 255 characters.`                                                   |
-| `Category`       | `category`    | 1. empty → `Category is required.` 2. not one of the 10 values in §2.4 → `Select a valid category.`                                                                                       |
-| `Type`           | `type`        | 1. empty → `Type is required.` 2. not `"income"` / `"expense"` → `Select a valid type.`                                                                                                   |
-| `Amount`         | `amount`      | 1. empty or not a number → `Amount is required.` 2. `amount <= 0` → `Amount must be greater than 0.`                                                                                      |
-| `Page`           | `page`        | 1. present and not an integer ≥ 1 → `Page must be a positive integer.`                                                                                                                    |
-| `Limit`          | `limit`       | 1. present and not an integer in `1`–`100` → `Limit must be between 1 and 100.`                                                                                                           |
-| `CategoryFilter` | `category`    | 1. present and not one of the 10 values in §2.4 → `Select a valid category.`                                                                                                              |
-| `TypeFilter`     | `type`        | 1. present and not `"income"` / `"expense"` → `Select a valid type.`                                                                                                                      |
-| `Timeframe`      | `timeframe`   | 1. present and not one of `"this_week"` / `"this_month"` / `"this_year"` / `"all_time"` → `Select a valid timeframe.`                                                                     |
-| `Sort`           | `sort`        | 1. present and not `"newest"` / `"oldest"` → `Select a valid sort order.`                                                                                                                 |
+| Rule set         | Field(s)      | Rules in order → message                                                                                                                                                                               |
+| :--------------- | :------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Title`          | `title`       | **New.** Trim leading/trailing whitespace first. 1. empty after trim, missing, or not a string → `Title is required.` 2. more than 100 characters after trim → `Title must be at most 100 characters.` |
+| `Description`    | `description` | 1. empty after trim → `Description is required.` 2. more than 255 characters after trim → `Description must be at most 255 characters.`                                                                |
+| `Category`       | `category`    | 1. empty → `Category is required.` 2. not one of the 10 values in §2.4 → `Select a valid category.`                                                                                                    |
+| `Type`           | `type`        | 1. empty → `Type is required.` 2. not `"income"` / `"expense"` → `Select a valid type.`                                                                                                                |
+| `Amount`         | `amount`      | 1. empty or not a number → `Amount is required.` 2. `amount <= 0` → `Amount must be greater than 0.`                                                                                                   |
+| `Page`           | `page`        | 1. present and not an integer ≥ 1 → `Page must be a positive integer.`                                                                                                                                 |
+| `Limit`          | `limit`       | 1. present and not an integer in `1`–`100` → `Limit must be between 1 and 100.`                                                                                                                        |
+| `CategoryFilter` | `category`    | 1. present and not one of the 10 values in §2.4 → `Select a valid category.`                                                                                                                           |
+| `TypeFilter`     | `type`        | 1. present and not `"income"` / `"expense"` → `Select a valid type.`                                                                                                                                   |
+| `Timeframe`      | `timeframe`   | 1. present and not one of `"this_week"` / `"this_month"` / `"this_year"` / `"all_time"` → `Select a valid timeframe.`                                                                                  |
+| `Sort`           | `sort`        | 1. present and not `"newest"` / `"oldest"` → `Select a valid sort order.`                                                                                                                              |
 
 The v1.0.0 `TransactionDate` rule set (`Date is required.` / `Enter a valid date.`) is **removed**: no request carries a date any more.
 

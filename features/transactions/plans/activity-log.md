@@ -15,3 +15,4 @@ Multi-agent audit trail. Append-only; shared across plan versions.
 - Plan: Frontend Fragment | 2026-10-04T04:29:25Z | output: v1.1.0/fragments/frontend.md | result: done
 - Plan: Backend Fragment | 2026-10-04T04:29:25Z | output: v1.1.0/fragments/backend.md | result: stopped — fds.md 1.1.0 makes `title` required (1–100 chars) but does not define what title pre-existing transaction rows receive when migration 0003 adds the NOT NULL column (placeholder literal / copy from description / drop rows); also does not state the timezone of the server-set `date` (UTC vs. server-local vs. fixed zone)
 - Plan: Backend Fragment | 2026-10-04T04:48:08Z | output: v1.1.0/fragments/backend.md | result: done
+- Plan: Synthesis | 2026-10-04T04:56:21Z | output: v1.1.0/plan.md, v1.1.0/contract.md | result: done

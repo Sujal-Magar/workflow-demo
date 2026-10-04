@@ -1,117 +1,129 @@
 # Plan Review: transactions (v1.1.0)
 
-- **Plan under review:** `plan.md`, Revision 3 (2026-10-04)
-- **Contract under review:** `contract.md`, Revision 2 (2026-10-04)
-- **Directives applied:** `directives.md` B-1 to B-4, and the authorization to revise beyond the 3-revision bound
-- **Reviewed:** 2026-10-04T05:53:30Z
-- **Earlier review:** archived to `reviews/r3.md` without being read
+- **Plan under review:** `plan.md` Revision 4 (2026-10-04), with `contract.md` Revision 3
+- **Inputs:** `fds.md` 1.1.0, `behavior.md`, `visuals/*.png` (all six), `directives.md` (B-1 to B-5 and the retry-bound authorization), `rules/*`, `features/index.json`
+- **Evidence checked in the repository:** `frontend/src/components/ui/toast.tsx`, `toast.test.tsx`, `icons.tsx`; `frontend/tailwind.config.ts`; `frontend/src/test/render-with-providers.tsx`; the three `transactions` dialogs, `transaction-row.tsx`, `transactions-table.tsx`, `lib/*`, `api/transactions-api.ts`; `packages/contracts/package.json` and `src/transactions/transaction-validation.ts`; `backend/src/db/schema/transactions.ts`, `db/migrate.ts`, `migrations/meta/_journal.json`, `features/transactions/transaction-service.ts`, `transaction-repository.ts`, `test-support/auth-test-harness.ts`, `features/auth/ports/access-token-signer.ts`, `auth-constants.ts`; `git show 1c226d9:backend/src/index.ts`; `playwright.config.ts`; `sonar-project.properties`; `frontend/vitest.config.ts`; `pnpm-lock.yaml` (`zod@3.25.76`, `@ts-rest/core@3.52.1`, `tailwindcss@3.4.19`, `drizzle-kit@0.24.2`); `node_modules/.pnpm/@ts-rest+core@3.52.1_…/src/lib/type-utils.d.ts` and `infer-types.d.ts` (client body typed as `z.input`, which confirms D-15)
+- **Review type:** Revision run (directives present; plan header records 4 revisions)
+
+---
 
 ## Verdict
 
-**CHANGES REQUIRED**: one Blocking finding (B-1).
+**CHANGES REQUIRED**
+
+Two Blocking findings. Both are about the `transactions` toasts, the area Revisions 3 and 4 opened up (D-32, D-33). Everything else checked holds: the D-15 build order and its typecheck claim at the locked versions, the migration rebuild, the UTC date rules, the Tailwind palette values in D-33, the test harness API, and the INT-05 worktree procedure against the baseline commit.
 
 ---
 
 ## Blocking Findings
 
-### B-1 · Toast colors and icons do not match `fds.md` §4, and §7 says they are covered when nothing checks them
+### B-1 · Toasts do not "slide in" (`behavior.md` §2). No task, no test, no recorded decision
 
-- **Origin:** Pre-existing. The gap is in the built v1.0.0 code, and the plan's wording about it was there before Revision 3. Revision 3 changed the §7 row for `fds.md` §4 under directive B-4, but kept the clause "copy and colors regression only".
-- **Plan location:** §7 matrix, rows "`fds.md` §4 UI Feedback & Notification Patterns (… copy and colors regression only)" and "`fds.md` §6 AC 7: green success / red error toasts"; D-28 (Phase 6 covers only the 1.1.0 deltas); D-32 and FE-15 (edit the same toast component and the same three dialogs); T-UI-04, T-UI-05, T-UI-06, T-UI-09, T-UI-16 (check copy, closing and timing only).
-- **Spec:** `fds.md` §4: "**Toast / Success**: Light green banner with green checkmark icon (`#22C55E`)" and "**Toast / Error**: Light red banner with red alert circle icon (`#EF4444`)"; `fds.md` §6 AC 7, "green success toasts … red error toasts"; `visuals/transaction-toast-success.png` (pale green banner, green check-circle icon, dark green text) and `visuals/transaction-toast-error.png` (pale red banner, red alert-circle icon, dark red text).
-- **Repository evidence:** every `transactions` toast goes through the shared `ToastProvider` in `frontend/src/components/ui/toast.tsx`. That component renders a success toast as a solid `bg-brand-teal` banner (`#00B894`, `frontend/tailwind.config.ts`) with white text and no icon. It renders an error toast as a solid `bg-red-600` banner with white text and no icon. The only icon is the close button (`CloseIcon`). `frontend/src/components/ui/icons.tsx` has no check-circle or alert-circle icon. The existing `toast.test.tsx` pins the current classes (`toHaveClass("bg-brand-teal")`, `toHaveClass("bg-red-600")`).
-- **Condition (a), spec violation.** If the plan is built as written, the Add, Edit and Delete toasts look different from `fds.md` §4 and from both toast visuals. The success toast is solid teal with no checkmark, and the error toast is solid red with no alert icon. Neither is the light banner with an icon that the spec describes. No step catches this:
-  - The plan has no task for the toast's appearance.
-  - No test asserts it.
-  - D-28 keeps toasts out of Phase 6.
-  - §7 records the toast colors as "regression only", which tells Build, Phase 6 and Validation that the colors already meet the spec. They do not.
+- **Plan sections:** FE-15 and D-33 (toast appearance), D-28 (Phase 6 scope), §6.2 T-UI-16 / T-UI-17, §7 rows for `behavior.md` §2 and `fds.md` §4.
+- **Spec:** `behavior.md` §2 step 3: "**On submission error**: A light red error toast notification **slides in** at the top right" and "**On submission success**: … a light green success toast **slides in**".
+- **What the plan says:** nothing. Neither `plan.md` nor `../v1.0.0/plan.md` mentions an entry animation. The built `ToastProvider` (`frontend/src/components/ui/toast.tsx` lines 76–120) puts the toast in a fixed top-right container with no transition or animation class. `frontend/tailwind.config.ts` defines only the `shake` keyframes, and no toast-related animation exists anywhere under `frontend/src`. FE-15 rewrites how the `transactions` toasts look (colors, icon, close-button color) and says "Nothing else changes". The §7 row for `behavior.md` §2 maps to FE-12, INT-05, D-16, D-30, T-UI-04 and T-UI-09, and none of them covers the slide-in.
+- **Condition:** (a) Spec violation. Built as written, the `transactions` toasts appear instantly instead of sliding in, against an explicit `behavior.md` behavior, and no task implements it and no test or review step checks it. Also (f): the plan treats this as unchanged without saying so. That differs from D-25, where a similar gap that predates 1.1.0 was written down and starred. The plan's pattern for toast gaps that predate 1.1.0 (D-32 duration, D-33 appearance: "a pre-existing gap in the built v1.0.0 code") makes the omission inconsistent. Phase 6 (D-28) checks static visuals only, so nothing before Phase 9 would surface it.
+- **Concrete failure:** Phase 9 Validation reports `behavior.md` §2 as unmet for both toasts, which forces a frozen-plan change through the Approval Gate.
+- **Origin:** Pre-existing.
 
-  Phase 9 Validation would find the deviation after Build and Test, and that sends the feature back to planning. The Advisory exception for "values that Phase 6 UI Review checks anyway" does not apply here, because D-28 keeps toasts out of Phase 6.
-- **Why the plan cannot pass this silently:** this is the same kind of gap as the 4000 ms dismiss in directive B-4. B-4 is a pre-existing `fds.md` §4 deviation in the same component that the plan now fixes. The plan handles a comparable pre-existing visual gap, the Edit amount prefix, with an explicit starred decision (D-25). Here it has neither a fix nor a recorded acceptance.
+### B-2 · The banner toast keeps a close button that the toast visuals do not show, and the plan does not record the deviation
+
+- **Plan sections:** D-33 ("the close button keeps its label and switches to the banner's dark text color so it stays visible on the light background"), FE-15 (`toast.tsx` banner bullet), D-28 (Phase 6 checks the toast appearance "against `visuals/transaction-toast-success.png` and `visuals/transaction-toast-error.png`"), T-UI-17 ("in addition to the close button's icon").
+- **Spec:** `visuals/transaction-toast-success.png` and `visuals/transaction-toast-error.png` show the full banner: icon, message, rounded pale background, soft shadow, and **no close (×) control**. `fds.md` §4 says "Toasts auto-dismiss after 4000ms **or on user interaction**" and does not name the interaction.
+- **What the plan says:** D-33 describes the visuals in detail (pale fill, solid circular icon, dark text) but never says the visuals have no close button. It then specifies a restyled, visible close button for the banner look. D-32 decides that "dismissal on user interaction is the existing close button", but that decision predates the banner and was made without the visuals in view. So the plan says it matches both visuals, Phase 6 checks against both, and the specified build visibly differs from both.
+- **Condition:** (a) Spec violation: the banner toast built as written differs from `visuals/`. (f) Silent ambiguity: how "on user interaction" coexists with a visual that has no dismiss control is settled by assumption, without a written trade-off. The alternatives behave differently: a visible × button, a click-anywhere-to-dismiss banner, or no manual dismissal.
+- **Concrete failure:** At Phase 6 the reviewer compares the rendered banner with the two visuals as D-28 instructs and finds an extra × control that no decision covers. Phase 6 then either fails, which sends Frontend Build back to choose between observably different dismissal behaviors, or signs off on an unrecorded deviation, which Phase 9 then reports.
+- **Origin:** Revision. It is in the text Revision 4 added under directive B-5, which asked for the toasts to match "per `visuals/transaction-toast-success.png` and `transaction-toast-error.png`". The plan applied B-5 incompletely.
 
 ---
 
 ## Advisory Findings
 
-- **A-1 · Route file outside D-26's coverage scope.** D-26 applies the 90% target to `backend/src/features/transactions/`, `packages/contracts/src/transactions/` and `frontend/src/features/transactions/`. `sonar-project.properties` measures coverage over all of `frontend/src`, so `frontend/src/app/(protected)/transactions/page.tsx` also counts. No planned test renders it, and `frontend/src/app/app-routes.test.tsx` does not mention it. The file is three statements, so it will not move the gate. A line in T-UI-01, or a note in D-26, would make the scope match what Sonar measures.
-- **A-2 · Delete failure is an inline alert, not a red toast.** `fds.md` §6 AC 7 reads "failed operations trigger red error toasts". The delete failure stays an inline `FormAlert` (FE-15, T-UI-06), carried forward from v1.0.0. That is a written v1.0.0 decision, so this is not a silent assumption. If the developer wants it confirmed at the Approval Gate, it could be starred or named in the §7 row for AC 7.
-- **A-3 · Stale reference in the plan header.** The "Sources synthesized" line calls the third Plan Review `review.md`. That file is now archived as `reviews/r3.md`. Update the reference in the next revision.
-- **A-4 · §7 row for AC 7.** That row lists only copy tests (T-UI-04, T-UI-05, T-UI-06, T-UI-09). Whatever B-1 resolves to, the row should name the test that verifies, or the decision that accepts, "green" and "red".
+- **A-1 · T-UA-07 `PUT` step: the access token expires when the clock advances.** T-UA-07 creates a transaction, advances the `TestClock` "several days", then sends `PUT` and a follow-up `GET`. Access tokens live `ACCESS_TOKEN_LIFETIME_SECONDS = 900` (`backend/src/features/auth/auth-constants.ts`) and are verified against the same clock (`access-token-signer.ts` line 41, `currentDate: this.clock.now()`). Both requests would return `401` unless the test signs in again, or mints a fresh token with `TestApp.accessTokenSigner`, after advancing. The Unit/API agent can fix this in its own scope. Worth one sentence in T-UA-07.
+- **A-2 · T-UA-07 follow-up `GET` needs `timeframe=all_time`.** `startTestApp` starts the clock at `TEST_START_TIME = 2026-09-30T12:00:00.000Z`, the last day of a month. After advancing several days the clock is in October, so a default (`this_month`) `GET` no longer returns the September-dated row whose `date` the test means to check. The same applies to the T-UA-04 service-level check if it reads back through `listTransactions`. Say "query with `timeframe=all_time`" (or read by id) in T-UA-07.
+- **A-3 · D-32 / D-33 and the visual's dismiss behavior.** Whatever B-2 decides, add one line to D-32 saying how "on user interaction" relates to the toast visuals, so the two decisions do not describe the dismissal in two places.
 
 ---
 
 ## Checklist Summary
 
-| #   | Point                         | Result | Note                                                                                                                                                                                                                                                                                                 |
-| :-- | :---------------------------- | :----- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Coverage                      | FAIL   | `fds.md` §4 toast colors and icons, and the "green" / "red" in AC 7, have no implementing task (B-1). Every other requirement and behavior maps to tasks.                                                                                                                                         |
-| 2   | Traceability                  | PASS   | Every task cites a requirement, an FDS section or a decision.                                                                                                                                                                                                                                    |
-| 3   | Cross-section consistency     | PASS   | Backend, Frontend, Integration and Testing agree on the field set, the dropped `date`, the ordering keys, the error mapping and the toast duration.                                                                                                                                          |
-| 4   | Rule compliance               | PASS   | No new library. Layering is kept. The per-toast option in D-32 stays inside the existing component.                                                                                                                                                                                          |
-| 5   | Testability                   | FAIL   | No test verifies the `fds.md` §4 toast appearance, yet §7 says it is covered (B-1). The rest of the test list is concrete and sufficient.                                                                                                                                                             |
-| 6   | Ambiguity carried forward     | PASS   | The specs are not ambiguous on toast styling. B-1 is a missed spec requirement, not an assumption about an unclear one. Earlier spec gaps (UTC, backfill, timeframe) are resolved in the FDS.                                                                                               |
-| 7   | API Contract completeness     | PASS   | All four operations, the shapes, rule sets, statuses and error codes are fully specified, in technology-agnostic prose.                                                                                                                                                                              |
-| 8   | Executability                 | PASS   | Path ownership, build order (D-15), INT-05 scratch setup and cleanup (D-31), migration generation (BE-09) and coverage outputs (`lcov` paths in `sonar-project.properties`) all check out against the repository at `1c226d9`. There are no code diffs between `1c226d9` and `HEAD`. |
-
-Points checked against the repository:
-
-- **D-15:** request schemas are `z.custom<unknown>().transform(...)` at `zod@3.25.76` and `@ts-rest/core@3.52.1`. `frontend/src/features/transactions/api/transactions-api.ts` builds its request type from `Pick<Transaction, …>`, so BE-08 alone leaves the frontend typecheck green.
-- **D-24:** every removed symbol has only the users the plan names.
-- **D-31 / INT-05:**
-  - `backend/src/index.ts` loads `.env` only from the current directory, `../.env` and `../../.env`, so the worktree needs `JWT_SECRET` passed inline.
-  - `DATABASE_PATH` is read by `loadConfig`.
-  - `.gitignore` ignores `*.db*`.
-  - `eslint.config.mjs` does not ignore `backend/data/`, so removing the worktree before the gates is required, as the plan says.
-- **T-UA-01:** `runMigrations` hard-codes `MIGRATIONS_FOLDER`, so the partial `0002` setup must call the Drizzle migrator directly on a temporary folder. That is test-only code and is allowed.
-- **T-UI-16:** `renderWithProviders` mounts the real `ToastProvider`.
-- **Contract package coverage:** `transaction-contract.ts` is loaded through `src/index.ts` by `auth-contract.test.ts`.
-
----
-
-## Outside Plan Scope
-
-- In the Add modal, the built Description and Amount inputs are full width. In `transaction-add-modal.png` they are content width. This is v1.0.0 layout, not touched by 1.1.0.
+| # | Point | Result |
+| :-- | :---- | :----- |
+| 1 | Coverage | **FAIL**: `behavior.md` §2 toast slide-in has no implementing task (B-1). |
+| 2 | Traceability | PASS: every task and test cites an FDS / behavior / visual section or a decision. |
+| 3 | Cross-section consistency | PASS: Backend, Frontend, Integration and Testing agree on `title`, the dropped `date`, ordering, error mapping, and the toast options shape (`TRANSACTION_TOAST_OPTIONS`). |
+| 4 | Rule compliance | PASS: no new library (D-27 avoids root `better-sqlite3`); layering unchanged; contracts stay in `packages/contracts`. |
+| 5 | Testability | **FAIL**: no test or review step verifies the toast slide-in (B-1). Otherwise concrete; see A-1 and A-2 for two test-setup details. |
+| 6 | Ambiguity carried forward | **FAIL**: slide-in silently treated as unchanged (B-1); close button vs. toast visuals settled by assumption (B-2). |
+| 7 | API Contract completeness | PASS: all four operations, shapes, rule sets, statuses and codes specified; technology-agnostic prose; no change needed by either finding. |
+| 8 | Executability | PASS: path ownership, the D-15 order (confirmed at `zod@3.25.76` / `@ts-rest/core@3.52.1`), the BE-09 generate-then-hand-edit migration, the INT-05 worktree (baseline `1c226d9` exists; its `index.ts` tolerates a missing `.env`), and the coverage scope (`sonar-project.properties`, T-UI-01 covers the route file) are all executable as written. |
 
 ---
 
 ## Suggested Next Step
 
-**Retry bound:** the plan header shows 3 revisions. Under `rules/workflow.md` §8 another revision needs the developer's explicit authorization. That authorization is already recorded in `directives.md` ("Authorization for Revision Beyond 3-Revision Retry Bound": Revision 4 and later authorized). This would be Revision 4.
+The specs are sound. Both findings are **developer decisions**. Neither changes `contract.md`.
 
-### 1. Classification
+### B-1 · Toast slide-in: DECISION NEEDED
 
-**B-1 · Toast colors and icons: developer decision.** `DECISION NEEDED`
+- **Option A: add a slide-in entry animation to the banner appearance only.** FE-15 adds keyframes and an animation to `frontend/tailwind.config.ts` (Frontend Build scope), applied only when `appearance: "banner"`, behind `motion-safe:` as `auth-card.tsx` already does. D-33 records it. T-UI-17 asserts the animation class on banner toasts and its absence on default toasts. D-28 adds "toast slides in from the top right" to Phase 6, where a human can see it. `auth` and `profile` toasts are unchanged, which matches the D-32/D-33 pattern. Trade-off: one more piece of the shared toast differs between `transactions` and other features.
+- **Option B: slide-in for every toast, app-wide.** Simpler code with one look everywhere, but it changes `auth` and `profile` behavior against their frozen plans and turns INT-06 into a cross-feature change. That is the same objection the developer accepted when rejecting B-4(B) and B-5(B).
+- **Option C: accept the instant appearance as a starred deviation, like D-25.** No code. The §7 row for `behavior.md` §2 states the gap, and Phase 9 reports it as an accepted deviation. Trade-off: an explicit `behavior.md` behavior stays unmet.
+- **Recommendation:** A. It is consistent with the developer's choices in B-4 and B-5 and keeps the change inside FE-15.
 
-| Option | What it means                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Trade-off                                                                                                                                                                                                                                                                           |
-| :----- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A      | **Per-toast appearance, transactions only.** Extend D-32's `ToastOptions` with an optional appearance, for example `appearance: "banner"`. With it, a success toast renders a light green banner with a green (`#22C55E`) check-circle icon, and an error toast renders a light red banner with a red (`#EF4444`) alert-circle icon, per the two toast PNGs. Without it, toasts render exactly as they do today. Add `CheckCircleIcon` and `AlertCircleIcon` to `icons.tsx`. The transactions dialogs pass the appearance through the same shared options object as `TRANSACTION_TOAST_DURATION_MS`. Extend FE-15 or add an FE task, add appearance checks to T-UI-16 or a new T-UI test (icon present, light background, for each of the five transactions toasts), add both toast visuals to D-28's Phase 6 list, and correct the §7 rows for §4 and AC 7. INT-06 records that default appearance and `toast.test.tsx` are unchanged. | Matches the FDS and the visuals for `transactions`, consistent with how B-4 was decided. `auth` and `profile` keep their current look, so the app has two toast styles. Adds a second option to the shared API and two icons. |
-| B      | **Restyle the shared toast app-wide** to the `fds.md` §4 look, with light banners and icons.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | One consistent toast style. Neither the `auth` nor the `profile` spec defines toast styling, so nothing forbids it. But it changes how `auth` and `profile` look, needs edits to the `auth`-era `toast.test.tsx` (it asserts `bg-brand-teal` / `bg-red-600`), and INT-06 becomes a cross-feature change.             |
-| C      | **Accept the built styling.** Add a starred decision like D-25: the toast appearance predates 1.1.0, is outside the 1.1.0 changelog, and is left as built, with any change as a separate follow-up. Correct the §7 rows for §4 and AC 7 so they say the colors and icons deviate and are accepted, not "regression only".                                                                                                                                                                                                                                                                                                                                                               | Least work and stops the loop. But the deviation from explicit `fds.md` §4 text stays, and Phase 9 Validation will report it unless the developer also amends `fds.md` §4 through the change process (`rules/workflow.md` §4).                                                                 |
+### B-2 · Close button on the banner toast: DECISION NEEDED
 
-**Recommendation:** A. It applies the FDS as written and follows the same approach the developer chose for the same component in B-4, without touching `auth` or `profile`. This is a recommendation only. The developer decides.
+- **Option A: keep the × close button in the banner look and record it as a starred deviation from the two toast visuals.** It is the existing, keyboard-accessible way to satisfy "or on user interaction" (D-32). D-33 says the visuals show no close control and why one is kept. D-28 tells the Phase 6 reviewer to expect it. Trade-off: a small visible difference from the visuals.
+- **Option B: no × in the banner look; clicking anywhere on the toast dismisses it.** Matches the visuals. But a clickable `role="alert"` / `<output>` region has no keyboard path unless it becomes a button. That changes the toast's semantics and needs new tests (T-UI-16 currently clicks `Dismiss notification`).
+- **Option C: no × and no manual dismissal; the toast closes on the 4000 ms timer only.** Matches the visuals, but violates `fds.md` §4 "or on user interaction". Listed only for completeness; not valid without an FDS change.
+- **Recommendation:** A.
 
-The advisory findings A-1 to A-4 can go into the same revision. Each can be closed by the Synthesizer inside the plan text without a developer decision.
+### Retry bound
 
-### 2. Revision prompt
+The plan header records **4 revisions**, which is beyond the 3-attempt bound in `rules/workflow.md` §8. `directives.md` already records the developer's authorization for "Revision 4 (and further revisions if needed)". The developer should confirm that this authorization covers Revision 5, or extend it explicitly in `directives.md`, before running the revision.
+
+### `directives.md` skeleton (append to `features/transactions/plans/v1.1.0/directives.md`)
+
+```text
+## B-6 Toast slide-in (behavior.md §2; review B-1, fifth review)
+
+Options considered: A) slide-in entry animation for the banner appearance only (tailwind.config.ts keyframes, motion-safe; FE-15, D-33, T-UI-17 class assertion, D-28 Phase 6 check); B) slide-in for every toast app-wide (auth/profile change; INT-06 cross-feature); C) accept instant appearance as a starred deviation like D-25 (§7 row states it)
+Decision: <developer to fill in>
+Apply to: FE-15, D-33, D-28, T-UI-17, §7 rows for behavior.md §2 and fds.md §4
+Record as a starred (★) decision in the plan's Decision Log: yes
+
+## B-7 Close button on the banner toast vs. toast visuals (review B-2, fifth review)
+
+Options considered: A) keep the × close button in the banner look, recorded as a starred deviation from visuals/transaction-toast-success.png and transaction-toast-error.png, and D-28 tells Phase 6 to expect it; B) no × in the banner look, click-anywhere-to-dismiss (semantics and keyboard path to define; T-UI-16/17 updated); C) no manual dismissal (conflicts with fds.md §4)
+Decision: <developer to fill in>
+Apply to: D-32, D-33, FE-15, D-28, T-UI-16, T-UI-17
+Record as a starred (★) decision in the plan's Decision Log: yes
+
+## Authorization for Revision 5 (rules/workflow.md §8)
+
+Decision: <developer to confirm that the existing authorization covers Revision 5, or extend it>
+```
+
+### Revision prompt (paste after filling in `directives.md`)
 
 ```text
 Read the file .ai/prompts/plan/plan-synthesizer.md and follow it exactly. That is your system prompt.
 
 Feature ID = transactions
-Revision run (revision 4; authorized beyond the 3-revision bound in features/transactions/plans/v1.1.0/directives.md).
-Plan Review (features/transactions/plans/v1.1.0/review.md) returned CHANGES REQUIRED.
-Apply every decision in features/transactions/plans/v1.1.0/directives.md, including the new B-5 (toast colors and icons, fds.md §4 / §6 AC 7 / visuals/transaction-toast-*.png).
-Also apply advisory findings A-1 (D-26 or T-UI-01 covers frontend/src/app/(protected)/transactions/page.tsx), A-2 (state the Delete-failure inline alert against AC 7 in the §7 row), A-3 (plan header cites reviews/r3.md for the third review) and A-4 (§7 AC 7 row names what verifies or accepts the colors).
-Revise plan.md and contract.md in place. Do not change other sections.
+Revision run. Plan Review (features/transactions/plans/v1.1.0/review.md) returned CHANGES REQUIRED.
+Apply decisions B-6 and B-7 in features/transactions/plans/v1.1.0/directives.md, under the developer's
+retry-bound authorization recorded there.
+Also apply advisory findings A-1 and A-2 (T-UA-07: re-authenticate or mint a fresh token after advancing
+the TestClock; read back with timeframe=all_time) and A-3 (one line in D-32 relating "on user interaction"
+to the toast visuals).
+Revise plan.md and contract.md in place. contract.md should change only its revision line.
+Do not change other sections.
 ```
 
-### 3. `directives.md` skeleton (append)
+Only the frontend side is affected. The Plan Synthesizer can apply this directly, as Revisions 1–4 did, without regenerating the fragments.
 
-```markdown
-## B-5 Toast colors and icons (fds.md §4, §6 AC 7; visuals/transaction-toast-success.png, transaction-toast-error.png)
+---
 
-Options considered: A) optional per-toast appearance in the shared toast API (default unchanged); transactions toasts render the light green / light red banner with #22C55E check-circle / #EF4444 alert-circle icons; new icons in icons.tsx; FE task, T-UI assertions, D-28 Phase 6 adds both toast visuals, §7 rows for §4 and AC 7 corrected, INT-06 notes default unchanged; B) restyle the shared toast app-wide (auth/profile change; toast.test.tsx updated; INT-06 cross-feature); C) accept the built styling as a starred decision like D-25, correct §7 to say the deviation is accepted
-Decision: <developer to fill in>
-Apply to: FE-15 or a new FE task, D-32 or a new decision, D-28, T-UI-16 or a new T-UI test, INT-06, §7 rows for fds.md §4 and §6 AC 7
-Record as a starred (★) decision in the plan's Decision Log: yes
-```
+## Outside Plan Scope
+
+- `sonar-project.properties` still declares `sonar.projectVersion=1.0.0`.

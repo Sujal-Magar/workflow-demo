@@ -9,6 +9,7 @@ import { useToast } from "@/components/ui/toast";
 
 import type { Transaction } from "../api/transactions-api";
 import { useDeleteTransaction } from "../hooks/use-delete-transaction";
+import { TRANSACTION_TOAST_OPTIONS } from "../lib/transaction-toast";
 
 /** Verbatim fds.md/behavior.md copy. */
 const TITLE = "Delete Transaction?";
@@ -31,7 +32,7 @@ function DeleteTransactionBody({ transaction, onDeleted }: Readonly<DeleteTransa
     setHasFailed(false);
     const result = await submitDeleteTransaction(transaction.id);
     if (result.ok) {
-      toast.success(SUCCESS_TOAST);
+      toast.success(SUCCESS_TOAST, TRANSACTION_TOAST_OPTIONS);
       onDeleted();
       return;
     }

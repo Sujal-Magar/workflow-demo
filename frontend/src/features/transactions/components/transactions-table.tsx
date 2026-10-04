@@ -6,7 +6,7 @@ import { TransactionRow } from "./transaction-row";
 /** Decision D-13 (plan.md). */
 const EMPTY_STATE_MESSAGE = "No transactions found for the selected filters.";
 
-const COLUMN_HEADERS = ["Date", "Category", "Description", "Amount", "Type", "Actions"] as const;
+const COLUMN_HEADERS = ["Date", "Category", "Title", "Description", "Amount", "Type", "Actions"] as const;
 
 interface TransactionsTableProps {
   transactions: readonly Transaction[];

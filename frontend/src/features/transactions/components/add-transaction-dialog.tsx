@@ -11,6 +11,7 @@ import { useToast } from "@/components/ui/toast";
 
 import { useCreateTransaction } from "../hooks/use-create-transaction";
 import { transactionFormSchema, type TransactionFormValues } from "../lib/transaction-form-schemas";
+import { TRANSACTION_TOAST_OPTIONS } from "../lib/transaction-toast";
 import { TransactionFormFields } from "./transaction-form-fields";
 
 /** Exact FDS copy (fds.md §4, REQ-TXN-01). */
@@ -18,7 +19,7 @@ const SUCCESS_TOAST = "Transaction added successfully!";
 const FAILURE_TOAST = "Failed to add transaction. Please try again.";
 
 const DEFAULT_VALUES: TransactionFormValues = {
-  date: "",
+  title: "",
   description: "",
   category: "",
   type: "",
@@ -35,7 +36,6 @@ function AddTransactionBody({ onAdded }: Readonly<AddTransactionBodyProps>) {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<TransactionFormValues>({
     resolver: zodResolver(transactionFormSchema),
@@ -43,18 +43,17 @@ function AddTransactionBody({ onAdded }: Readonly<AddTransactionBodyProps>) {
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
-  const dateValue = watch("date");
 
   const submitValidForm = async (values: TransactionFormValues) => {
     const parsed = transactionFormSchema.parse(values);
     const result = await submitCreateTransaction(parsed);
     if (result.ok) {
-      toast.success(SUCCESS_TOAST);
+      toast.success(SUCCESS_TOAST, TRANSACTION_TOAST_OPTIONS);
       onAdded();
       return;
     }
     // Form state is preserved on failure (behavior.md §2) — the inputs are simply left as the user typed them.
-    toast.error(FAILURE_TOAST);
+    toast.error(FAILURE_TOAST, TRANSACTION_TOAST_OPTIONS);
   };
 
   const submitForm = (event: FormEvent<HTMLFormElement>) => {
@@ -64,7 +63,7 @@ function AddTransactionBody({ onAdded }: Readonly<AddTransactionBodyProps>) {
 
   return (
     <form noValidate onSubmit={submitForm} className="mt-6 flex flex-col gap-4">
-      <TransactionFormFields register={register} errors={errors} dateValue={dateValue} />
+      <TransactionFormFields register={register} errors={errors} />
       <div className="mt-2 flex justify-end gap-3">
         <Dialog.Close asChild>
           <Button type="button" variant="outline">

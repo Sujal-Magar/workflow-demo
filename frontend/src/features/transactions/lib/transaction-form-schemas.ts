@@ -1,18 +1,9 @@
 // Form-only validation for the Add/Edit Transaction dialogs (plan FE-06), mirroring contract.md §4's
-// `TransactionDate`/`Description`/`Category`/`Type`/`Amount` rule sets exactly (same messages, same order).
+// `Title`/`Description`/`Category`/`Type`/`Amount` rule sets exactly (same messages, same order).
 // `updateTransaction` reuses this schema unchanged — it is a full replace of the editable fields (D-01).
 import { z } from "zod";
 
 import { CATEGORIES, TRANSACTION_TYPES, type Category, type TransactionType } from "../api/transactions-api";
-
-function isValidCalendarDate(value: string): boolean {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-    return false;
-  }
-  const [year, month, day] = value.split("-").map(Number);
-  const date = new Date(Date.UTC(year, month - 1, day));
-  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
-}
 
 function requiredEnum<T extends string>(
   values: readonly T[],
@@ -32,10 +23,11 @@ function requiredEnum<T extends string>(
     .transform((value) => value as T);
 }
 
-export const transactionDateSchema = z
+export const transactionTitleSchema = z
   .string()
-  .min(1, "Date is required.")
-  .refine(isValidCalendarDate, "Enter a valid date.");
+  .trim()
+  .min(1, "Title is required.")
+  .max(100, "Title must be at most 100 characters.");
 
 export const transactionDescriptionSchema = z
   .string()
@@ -69,7 +61,7 @@ export const transactionAmountSchema = z
   .transform((value) => (typeof value === "string" ? Number(value.trim()) : value));
 
 export const transactionFormSchema = z.object({
-  date: transactionDateSchema,
+  title: transactionTitleSchema,
   description: transactionDescriptionSchema,
   category: transactionCategorySchema,
   type: transactionTypeSchema,

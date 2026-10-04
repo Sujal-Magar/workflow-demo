@@ -40,8 +40,8 @@ const DECLARED_ERRORS: Readonly<Record<TransactionOperation, readonly DeclaredEr
 /** Form fields that can display a `fieldErrors` entry for each operation. */
 export const OPERATION_FORM_FIELDS: Readonly<Record<TransactionOperation, readonly string[]>> = {
   getTransactions: ["page", "limit", "category", "type", "timeframe", "sort"],
-  createTransaction: ["date", "description", "category", "type", "amount"],
-  updateTransaction: ["date", "description", "category", "type", "amount"],
+  createTransaction: ["title", "description", "category", "type", "amount"],
+  updateTransaction: ["title", "description", "category", "type", "amount"],
   deleteTransaction: [],
 };
 

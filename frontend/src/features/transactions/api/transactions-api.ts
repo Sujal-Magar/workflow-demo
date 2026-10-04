@@ -40,7 +40,7 @@ export interface TransactionListQuery {
   readonly sort?: Sort;
 }
 
-export type CreateTransactionRequest = Pick<Transaction, "date" | "description" | "category" | "type" | "amount">;
+export type CreateTransactionRequest = Pick<Transaction, "title" | "description" | "category" | "type" | "amount">;
 
 export type UpdateTransactionRequest = CreateTransactionRequest;
 

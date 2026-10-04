@@ -2,7 +2,6 @@
 
 import type { FieldErrors, UseFormRegister } from "react-hook-form";
 
-import { CalendarIcon, ChevronDownIcon } from "@/components/ui/icons";
 import { FieldError } from "@/components/ui/field-error";
 import { SelectField, type SelectFieldOption } from "@/components/ui/select-field";
 import { cn } from "@/lib/cn";
@@ -26,45 +25,28 @@ const TYPE_OPTIONS: readonly SelectFieldOption[] = [
 interface TransactionFormFieldsProps {
   register: UseFormRegister<TransactionFormValues>;
   errors: FieldErrors<TransactionFormValues>;
-  /** Watched current value of the `date` field, used to approximate the FDS `"Title"` placeholder (plan FE-06). */
-  dateValue: string;
 }
 
 /** Shared by Add and Edit (plan FE-06; `rules/conventions.md` "avoid duplicated logic"). */
-export function TransactionFormFields({ register, errors, dateValue }: Readonly<TransactionFormFieldsProps>) {
-  const hasDateValue = Boolean(dateValue);
-
+export function TransactionFormFields({ register, errors }: Readonly<TransactionFormFieldsProps>) {
   return (
     <div className="flex flex-col gap-4">
       <div className="w-full">
-        <label htmlFor="transaction-date" className="sr-only">
-          Date
+        <label htmlFor="transaction-title" className="sr-only">
+          Title
         </label>
-        <div className="relative">
-          <span className="pointer-events-none absolute left-[14px] top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center text-gray-500">
-            <CalendarIcon className="h-5 w-5" />
-          </span>
-          {!hasDateValue ? (
-            <span className="pointer-events-none absolute left-[42px] top-1/2 -translate-y-1/2 text-[15px] text-gray-500">
-              Title
-            </span>
-          ) : null}
-          <input
-            id="transaction-date"
-            type="date"
-            aria-invalid={Boolean(errors.date) || undefined}
-            aria-describedby={errors.date ? "transaction-date-error" : undefined}
-            className={cn(
-              "h-12 w-full rounded-[3px] border border-gray-300 bg-white pl-[42px] pr-9 text-[15px] text-brand-ink focus:border-brand-teal focus:outline-none focus:ring-1 focus:ring-brand-teal",
-              // The native date input's own "mm/dd/yyyy" placeholder text is hidden so the "Title" overlay above shows instead.
-              !hasDateValue && "text-transparent",
-              errors.date && "border-red-500 focus:border-red-500 focus:ring-red-500"
-            )}
-            {...register("date")}
-          />
-          <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
-        </div>
-        <FieldError id="transaction-date-error" message={errors.date?.message} />
+        <input
+          id="transaction-title"
+          placeholder="Title"
+          aria-invalid={Boolean(errors.title) || undefined}
+          aria-describedby={errors.title ? "transaction-title-error" : undefined}
+          className={cn(
+            "h-11 w-full rounded-md border border-gray-300 px-3 text-[15px] text-brand-ink placeholder:text-gray-500 focus:border-brand-teal focus:outline-none focus:ring-1 focus:ring-brand-teal",
+            errors.title && "border-red-500 focus:border-red-500 focus:ring-red-500"
+          )}
+          {...register("title")}
+        />
+        <FieldError id="transaction-title-error" message={errors.title?.message} />
       </div>
 
       <div className="w-full">

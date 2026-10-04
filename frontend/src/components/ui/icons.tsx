@@ -96,16 +96,6 @@ export function SpinnerIcon({ className, ...props }: Readonly<IconProps>) {
   );
 }
 
-export function CalendarIcon(props: Readonly<IconProps>) {
-  return (
-    <StrokeIcon {...props}>
-      <rect x="3.5" y="5" width="17" height="15" rx="2" />
-      <path d="M3.5 9.5h17" />
-      <path d="M8 3v3.5M16 3v3.5" />
-    </StrokeIcon>
-  );
-}
-
 export function ChevronDownIcon(props: Readonly<IconProps>) {
   return (
     <StrokeIcon {...props}>
@@ -131,6 +121,33 @@ export function TrashIcon(props: Readonly<IconProps>) {
       <path d="M6.5 7l1 12.5a1.5 1.5 0 0 0 1.5 1.4h6a1.5 1.5 0 0 0 1.5-1.4L17.5 7" />
       <path d="M10.5 11v6M13.5 11v6" />
     </StrokeIcon>
+  );
+}
+
+/** Solid status circles for the banner toasts (`transaction-toast-success.png`, `transaction-toast-error.png`). */
+export function CheckCircleIcon(props: Readonly<IconProps>) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false" {...props}>
+      <circle cx="12" cy="12" r="10" fill="currentColor" />
+      <path
+        d="m7.5 12.5 3 3 6-6.5"
+        fill="none"
+        stroke="#ffffff"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function AlertCircleIcon(props: Readonly<IconProps>) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false" {...props}>
+      <circle cx="12" cy="12" r="10" fill="currentColor" />
+      <path d="M12 7v6" fill="none" stroke="#ffffff" strokeWidth={2} strokeLinecap="round" />
+      <circle cx="12" cy="16.5" r="1.25" fill="#ffffff" />
+    </svg>
   );
 }
 

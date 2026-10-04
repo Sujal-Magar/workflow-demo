@@ -43,9 +43,14 @@ const config: Config = {
           "20%, 60%": { transform: "translateX(-6px)" },
           "40%, 80%": { transform: "translateX(6px)" },
         },
+        "toast-slide-in": {
+          from: { opacity: "0", transform: "translateX(100%)" },
+          to: { opacity: "1", transform: "translateX(0)" },
+        },
       },
       animation: {
         shake: "shake 400ms ease-in-out",
+        "toast-slide-in": "toast-slide-in 300ms ease-out",
       },
     },
   },

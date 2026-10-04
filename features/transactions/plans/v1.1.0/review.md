@@ -52,16 +52,16 @@ None.
 
 ## Checklist Summary
 
-| # | Point | Result | Note |
-| :-- | :--- | :--- | :--- |
-| 1 | Coverage | PASS | Every 1.1.0 changelog item, REQ-TXN-01 to 04, `fds.md` §2, §4, §5, all seven §6 ACs, `behavior.md` §1–§4 and every visual map to tasks in §7. Starred deviations (D-25, D-29, D-30, the D-32/D-33 close button) are written decisions. |
-| 2 | Traceability | PASS | Every BE, FE, INT and test item carries a trace to a REQ ID, an FDS / behavior section, a visual, or a decision. |
-| 3 | Cross-section consistency | PASS | Field set `title, description, category, type, amount`, no `date` in requests, `fieldErrors` keys, ordering `date → createdAt → id`, UTC "today", and toast options all agree across §3–§6 and `contract.md`. One wording slip (A-1). |
-| 4 | Rule compliance | PASS | Layering unchanged. No new library, error code or `DomainError`. Contracts stay in `packages/contracts`. Named constants are used. |
-| 5 | Testability | PASS | T-UA-01 to 08 and T-UI-01 to 17 cover every requirement with implementation tasks. Phase 6 (D-28) covers the colour and motion checks that jsdom cannot make. |
-| 6 | Ambiguity carried forward | PASS | UTC basis, trimming, UTF-16 counting, `date` dropped silently, backfill edge cases, future-dated legacy rows, Date format, toast duration, appearance, slide-in and close button are all explicit decisions (starred where they are choices). |
-| 7 | API Contract completeness | PASS | All four operations, shapes, rule sets with exact messages, statuses and error codes are specified. Written in plain language with no framework code. |
-| 8 | Executability | PASS | Ownership, build order (D-15), per-task typecheck windows, migration procedure, INT-05 worktree lifecycle (D-31) and gates are executable at the locked tool versions. A-3, A-4 and A-5 are friction points, not blockers. |
+| #   | Point                     | Result | Note                                                                                                                                                                                                                                          |
+| :-- | :------------------------ | :----- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Coverage                  | PASS   | Every 1.1.0 changelog item, REQ-TXN-01 to 04, `fds.md` §2, §4, §5, all seven §6 ACs, `behavior.md` §1–§4 and every visual map to tasks in §7. Starred deviations (D-25, D-29, D-30, the D-32/D-33 close button) are written decisions.        |
+| 2   | Traceability              | PASS   | Every BE, FE, INT and test item carries a trace to a REQ ID, an FDS / behavior section, a visual, or a decision.                                                                                                                              |
+| 3   | Cross-section consistency | PASS   | Field set `title, description, category, type, amount`, no `date` in requests, `fieldErrors` keys, ordering `date → createdAt → id`, UTC "today", and toast options all agree across §3–§6 and `contract.md`. One wording slip (A-1).         |
+| 4   | Rule compliance           | PASS   | Layering unchanged. No new library, error code or `DomainError`. Contracts stay in `packages/contracts`. Named constants are used.                                                                                                            |
+| 5   | Testability               | PASS   | T-UA-01 to 08 and T-UI-01 to 17 cover every requirement with implementation tasks. Phase 6 (D-28) covers the colour and motion checks that jsdom cannot make.                                                                                 |
+| 6   | Ambiguity carried forward | PASS   | UTC basis, trimming, UTF-16 counting, `date` dropped silently, backfill edge cases, future-dated legacy rows, Date format, toast duration, appearance, slide-in and close button are all explicit decisions (starred where they are choices). |
+| 7   | API Contract completeness | PASS   | All four operations, shapes, rule sets with exact messages, statuses and error codes are specified. Written in plain language with no framework code.                                                                                         |
+| 8   | Executability             | PASS   | Ownership, build order (D-15), per-task typecheck windows, migration procedure, INT-05 worktree lifecycle (D-31) and gates are executable at the locked tool versions. A-3, A-4 and A-5 are friction points, not blockers.                    |
 
 ---
 

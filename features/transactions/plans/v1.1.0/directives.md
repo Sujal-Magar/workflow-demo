@@ -59,7 +59,3 @@ Record as a starred (★) decision in the plan's Decision Log: yes
 
 Decision: Confirmed. The developer confirms that the authorization recorded under "Authorization for Revision Beyond 3-Revision Retry Bound" covers Revision 5 (and subsequent revisions if needed). Proceed with Revision 5 to apply B-6, B-7, and review advisories A-1 to A-3.
 Record as a starred (★) decision in the plan's Decision Log: no
-
-
-
-

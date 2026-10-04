@@ -28,3 +28,10 @@ Decision: A — optional per-toast duration in the shared toast API (default sta
 Apply to: new FE task, §6.2 test list (new or extended T-UI test), §7 matrix row for fds.md §4, INT-06, §2 step 2
 Record as a starred (★) decision in the plan's Decision Log: yes
 
+## Authorization for Revision Beyond 3-Revision Retry Bound (rules/workflow.md §8)
+
+- **Context / Finding**: Revision 3 was committed following Plan Review Round 3. Under `rules/workflow.md` §8, self-correction loops are bounded at 3 attempts, requiring explicit developer authorization recorded in `directives.md` to proceed with any subsequent revision (Revision 4+).
+- **Decision**: Authorized by developer. The developer explicitly authorizes proceeding with Revision 4 (and further revisions if needed) should Plan Review require additional adjustments before approval.
+- **Record as a starred (★) decision in the plan's Decision Log**: no
+
+

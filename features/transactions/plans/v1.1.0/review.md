@@ -1,11 +1,8 @@
 # Plan Review: transactions (v1.1.0)
 
-- **Plan under review:** `plan.md` (Revision 1, 2026-10-04) and `contract.md` (Revision 1), same directory
-- **Specs:** `fds.md` 1.1.0, `behavior.md`, `visuals/*.png` (6 files)
-- **Directives:** `directives.md` (B-1, B-2). Both are settled and were not reopened.
-- **Re-review:** yes. This is review 2 of this version; the previous report was archived to `reviews/r1.md` unread.
-- **Finding IDs** continue after the IDs the plan header already cites (B-1, B-2, A-1 to A-4), so new IDs start at B-3 and A-5.
-- **Reviewed:** 2026-10-04
+- **Reviewed:** `plan.md` (Revision 2, 2026-10-04) and `contract.md` (Revision 2, 2026-10-04), against `fds.md` 1.1.0, `behavior.md`, `visuals/*.png`, `directives.md` (B-1, B-2, B-3), `rules/*` and `features/index.json`.
+- **Review type:** Re-review (the plan header records two revisions; `directives.md` exists). `reviews/` was not read.
+- **Repository evidence checked:** the baseline code at `1c226d9` (HEAD has no code changes since then): `packages/contracts/src/transactions/*`, `backend/src/features/transactions/*`, `backend/src/db/{schema/transactions.ts,migrations/*,migrate.ts,client.ts,client.test.ts}`, `backend/src/index.ts`, `backend/src/config/env.ts`, `backend/src/test-support/auth-test-harness.ts` (exports only), `frontend/src/features/transactions/**` (the files FE-10 to FE-13 change), `frontend/src/components/ui/{icons,toast}.tsx`, `frontend/src/components/ui/toast.test.tsx`, `e2e/support/auth.ts`, `playwright.config.ts`, `sonar-project.properties`, the Vitest configs, `.gitignore`, `pnpm-lock.yaml`. Package source checked: `@ts-rest/core@3.52.1` `src/lib/infer-types.d.ts` and `type-utils.d.ts` (the client request body is typed `z.input<body>`, which confirms D-15's typing claim); `drizzle-orm@0.33.0` `sqlite-core/dialect.js` (the migrator wraps all pending migrations in one `BEGIN … COMMIT` and decides what to apply only by comparing `created_at` with each journal entry's `when`, which confirms the T-UA-01 approach of a cut journal followed by a full `runMigrations`). Node 22.23.2: `process.loadEnvFile` does not overwrite a variable that is already set, so the inline `DATABASE_PATH` / `JWT_SECRET` values in INT-05 take precedence over any `.env` file.
 
 ---
 
@@ -13,99 +10,108 @@
 
 **CHANGES REQUIRED**
 
-There is one Blocking finding. It sits in text that Revision 1 rewrote (INT-05). The rest of the plan is sound. Coverage, traceability, the contract, the rule checks and the test list all pass. The build-order claim in D-15 holds at the locked versions (see Checklist 8).
+One Blocking finding (B-4, pre-existing). The 1.1.0 change itself (title, server-set UTC date, migration `0003`, Title column, Date format, build order, INT-05 scratch database) is complete, consistent across sections and executable as written. Finding numbering continues from the earlier rounds so it does not collide with `directives.md` B-1 to B-3.
 
 ---
 
 ## Blocking Findings
 
-### B-3 · INT-05 makes the Integration agent work outside the repository
+### B-4 · `fds.md` §4 toast auto-dismiss time (4000 ms): the built code does something else, no task changes it, no test checks it
 
-- **Plan section:** §5 INT-05, the "Scratch database" steps 1–4 and the step after them ("Start the current backend with `DATABASE_PATH` pointing at `<scratch-dir>/int05.db`"). §2 step 4 limits Integration to `frontend/**` and `backend/**`.
-- **Conflicts with:** `.ai/prompts/build-mode.md`, Context & Rules: "Work strictly within the current project repository. Never inspect, reference, copy, or modify anything outside it." Integration runs under that prompt (`rules/workflow.md` §2 Phase 7; `CLAUDE.md` Phase 7).
-- **Condition:** (c) Not executable.
-- **Concrete failure:** INT-05 tells the agent to run `git worktree add <scratch-dir>/transactions-1c226d9 1c226d9`, "where `<scratch-dir>` is outside the repository", then run `pnpm install` there, start that checkout's backend, and write `<scratch-dir>/int05.db`. It then starts the current backend against that outside file. Every one of those steps creates, changes or reads files outside the repository. An Integration agent that obeys its system prompt has to stop at INT-05 step 1 and escalate. The alternative is to break its boundary. Directive B-2 depends on INT-05 to check the future-dated legacy row in the real product, so this step cannot be skipped.
-- **Secondary gap in the same step:** step 2 starts the worktree's backend "with the developer's usual backend environment". The worktree is a fresh checkout, and `.env` is git-ignored (`.gitignore`). `backend/src/index.ts` loads the environment through `process.loadEnvFile`, and `loadConfig` throws without `JWT_SECRET`. The plan does not say where the worktree backend gets its `JWT_SECRET`. Copying `backend/.env` into the worktree, or passing `JWT_SECRET` inline, would close this. The fix for B-3 should state which one.
-- **Origin:** `Revision`. INT-05's database-production steps are the text the plan header lists as changed under A-2 in Revision 1. The future-dated seed row came from directive B-2.
+- **Plan sections:** §7 matrix row "`fds.md` §4 UI Feedback & Notification Patterns (regression only) → T-UI-04, T-UI-05, T-UI-06, T-UI-09"; §6.2 T-UI-04, T-UI-05, T-UI-06, T-UI-09; D-26 (Phase 8 tests the whole feature); INT-06 (says `icons.tsx` is the only shared file this version edits).
+- **Spec:** `fds.md` §4: "Toasts auto-dismiss after 4000ms or on user interaction." AC 7 (`fds.md` §6) depends on these toasts.
+- **What the repository shows:** every `transactions` dialog shows its toasts through the shared `ToastProvider` / `useToast` (`frontend/src/components/ui/toast.tsx`). It dismisses every toast after a single fixed constant, `TOAST_DURATION_MS = 5000` (line 7, applied at line 53), and the API offers no per-call duration. `frontend/src/components/ui/toast.test.tsx` asserts `TOAST_DURATION_MS` is `5000` ("auto-dismisses after about 5 seconds"). That value comes from the frozen `auth` plan ("auto-dismisses after about 5 seconds"). No other feature's `fds.md` or `behavior.md` states a toast duration.
+- **What the plan says:** the matrix lists §4 as "regression only", which means already satisfied and unchanged. None of the four tests it cites checks the dismiss time: they check toast text, closing and kept values. No task touches `toast.tsx`, and no decision mentions the 4000 ms figure.
+- **Severity:**
+  - **(a) Spec violation.** Built as written, every `transactions` toast stays up for 5000 ms, not the 4000 ms `fds.md` §4 specifies, and the requirement has no implementing task and no verifying test.
+  - **(c) Not executable.** D-26 tells the Phase 8 UI/E2E agent to test the whole feature from the spec ("Primary context is `fds.md`"). A test of §4 as written fails against `toast.tsx`. The fix is in a shared component that `auth` and `profile` also use, and an existing `auth` test pins it at 5000 ms. Under `test-build-mode.md` ("If fixing a defect would require changing a file that the plan's … sections also depend on, STOP"), the agent has to stop mid-phase and escalate through Diagnosis. That costs a Phase 8b loop and a return to Frontend Build after the plan is frozen.
+- **Origin:** Pre-existing. It was already in the built v1.0.0 code. No 1.1.0 revision touched it, and no directive caused it.
 - **Classification:** Developer decision. See Suggested Next Step.
 
 ---
 
 ## Advisory Findings
 
-- **A-5 · §2 step 3 still says "the three deltas only (D-28)".** D-28 now lists four review items: the Add first field, the Edit first field, the seven-column ledger, and the Date cell format added by directive B-1 (D-29). The table row disagrees with the decision it cites. Phase 6 is a human review that reads D-28, so nothing breaks, but the row should say "the four deltas". (Revision text.)
-- **A-6 · Some per-task typechecks will fail before the next task runs.** `build-mode.md` runs lint and typecheck after every item, with 3 attempts. BE-08's done-when says the filtered typecheck passes only once BE-10 and BE-11 are done, which is right. BE-09 and FE-10 have the same property but do not say so. After BE-09, `transaction-repository.ts` `create` lacks the now-required `title`. After FE-10, both dialogs still call `watch("date")` and pass `dateValue`, and FE-12 is what removes those. The agent can resolve this inside its own scope by doing the next task, so this is not blocking. A one-line note on BE-09 and FE-10 ("typecheck is green again after BE-10 / FE-12") would stop the agent from spending retry attempts on it.
-- **A-7 · BE-09's "the generated snapshot matches the Drizzle schema" has no named check.** Suggest stating the check: after the hand edit, run `pnpm --filter backend db:generate` again and confirm it reports no schema changes and creates no `0004` file.
-- **A-8 · The `Title` rule does not say what happens to a present but non-string value.** An example is `"title": 5`. Contract §4 says "empty after trim (or missing) → `Title is required.`" but does not cover other types. The built `Description` rule maps non-strings to `""` (`asText`), so they get the "required" message, and BE-08 says to write `transactionTitleSchema` "in the same style". Both sides use the same contract package, so Frontend and Backend cannot diverge. The frontend always sends strings, so users cannot see the difference. For completeness, contract §4 could add "(or not a string)" to rule 1, the same wording `Amount` uses.
+- **A-9 · INT-05 / D-31 / `directives.md` B-3 name `backend/.env`, which does not exist.** The developer's env file is at the repository root, `.env`. `backend/src/index.ts` loads it through its third candidate path, `path.resolve(__dirname, "../../.env")`, and it defines `JWT_SECRET` (64 characters). An agent following INT-05 step 2 will not find `backend/.env`. It can fix this within its own task without any observable change: read the value from the root `.env`, or use any throwaway secret of at least 32 characters. The worktree backend's tokens are only used against that backend and are never reused, and passwords are argon2 hashes that do not depend on the JWT secret. This is advisory because the directive's intent ("pass the developer's secret inline; do not copy a `.env` into the worktree") still works with the corrected path. Suggest the developer corrects the path in `directives.md` B-3 and the revision copies the correction into D-31 and INT-05 step 2. The current backend in INT-05 needs no change, because it loads the root `.env` itself and the inline `DATABASE_PATH` wins (`process.loadEnvFile` does not overwrite variables that are already set).
+- **A-10 · D-25 settles a disagreement between the specs, not only between the plan and the specs.** `fds.md` REQ-TXN-02 shows the Edit modal's amount as `450`; `behavior.md` §3 and `visuals/transaction-edit-modal.png` show `-₹450`. D-25 is written down and starred, so this is not a silent assumption. But `build-mode.md` says `behavior.md` and the visuals govern UI presentation, so the developer should confirm D-25 at the gate knowing that the specs disagree. If the specs should agree, add a Clarification addendum to `behavior.md` §3 (`rules/workflow.md` §4).
+- **A-11 · FE-10's typecheck note is incomplete.** After FE-10 and before FE-11, both dialogs also pass the new form output (`title`, no `date`) to `CreateTransactionRequest`, which still requires `date`. So the errors are not only the `watch("date")` / `dateValue` errors the note names. The conclusion still holds (green after FE-12), so no retry budget is at risk. It is only a wording gap.
+- **A-12 · T-UI-11 asserts "the total" after a delete, but the ledger shows no total.** `transactions-page.tsx` passes `data.total` only to `PaginationControls`. The test can only observe the row disappearing and the page count. Suggest rewording to "the row count and the page count reflect the new total" so the agent does not look for a total that is not shown.
+- **A-13 · INT-05 cleanup does not say what to do if `git worktree remove` refuses.** Git refuses to remove a worktree that has modified or untracked, non-ignored files, for example if `pnpm install` rewrites the worktree's `pnpm-lock.yaml`. The agent can decide within its own task (inspect, then `--force` on its own scratch worktree), with no effect on another phase. One line naming the allowed fallback would save a decision.
 
 ---
 
 ## Checklist Summary
 
-| #   | Point                         | Result | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| :-- | :---------------------------- | :----- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Coverage                      | PASS   | Each 1.1.0 changelog item, REQ-TXN-01–04, §4, §5, all seven §6 criteria and `behavior.md` §1–§4 map to tasks or regression tests (§7 matrix, checked against the spec text).                                                                                                                                                                                                                                                                                                                  |
-| 2   | Traceability                  | PASS   | Every BE, FE and INT task and every T-UA and T-UI row cites an FDS section, REQ ID or decision.                                                                                                                                                                                                                                                                                                                                                                                               |
-| 3   | Cross-section consistency     | PASS   | Field set, the dropped `date`, the `title` rule and the ordering keys agree across §3–§6 and the contract. One wording slip is noted in A-5.                                                                                                                                                                                                                                                                                                                                                   |
-| 4   | Rule compliance               | PASS   | No new library; layering is unchanged; D-27 avoids adding `better-sqlite3` at the root; types come from the contract package.                                                                                                                                                                                                                                                                                                                                                                 |
-| 5   | Testability                   | PASS   | Each implementation task has a test row. The migration (T-UA-01), the UTC date (T-UA-04), the dropped `date` (T-UA-06, T-UA-07), the `id` tie-break and D-30 (T-UA-02), the Date format (T-UI-03) and request bodies (T-UI-04, T-UI-05, T-UI-15) all have tests.                                                                                                                                                                                                                             |
-| 6   | Ambiguity carried forward     | PASS   | UTC "today" (D-16), the backfill edge cases (D-20, D-21), legacy future dates (D-30), the Edit amount prefix (D-25) and the Date format (D-29) are all written decisions, starred where they involve a choice.                                                                                                                                                                                                                                                                                 |
-| 7   | API contract completeness     | PASS   | All four operations, the shapes, the rule sets with exact messages, the statuses, the `fieldErrors` keys and the ordering are specified. The contract is plain prose with no framework code. A-8 is a cosmetic gap only.                                                                                                                                                                                                                                                                     |
-| 8   | Executability                 | FAIL   | B-3. The rest was verified: `pnpm --filter @workflow-demo/contracts --filter backend` resolves both packages. The D-15 claim holds: at `@ts-rest/core@3.52.1` the client body is `ZodInputOrType` (`src/lib/infer-types.d.ts`), the input of a `z.custom<unknown>()` field is optional `unknown` at `zod@3.25.76`, and no frontend file imports a removed date export. T-UA-01's cut-journal approach works with the drizzle migrator, which applies migrations whose `folderMillis` is greater than the last stored `created_at`. `TestClock`, `startTestApp` and `sendRequest` exist as cited. |
+| #   | Point                         | Result   | Note                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| :-- | :---------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Coverage                      | **Fail** | `fds.md` §4 auto-dismiss time has no implementing task (B-4). Every other FDS requirement, AC and `behavior.md` step maps to a task or a regression test.                                                                                                                                                                                                                                                                         |
+| 2   | Traceability                  | Pass     | Every BE, FE and INT task and every test row cites an FDS section, requirement, contract section or decision.                                                                                                                                                                                                                                                                                                                      |
+| 3   | Cross-section consistency     | Pass     | Field names, the `title` rule and its messages, the request field set, `fieldErrors` keys, ordering keys and the D-30 exception agree across the Backend, Frontend, Integration and Testing sections and the contract.                                                                                                                                                                                                         |
+| 4   | Rule compliance               | Pass     | No new library. Layering is unchanged. The repository is the only Drizzle user. Contracts stay in `packages/contracts`. D-27 avoids an unapproved root dependency.                                                                                                                                                                                                                                                               |
+| 5   | Testability                   | **Fail** | No test verifies the 4000 ms auto-dismiss (B-4). Otherwise the tests are concrete and enough: migration (T-UA-01), repository/service/API (T-UA-02–07), component tests (T-UI-01–07, 13–15), E2E (T-UI-08–12), regression (T-UA-08, INT-06).                                                                                                                                                                                    |
+| 6   | Ambiguity carried forward     | Pass     | The 1.1.0 ambiguities (UTC "today", backfill edge cases, a sent `date`, future-dated legacy rows, Date format) are all settled in writing. The 4000 ms gap is silent, but it is recorded under points 1 and 5, not as a spec ambiguity: the FDS is clear. The `450` vs `-₹450` disagreement between the specs is handled explicitly by D-25 (A-10).                                                                           |
+| 7   | API Contract completeness     | Pass     | All four operations, the shapes, rule sets with exact messages, statuses, error codes, unknown-field policy, ordering and the server-set `date` are fully specified. Plain prose with no framework code.                                                                                                                                                                                                                       |
+| 8   | Executability                 | **Fail** | B-4 forces a stop in Phase 8 (shared `toast.tsx`, pinned by an `auth` test). The rest checks out: build order and typecheck claims (D-15, confirmed against `@ts-rest/core` types), migration generate and hand edit (BE-09), the T-UA-01 cut-journal approach (confirmed against the `drizzle-orm` migrator), path ownership, and INT-05's in-repo scratch worktree (the `backend/.env` path is wrong but the agent can fix it itself: A-9). |
 
 ---
 
 ## Outside Plan Scope
 
-- `playwright.config.ts` sets `reuseExistingServer: !process.env.CI`. Outside CI, a backend already running on port 4000 is reused, so E2E can run against that server's database (for example `app.db`) instead of `data/e2e-test.db`.
+- `visuals/transaction-add-modal.png` and `transaction-edit-modal.png` draw the Description and Amount inputs at content width, but the built inputs are full width. This was frozen at v1.0.0 Phase 6, and 1.1.0 does not touch it.
 
 ---
 
 ## Suggested Next Step
 
-The retry bound is not reached: this is the plan's first revision cycle. The header shows Revision 1.
+The specs are sound: `fds.md` §4 is clear. The finding needs a developer decision, then a plan revision.
+
+**Retry bound:** the plan header shows 2 revisions. The revision proposed here would be Revision 3. Under `rules/workflow.md` §8, any revision after that one needs the developer's explicit authorization, recorded in `directives.md`.
 
 ### 1. Classification
 
-**B-3: Developer decision. `DECISION NEEDED`.** Two options are valid. Directive B-2 is settled, so INT-05 must keep a hands-on check of a migrated `0002` database that holds a future-dated legacy row.
+**B-4 · Toast auto-dismiss time: Developer decision. `DECISION NEEDED`.**
 
-- **Option A (recommended): keep the worktree approach, but inside `backend/`.**
-  - Worktree at `backend/data/int05-worktree` (`git worktree add backend/data/int05-worktree 1c226d9`), then `pnpm install` inside it.
-  - The worktree backend gets its `JWT_SECRET` from the developer's `backend/.env`, copied into the worktree's `backend/` or passed inline.
-  - The database is `backend/data/int05.db`, which `*.db` in `.gitignore` already ignores. The current backend runs against that same file.
-  - Order at the end: remove the worktree (step 4) and delete `int05.db` and its `-shm` and `-wal` files, then run root `pnpm lint`, `pnpm typecheck` and `pnpm test`. While the worktree exists, `eslint .` and backend Vitest would scan its files.
-  - *Trade-off:* the step stays fully automated and inside Integration's `backend/**` scope. A second full checkout sits under `backend/` for a while, so the removal order is load-bearing.
-- **Option B: the developer produces the `0002` database before Integration.**
-  - Move steps 1–4 into a "Before you start" step for the developer, who is not bound by the agent's path rules. The output is a file at `backend/data/int05.db` with the seeded users and rows, including the future-dated one.
-  - INT-05 then starts from that file and only runs the checks.
-  - *Trade-off:* the agent's steps get simpler and touch no git state. A manual setup step is added, and the agent cannot check how the seed data was made.
+| Option                                                                                                                                                                                                                                                                                                                         | Trade-off                                                                                                                                                                                                                                                                                                                                                  |
+| :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A. Per-toast duration, 4000 ms for transactions.** A new Frontend Build task gives the shared toast API an optional duration (default stays `TOAST_DURATION_MS = 5000`). The three transactions dialogs pass a named constant `TRANSACTION_TOAST_DURATION_MS = 4000`. A new component test covers it. INT-06 lists `toast.tsx` as a shared file with unchanged default behavior. | Meets `fds.md` §4 exactly. `auth` and `profile` keep their approved 5000 ms, and `toast.test.tsx` stays valid. Cost: a small change to a shared component's API, and two dismiss times in the app.                                                                                                                                                    |
+| **B. Change `TOAST_DURATION_MS` to 4000 for the whole app.**                                                                                                                                                                                                                                                                   | Smallest code change; one dismiss time everywhere. But it changes `auth` and `profile` behavior against the frozen `auth` plan's "about 5 seconds", requires editing an existing `auth`-era test (`toast.test.tsx`), and turns INT-06 into a real cross-feature change.                                                                             |
+| **C. Keep 5000 ms and change the spec.** The developer amends `fds.md` §4 to 5000 ms before approval, and the plan adds only a verifying test.                                                                                                                                                                                 | No production change. But it rewrites a stated FDS value to match the code rather than the other way round, which is a spec change, not a Clarification, and is the developer's call alone. The verifying test is still needed.                                                                                                                   |
 
-### 2. Revision prompt
+**Recommendation: A.** It is the only option that satisfies `fds.md` §4 without changing the behavior of already approved features.
 
-Fill in `directives.md` first (step 3 below), then paste:
+Whichever option is chosen, the revision must also:
+
+- update the §7 matrix row for `fds.md` §4 (it is no longer "regression only");
+- add a test that checks dismissal at the chosen time with fake timers (visible just before, gone at it) and dismissal on user interaction (the close button);
+- under A, give the new task an owner (Frontend Build, `frontend/**`).
+
+**Advisories to carry in the same revision (obvious, no decision):** A-9 (D-31 and INT-05 step 2: the root `.env`, not `backend/.env`; correct `directives.md` B-3 to match), A-11 (FE-10 typecheck note wording), A-12 (T-UI-11 wording), A-13 (INT-05: name the allowed `git worktree remove --force` fallback for the scratch worktree).
+
+### 2. `directives.md` skeleton (append to `features/transactions/plans/v1.1.0/directives.md`)
+
+```markdown
+## B-4 Toast auto-dismiss after 4000ms (fds.md §4)
+
+Options considered: A) optional per-toast duration in the shared toast API (default stays 5000 ms), transactions dialogs pass TRANSACTION_TOAST_DURATION_MS = 4000, new Frontend Build task, new fake-timer component test, INT-06 lists toast.tsx as shared with unchanged default; B) change TOAST_DURATION_MS to 4000 app-wide, update toast.test.tsx, INT-06 becomes a cross-feature change; C) developer amends fds.md §4 to 5000 ms, plan adds only a verifying test
+Decision: <developer to fill in> (DECISION NEEDED; reviewer recommends A)
+Apply to: new FE task (A or B), §6.2 test list (new or extended T-UI test), §7 matrix row for fds.md §4, INT-06, §2 step 2 if a new task is added
+Record as a starred (★) decision in the plan's Decision Log: yes
+```
+
+Also correct the path in the existing **B-3** entry: `JWT_SECRET from backend/.env` → `JWT_SECRET from the repository-root .env` (A-9).
+
+### 3. Revision prompt (Plan Synthesizer; the fragments are superseded, `rules/workflow.md` §6 rule 5)
 
 ```text
 Read the file .ai/prompts/plan/plan-synthesizer.md and follow it exactly. That is your system prompt.
 
 Feature ID = transactions
 Revision run. Plan Review (features/transactions/plans/v1.1.0/review.md) returned CHANGES REQUIRED.
-Apply decision B-3 in features/transactions/plans/v1.1.0/directives.md (INT-05 scratch database location);
-directives B-1 and B-2 stay as already applied.
-Also apply these advisory fixes from the review:
-- A-5: plan.md §2 step 3 says "the four deltas only (D-28)".
-- A-6: BE-09 and FE-10 note that the per-task typecheck goes green again after BE-10 / FE-12.
-- A-7: BE-09 done-when adds: re-run `pnpm --filter backend db:generate` and confirm it reports no schema changes.
-- A-8: contract.md §4 Title rule 1 reads "empty after trim, missing, or not a string → Title is required."
-Revise plan.md and contract.md in place. Do not change other sections.
-```
-
-### 3. `directives.md` skeleton (append to the existing file)
-
-```markdown
-## B-3 INT-05 scratch database outside the repository
-
-Options considered: A) worktree at backend/data/int05-worktree, DB at backend/data/int05.db, JWT_SECRET from backend/.env, worktree and DB removed before the root gates; B) developer produces backend/data/int05.db (0002 schema, seeded users and legacy rows incl. one future-dated row) before Integration, INT-05 only verifies
-Decision: <developer to fill in>
-Apply to: INT-05, §2 step 4 (and the Integration "Before you start" if B)
-Record as a starred (★) decision in the plan's Decision Log: <developer to fill in>
+Apply directive B-4 in features/transactions/plans/v1.1.0/directives.md (toast auto-dismiss after 4000 ms, fds.md §4) and the corrected B-3 path.
+Also apply these advisory findings from review.md:
+- A-9: in D-31 and INT-05 step 2, JWT_SECRET is read from the repository-root .env (backend/src/index.ts loads it via ../../.env); backend/.env does not exist.
+- A-11: FE-10's typecheck note also names the CreateTransactionRequest mismatch that lasts until FE-11; still green after FE-12.
+- A-12: T-UI-11 asserts the row count and page count after delete (the ledger shows no total).
+- A-13: INT-05 cleanup names `git worktree remove --force backend/data/int05-worktree` as the allowed fallback if the plain remove refuses.
+Revise plan.md and contract.md in place (contract.md only if a shape changes; B-4 should not change it). Record this as Revision 3 in the plan header. Do not change other sections.
 ```

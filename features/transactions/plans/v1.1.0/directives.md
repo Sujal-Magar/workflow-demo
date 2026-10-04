@@ -16,7 +16,15 @@ Record as a starred (★) decision in the plan's Decision Log: yes
 
 ## B-3 INT-05 scratch database outside the repository
 
-Options considered: A) worktree at backend/data/int05-worktree, DB at backend/data/int05.db, JWT_SECRET from backend/.env, worktree and DB removed before the root gates; B) developer produces backend/data/int05.db (0002 schema, seeded users and legacy rows incl. one future-dated row) before Integration, INT-05 only verifies
-Decision: A — worktree at backend/data/int05-worktree, DB at backend/data/int05.db, JWT_SECRET from backend/.env, worktree and DB removed before the root gates. Keep the worktree inside `backend/data/int05-worktree` (`git worktree add backend/data/int05-worktree 1c226d9`), run `pnpm install` inside it, and pass `JWT_SECRET` from `backend/.env` (copied into worktree or passed inline). The database is `backend/data/int05.db`. Remove the worktree (`git worktree remove`) and delete `int05.db` (including `-shm` and `-wal` files) before running the root lint, typecheck, and test gates.
+Options considered: A) worktree at backend/data/int05-worktree, DB at backend/data/int05.db, JWT_SECRET from the repository-root .env, worktree and DB removed before the root gates; B) developer produces backend/data/int05.db (0002 schema, seeded users and legacy rows incl. one future-dated row) before Integration, INT-05 only verifies
+Decision: A — worktree at backend/data/int05-worktree, DB at backend/data/int05.db, JWT_SECRET from the repository-root .env, worktree and DB removed before the root gates. Keep the worktree inside `backend/data/int05-worktree` (`git worktree add backend/data/int05-worktree 1c226d9`), run `pnpm install` inside it, and pass `JWT_SECRET` from the repository-root `.env` (copied into worktree or passed inline). The database is `backend/data/int05.db`. Remove the worktree (`git worktree remove`) and delete `int05.db` (including `-shm` and `-wal` files) before running the root lint, typecheck, and test gates.
 Apply to: INT-05, §2 step 4
 Record as a starred (★) decision in the plan's Decision Log: yes
+
+## B-4 Toast auto-dismiss after 4000ms (fds.md §4)
+
+Options considered: A) optional per-toast duration in the shared toast API (default stays 5000 ms), transactions dialogs pass TRANSACTION_TOAST_DURATION_MS = 4000, new Frontend Build task, new fake-timer component test, INT-06 lists toast.tsx as shared with unchanged default; B) change TOAST_DURATION_MS to 4000 app-wide, update toast.test.tsx, INT-06 becomes a cross-feature change; C) developer amends fds.md §4 to 5000 ms, plan adds only a verifying test
+Decision: A — optional per-toast duration in the shared toast API (default stays 5000 ms), transactions dialogs pass TRANSACTION_TOAST_DURATION_MS = 4000. Add a new Frontend Build task to update the shared toast API (`toast.tsx`) with an optional duration parameter while preserving the 5000 ms default (`TOAST_DURATION_MS = 5000`). The three transactions dialogs pass `TRANSACTION_TOAST_DURATION_MS = 4000`. Add a new fake-timer component test verifying dismissal at 4000 ms and on user interaction (close button). Update §7 matrix row for `fds.md` §4 from "regression only". INT-06 lists `toast.tsx` as a shared file with unchanged default behavior.
+Apply to: new FE task, §6.2 test list (new or extended T-UI test), §7 matrix row for fds.md §4, INT-06, §2 step 2
+Record as a starred (★) decision in the plan's Decision Log: yes
+

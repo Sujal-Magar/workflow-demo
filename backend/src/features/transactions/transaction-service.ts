@@ -30,6 +30,7 @@ export interface TransactionListResult {
 function toTransaction(record: TransactionRecord): Transaction {
   return {
     id: record.id,
+    title: record.title,
     date: record.date,
     description: record.description,
     category: record.category,
@@ -102,11 +103,13 @@ export class TransactionService {
 
   createTransaction(userId: string, input: CreateTransactionRequest): Transaction {
     const { transactionRepository, clock } = this.dependencies;
+    // One instant for both, so `date` (UTC calendar date) and `createdAt` never disagree across UTC midnight (D-16).
     const now = clock.now();
     const record = transactionRepository.create({
       id: randomUUID(),
       userId,
-      date: input.date,
+      title: input.title,
+      date: formatDate(now),
       description: input.description,
       category: input.category as TransactionCategory,
       type: input.type as TransactionType,
@@ -116,14 +119,14 @@ export class TransactionService {
     return toTransaction(record);
   }
 
-  /** Full replace of the editable fields (D-01); `null` from the repository → `TransactionNotFoundError` (D-02). */
+  /** Full replace of the editable fields (D-01), never `date`; `null` from the repository → `TransactionNotFoundError` (D-02). */
   updateTransaction(userId: string, id: string, input: UpdateTransactionRequest): Transaction {
     const { transactionRepository, clock } = this.dependencies;
     const record = transactionRepository.update(
       id,
       userId,
       {
-        date: input.date,
+        title: input.title,
         description: input.description,
         category: input.category as TransactionCategory,
         type: input.type as TransactionType,

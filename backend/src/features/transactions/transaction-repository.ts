@@ -12,6 +12,7 @@ export type TransactionSort = "newest" | "oldest";
 export interface TransactionRecord {
   readonly id: string;
   readonly userId: string;
+  readonly title: string;
   readonly date: string;
   readonly description: string;
   readonly category: TransactionCategory;
@@ -24,6 +25,7 @@ export interface TransactionRecord {
 export interface NewTransaction {
   readonly id: string;
   readonly userId: string;
+  readonly title: string;
   readonly date: string;
   readonly description: string;
   readonly category: TransactionCategory;
@@ -32,9 +34,9 @@ export interface NewTransaction {
   readonly createdAt: Date;
 }
 
-/** Full replace of the editable fields — never a partial patch (D-01). */
+/** Full replace of the editable fields — never a partial patch (D-01). No `date`: it is never changed on update (D-18). */
 export interface TransactionUpdate {
-  readonly date: string;
+  readonly title: string;
   readonly description: string;
   readonly category: TransactionCategory;
   readonly type: TransactionType;
@@ -61,6 +63,7 @@ function toTransactionRecord(row: TransactionRow): TransactionRecord {
   return {
     id: row.id,
     userId: row.userId,
+    title: row.title,
     date: row.date,
     description: row.description,
     category: row.category,
@@ -85,10 +88,11 @@ export class TransactionRepository {
   }
 
   findManyByUserId(userId: string, filter: TransactionFilter, pagination: Pagination): TransactionRecord[] {
+    // `id` makes the order total, so paging never repeats or skips rows tied on `date` and `createdAt` (D-22).
     const orderColumns =
       filter.sort === "newest"
-        ? [desc(transactions.date), desc(transactions.createdAt)]
-        : [asc(transactions.date), asc(transactions.createdAt)];
+        ? [desc(transactions.date), desc(transactions.createdAt), desc(transactions.id)]
+        : [asc(transactions.date), asc(transactions.createdAt), asc(transactions.id)];
     const rows = this.db
       .select()
       .from(transactions)
@@ -113,6 +117,7 @@ export class TransactionRepository {
       .values({
         id: newTransaction.id,
         userId: newTransaction.userId,
+        title: newTransaction.title,
         date: newTransaction.date,
         description: newTransaction.description,
         category: newTransaction.category,

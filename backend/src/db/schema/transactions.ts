@@ -18,8 +18,9 @@ export const TRANSACTION_CATEGORIES = [
 
 export const TRANSACTION_TYPES = ["income", "expense"] as const;
 
-// `date` is a plain YYYY-MM-DD calendar date (no time component); timestamps are ISO-8601 UTC
-// text; `id` is a UUID generated in code (plan BE-01).
+// `date` is a plain YYYY-MM-DD calendar date (no time component), set by the server to the UTC
+// date at creation and never changed on update (v1.1.0 D-16); timestamps are ISO-8601 UTC text;
+// `id` is a UUID generated in code (plan BE-01).
 export const transactions = sqliteTable(
   "transactions",
   {
@@ -27,6 +28,7 @@ export const transactions = sqliteTable(
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
     date: text("date").notNull(),
     description: text("description").notNull(),
     category: text("category", { enum: TRANSACTION_CATEGORIES }).notNull(),

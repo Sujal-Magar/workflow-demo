@@ -27,6 +27,7 @@ export const DEFAULT_TRANSACTION_SORT = "newest";
 /** Contract §2.1. `userId` is never part of this shape (an internal ownership column). */
 export const transactionSchema = z.object({
   id: z.string().uuid(),
+  title: z.string(),
   date: z.string(),
   description: z.string(),
   category: z.enum(TRANSACTION_CATEGORIES),

@@ -13,7 +13,7 @@ dependencies:
 changelog:
   - version: 1.1.0
     date: 2026-10-04
-    summary: "Add a required `title` field. The Add/Edit modals' first control becomes a Title text input in place of the date picker (the design's `Title` placeholder on a date picker was inconsistent); `date` is no longer user-entered and is set by the server to the creation date; the ledger table gains a Title column"
+    summary: "Add a required `title` field. The Add/Edit modals' first control becomes a Title text input in place of the date picker (the design's `Title` placeholder on a date picker was inconsistent); `date` is no longer user-entered and is set by the server to the creation date in UTC; the ledger table gains a Title column; existing records backfill `title` from the first 100 characters of `description` upon migration"
   - version: 1.0.0
     date: 2026-09-22
     summary: "Initial specification for FinTrack Transactions ledger, pagination, filtering, and CRUD operations; clarified timeframe filter as a closed set of labelled presets (not a startDate/endDate range)"
@@ -30,8 +30,8 @@ The Transactions module provides the core financial ledger for the FinTrack appl
 | Field         | Type            | Required | Description                                                                                                                                                                                        |
 | :------------ | :-------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `id`          | UUID string     | Yes      | Unique identifier (Primary Key)                                                                                                                                                                    |
-| `title`       | string          | Yes      | Short name of the transaction (1–100 characters, e.g., `"Dinner out"`)                                                                                                                             |
-| `date`        | ISO Date string | Yes      | Date of transaction (`YYYY-MM-DD`, e.g., `"2025-10-17"`). Set by the server to the current calendar date when the transaction is created; never supplied by the client and never changed on update |
+| `title`       | string          | Yes      | Short name of the transaction (1–100 characters, e.g., `"Dinner out"`). When the column is added via migration, existing records populate `title` from the first 100 characters of `description` (`SUBSTR(description, 1, 100)`) |
+| `date`        | ISO Date string | Yes      | Date of transaction (`YYYY-MM-DD`, e.g., `"2025-10-17"`). Set by the server to the current calendar date in UTC when the transaction is created; never supplied by the client and never changed on update |
 | `description` | string          | Yes      | Transaction details/memo (1–255 characters)                                                                                                                                                        |
 | `category`    | enum            | Yes      | `"food_and_dining"`, `"salary"`, `"transportation"`, `"shopping"`, `"investment"`, `"freelance_work"`, `"bills_and_utilities"`, `"health_and_fitness"`, `"savings_account"`, `"others"`            |
 | `type`        | enum            | Yes      | Direction of transaction: `"income"` or `"expense"`                                                                                                                                                |
@@ -94,7 +94,7 @@ The Transactions module provides the core financial ledger for the FinTrack appl
 | API / Operation Name | Method   | Endpoint                   | Query / Body Params                                             | Success Status / Response                         | Description                                                            |
 | :------------------- | :------- | :------------------------- | :-------------------------------------------------------------- | :------------------------------------------------ | :--------------------------------------------------------------------- |
 | `getTransactions`    | `GET`    | `/api/v1/transactions`     | Query: `page`, `limit`, `category`, `type`, `timeframe`, `sort` | `200 OK` (`data: Transaction[]`, `total: number`) | Returns paginated and filtered transactions ledger                     |
-| `createTransaction`  | `POST`   | `/api/v1/transactions`     | Body: `title`, `description`, `category`, `type`, `amount`      | `201 Created` (`Transaction` object)              | Creates a new income or expense transaction, dated today by the server |
+| `createTransaction`  | `POST`   | `/api/v1/transactions`     | Body: `title`, `description`, `category`, `type`, `amount`      | `201 Created` (`Transaction` object)              | Creates a new income or expense transaction, dated today (in UTC) by the server |
 | `updateTransaction`  | `PUT`    | `/api/v1/transactions/:id` | Body: `title`, `description`, `category`, `type`, `amount`      | `200 OK` (`Transaction` object)                   | Updates an existing transaction by ID; its `date` is unchanged         |
 | `deleteTransaction`  | `DELETE` | `/api/v1/transactions/:id` | Path: `id`                                                      | `200 OK` (`success: true`, `id: string`)          | Permanently deletes a transaction by ID                                |
 

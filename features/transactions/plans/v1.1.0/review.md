@@ -1,130 +1,111 @@
 # Plan Review: transactions (v1.1.0)
 
-- **Plan under review:** `features/transactions/plans/v1.1.0/plan.md` (first synthesis run, no revision header)
-- **Contract under review:** `features/transactions/plans/v1.1.0/contract.md`
-- **Specs:** `fds.md` 1.1.0, `behavior.md`, `visuals/*.png`
-- **Directives:** none (`v1.1.0/directives.md` does not exist). This is a first review, so findings carry no origin label.
+- **Plan under review:** `plan.md` (Revision 1, 2026-10-04) and `contract.md` (Revision 1), same directory
+- **Specs:** `fds.md` 1.1.0, `behavior.md`, `visuals/*.png` (6 files)
+- **Directives:** `directives.md` (B-1, B-2). Both are settled and were not reopened.
+- **Re-review:** yes. This is review 2 of this version; the previous report was archived to `reviews/r1.md` unread.
+- **Finding IDs** continue after the IDs the plan header already cites (B-1, B-2, A-1 to A-4), so new IDs start at B-3 and A-5.
 - **Reviewed:** 2026-10-04
+
+---
 
 ## Verdict
 
 **CHANGES REQUIRED**
 
-There are two Blocking findings. Both are developer decisions. Neither is a spec defect, so the plan can be revised in place.
+There is one Blocking finding. It sits in text that Revision 1 rewrote (INT-05). The rest of the plan is sound. Coverage, traceability, the contract, the rule checks and the test list all pass. The build-order claim in D-15 holds at the locked versions (see Checklist 8).
 
 ---
 
 ## Blocking Findings
 
-### B-1 · Ledger date format: the plan contradicts itself and the visual spec
+### B-3 · INT-05 makes the Integration agent work outside the repository
 
-- **Where:** plan §4 FE-13 ("Date (already formatted with `timeZone: "UTC"`), amount and badge rendering are unchanged") vs. plan §6.2 T-UI-03 ("[regression] Date formatted `15 Oct 2025` style") vs. `visuals/transactions-page.png` (every Date cell reads `15 Oct 2025`).
-- **Evidence:** `frontend/src/features/transactions/components/transaction-row.tsx` `formatDate` calls `toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })`. On this Node runtime that produces `Oct 15, 2025`, not `15 Oct 2025`.
-- **Conditions:** **(c) Not executable** and **(a) Spec violation**.
-  - (c): FE-13 keeps the rendering as it is, so the built ledger shows `Oct 15, 2025`. In Phase 8, the UI/E2E Test agent writes T-UI-03 from the plan and the visual, and the test fails against the planned code. The agent then has to choose between changing production code (a "defect" fix under `defects-ui-e2e.md`) and loosening a planned assertion. The plan does not settle that choice, so the run costs a Diagnosis loop.
-  - (a): built as planned, the Date column differs from `visuals/transactions-page.png`. FE-13 already edits `transaction-row.tsx` and D-28 sends the ledger back through Phase 6, so this version touches the column anyway.
-- The plan scopes out a similar pre-existing gap explicitly (D-25, Edit amount prefix) but does not mention this one.
-
-### B-2 · "New record at the top of the table" fails when older rows are dated in the future
-
-- **Where:** plan D-16, D-22 and BE-10 ordering (`date`, then `createdAt`, then `id`, descending under `newest`); contract §2.3; INT-05 ("Add creates a row dated with today's UTC date at the top of the default view"). Spec: `behavior.md` §2 step 3 ("the new record (dated today) is added to the top of the table").
-- **Evidence:** v1.0.0 accepted any valid calendar date, with no future-date limit (`../v1.0.0/contract.md` §4 `TransactionDate`; the built `isValidCalendarDate` in `packages/contracts/src/transactions/transaction-validation.ts`). Migration `0003` keeps those dates (D-20). From 1.1.0 on, every new row is dated today (UTC). So any pre-1.1.0 row dated later in the current month sorts **above** a newly added row in the default `this_month` / `Newest First` view.
-- **Conditions:** **(f) Silent ambiguity** and **(a) Spec violation**. The plan assumes that no stored row is dated after today. It never says so, and that assumption changes behavior `behavior.md` §2 defines. INT-05, which runs on a legacy-data database, fails as written if its seed data includes a future-dated row. The Integration agent may not change ordering logic ("Do not alter business logic"), so it would have to stop.
-- This is the same kind of transitional legacy-data edge case as D-21, which the plan does star for the developer. This one is not recorded anywhere.
+- **Plan section:** §5 INT-05, the "Scratch database" steps 1–4 and the step after them ("Start the current backend with `DATABASE_PATH` pointing at `<scratch-dir>/int05.db`"). §2 step 4 limits Integration to `frontend/**` and `backend/**`.
+- **Conflicts with:** `.ai/prompts/build-mode.md`, Context & Rules: "Work strictly within the current project repository. Never inspect, reference, copy, or modify anything outside it." Integration runs under that prompt (`rules/workflow.md` §2 Phase 7; `CLAUDE.md` Phase 7).
+- **Condition:** (c) Not executable.
+- **Concrete failure:** INT-05 tells the agent to run `git worktree add <scratch-dir>/transactions-1c226d9 1c226d9`, "where `<scratch-dir>` is outside the repository", then run `pnpm install` there, start that checkout's backend, and write `<scratch-dir>/int05.db`. It then starts the current backend against that outside file. Every one of those steps creates, changes or reads files outside the repository. An Integration agent that obeys its system prompt has to stop at INT-05 step 1 and escalate. The alternative is to break its boundary. Directive B-2 depends on INT-05 to check the future-dated legacy row in the real product, so this step cannot be skipped.
+- **Secondary gap in the same step:** step 2 starts the worktree's backend "with the developer's usual backend environment". The worktree is a fresh checkout, and `.env` is git-ignored (`.gitignore`). `backend/src/index.ts` loads the environment through `process.loadEnvFile`, and `loadConfig` throws without `JWT_SECRET`. The plan does not say where the worktree backend gets its `JWT_SECRET`. Copying `backend/.env` into the worktree, or passing `JWT_SECRET` inline, would close this. The fix for B-3 should state which one.
+- **Origin:** `Revision`. INT-05's database-production steps are the text the plan header lists as changed under A-2 in Revision 1. The future-dated seed row came from directive B-2.
+- **Classification:** Developer decision. See Suggested Next Step.
 
 ---
 
 ## Advisory Findings
 
-### A-1 · D-15's "two expected frontend typecheck errors" will not happen at the locked versions
-
-D-15, §2 step 1, BE-08 "Done when" and FE-11 "Done when" all expect BE-08 to cause two frontend typecheck errors in `api/transactions-api.ts`. It does not. Every request rule set in the contract package is written as `z.custom<unknown>().transform(...)`. With `zod@3.25.76` (`pnpm-lock.yaml`), `z.input` of such an object makes every key optional and of type `unknown`. ts-rest types the client request body as `ZodInputOrType<route.body>` (`@ts-rest/core@3.52.1`, `src/lib/infer-types.d.ts`). So a body that lacks `title` and still carries `date` still type-checks.
-
-I confirmed this with a scratch `tsc --strict` check against the repository's zod: an object `{ date, description }` assigns to the input type of `z.object({ title: z.custom<unknown>().transform(...), description: ... })` with no error. Nothing else in `frontend/` imports a removed date export, so root `pnpm typecheck` stays green after BE-08 through BE-11.
-
-The build order D-15 chooses still holds, because FE-11 (`Pick<Transaction, "title" | …>`) and FE-13 (`transaction.title`) need BE-08's `Transaction.title`. But the starred decision's stated consequence is wrong, and FE-11's "Done when" can never fail. Also note that typecheck gives no guarantee that the frontend sends `title` or omits `date`; T-UI-04 and T-UI-05 are the only guard. Fix the wording: expect zero frontend errors, and give FE-11 a real completion check, for example "the create and update request types include `title` and exclude `date`".
-
-### A-2 · INT-05 does not say where its migration-0002 database comes from
-
-INT-05 needs "a scratch copy of a database at migration `0002` that holds transactions from at least two users, including one with a description longer than 100 characters". No such database exists. `backend/data/app.db` is at migration 0002 but has 0 transactions. `backend/data/e2e-test.db` has no `transactions` table. Also, the developer database is at `backend/data/app.db`, not `data/app.db` as INT-05 writes. Name the method, for example: apply migrations through `0002` using the truncated-journal technique from T-UA-01, then seed through a throwaway script that uses `backend`'s own `better-sqlite3`. Alternatively, run the `1c226d9` backend in a separate worktree and seed through the API.
-
-### A-3 · No test item for `api/transactions-api.ts`, and most of `transaction-error.ts` is untested
-
-D-26 makes Phase 8 responsible for 90% coverage of `frontend/src/features/transactions/`. But every component test mocks `api/transactions-api.ts` with `vi.mock` (§6.2 header), and no test item covers `runOperation`: a success response that fails schema parsing becomes `unexpected`, a network failure becomes `unexpected`, and an error response is mapped. T-UI-14 covers only the `title` / `date` branches of `toTransactionFailure`. The not-found, unauthenticated, malformed-body and undeclared-status branches, which implement contract §1 "Undeclared outcomes", have no test. Adding one T-UI item that mocks `@/lib/api-client` lowers the risk of a Phase 8c coverage loop-back.
-
-### A-4 · Some task traces do not cite an FDS section
-
-FE-14 traces only to D-24. INT-06 traces to a fragment section and FE-14. FE-11 traces to the contract and D-15. All three are dead-code removal or verification tasks, so this is cosmetic. Adding the FDS section each one serves (for FE-14, `fds.md` §3 REQ-TXN-01 "There is no date control") would keep the matrix complete.
+- **A-5 · §2 step 3 still says "the three deltas only (D-28)".** D-28 now lists four review items: the Add first field, the Edit first field, the seven-column ledger, and the Date cell format added by directive B-1 (D-29). The table row disagrees with the decision it cites. Phase 6 is a human review that reads D-28, so nothing breaks, but the row should say "the four deltas". (Revision text.)
+- **A-6 · Some per-task typechecks will fail before the next task runs.** `build-mode.md` runs lint and typecheck after every item, with 3 attempts. BE-08's done-when says the filtered typecheck passes only once BE-10 and BE-11 are done, which is right. BE-09 and FE-10 have the same property but do not say so. After BE-09, `transaction-repository.ts` `create` lacks the now-required `title`. After FE-10, both dialogs still call `watch("date")` and pass `dateValue`, and FE-12 is what removes those. The agent can resolve this inside its own scope by doing the next task, so this is not blocking. A one-line note on BE-09 and FE-10 ("typecheck is green again after BE-10 / FE-12") would stop the agent from spending retry attempts on it.
+- **A-7 · BE-09's "the generated snapshot matches the Drizzle schema" has no named check.** Suggest stating the check: after the hand edit, run `pnpm --filter backend db:generate` again and confirm it reports no schema changes and creates no `0004` file.
+- **A-8 · The `Title` rule does not say what happens to a present but non-string value.** An example is `"title": 5`. Contract §4 says "empty after trim (or missing) → `Title is required.`" but does not cover other types. The built `Description` rule maps non-strings to `""` (`asText`), so they get the "required" message, and BE-08 says to write `transactionTitleSchema` "in the same style". Both sides use the same contract package, so Frontend and Backend cannot diverge. The frontend always sends strings, so users cannot see the difference. For completeness, contract §4 could add "(or not a string)" to rule 1, the same wording `Amount` uses.
 
 ---
 
 ## Checklist Summary
 
-| #   | Check                     | Result | Notes                                                                                                                                                                                                                                                                                                                                                            |
-| :-- | :------------------------ | :----- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Coverage                  | PASS   | Every 1.1.0 changelog item, REQ-TXN-01 through 04, §4, §5, every §6 AC and every `behavior.md` section maps to tasks or tests (§7 matrix checked against the spec text).                                                                                                                                                                                         |
-| 2   | Traceability              | PASS   | Every task has a trace. A-4 covers three weak traces.                                                                                                                                                                                                                                                                                                            |
-| 3   | Cross-section consistency | FAIL   | B-1: FE-13 and T-UI-03 disagree on the date rendering. Field names, endpoints, bodies and error mapping (FE-10, T-UI-14, contract §5) otherwise agree.                                                                                                                                                                                                           |
-| 4   | Rule compliance           | PASS   | No new libraries (D-27 avoids root `better-sqlite3`). Layering is kept. Contract types still come from `packages/contracts`.                                                                                                                                                                                                                                     |
-| 5   | Testability               | PASS   | Every requirement has Unit/API, component and/or E2E items. See A-3 for the coverage risk.                                                                                                                                                                                                                                                                       |
-| 6   | Ambiguity carried forward | FAIL   | B-2: assumes no stored row is dated after today. B-1: date-format gap against the visual is not addressed.                                                                                                                                                                                                                                                       |
-| 7   | API Contract completeness | PASS   | All four operations, shapes, rule sets, statuses and `fieldErrors` keys are specified. Plain prose with no ts-rest or Zod code. §8 gives a complete change list.                                                                                                                                                                                                 |
-| 8   | Executability             | FAIL   | B-1 forces an unplanned production-code-or-test decision in Phase 8. Otherwise executable: path ownership and test scopes are consistent; the drizzle 0.33 migrator applies `0003` alone after a truncated-journal run (`sqlite-core/dialect.js` compares `created_at` against the journal `when`); T-UA-01 is feasible. A-1 and A-2 are wording and setup gaps. |
+| #   | Point                         | Result | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| :-- | :---------------------------- | :----- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Coverage                      | PASS   | Each 1.1.0 changelog item, REQ-TXN-01–04, §4, §5, all seven §6 criteria and `behavior.md` §1–§4 map to tasks or regression tests (§7 matrix, checked against the spec text).                                                                                                                                                                                                                                                                                                                  |
+| 2   | Traceability                  | PASS   | Every BE, FE and INT task and every T-UA and T-UI row cites an FDS section, REQ ID or decision.                                                                                                                                                                                                                                                                                                                                                                                               |
+| 3   | Cross-section consistency     | PASS   | Field set, the dropped `date`, the `title` rule and the ordering keys agree across §3–§6 and the contract. One wording slip is noted in A-5.                                                                                                                                                                                                                                                                                                                                                   |
+| 4   | Rule compliance               | PASS   | No new library; layering is unchanged; D-27 avoids adding `better-sqlite3` at the root; types come from the contract package.                                                                                                                                                                                                                                                                                                                                                                 |
+| 5   | Testability                   | PASS   | Each implementation task has a test row. The migration (T-UA-01), the UTC date (T-UA-04), the dropped `date` (T-UA-06, T-UA-07), the `id` tie-break and D-30 (T-UA-02), the Date format (T-UI-03) and request bodies (T-UI-04, T-UI-05, T-UI-15) all have tests.                                                                                                                                                                                                                             |
+| 6   | Ambiguity carried forward     | PASS   | UTC "today" (D-16), the backfill edge cases (D-20, D-21), legacy future dates (D-30), the Edit amount prefix (D-25) and the Date format (D-29) are all written decisions, starred where they involve a choice.                                                                                                                                                                                                                                                                                 |
+| 7   | API contract completeness     | PASS   | All four operations, the shapes, the rule sets with exact messages, the statuses, the `fieldErrors` keys and the ordering are specified. The contract is plain prose with no framework code. A-8 is a cosmetic gap only.                                                                                                                                                                                                                                                                     |
+| 8   | Executability                 | FAIL   | B-3. The rest was verified: `pnpm --filter @workflow-demo/contracts --filter backend` resolves both packages. The D-15 claim holds: at `@ts-rest/core@3.52.1` the client body is `ZodInputOrType` (`src/lib/infer-types.d.ts`), the input of a `z.custom<unknown>()` field is optional `unknown` at `zod@3.25.76`, and no frontend file imports a removed date export. T-UA-01's cut-journal approach works with the drizzle migrator, which applies migrations whose `folderMillis` is greater than the last stored `created_at`. `TestClock`, `startTestApp` and `sendRequest` exist as cited. |
+
+---
+
+## Outside Plan Scope
+
+- `playwright.config.ts` sets `reuseExistingServer: !process.env.CI`. Outside CI, a backend already running on port 4000 is reused, so E2E can run against that server's database (for example `app.db`) instead of `data/e2e-test.db`.
 
 ---
 
 ## Suggested Next Step
 
-Both Blocking Findings are **Developer decisions**. Neither is an obvious fix.
+The retry bound is not reached: this is the plan's first revision cycle. The header shows Revision 1.
 
-### B-1 · Ledger date format — DECISION NEEDED
+### 1. Classification
 
-- **Option A: match the visual (recommended).** Add to FE-13: `transaction-row.tsx` renders the Date cell as `15 Oct 2025` (day, short month, year, UTC). Build the string explicitly from a fixed month-abbreviation list, or with `formatToParts`. A bare `en-GB` locale renders September as `15 Sept 2025` on this Node runtime. Add the Date column to the D-28 Phase 6 review, and make T-UI-03 assert the exact string for at least one September date and one other month. _Trade-off:_ a small UI change outside the strict 1.1.0 changelog, in a file FE-13 already edits, and it brings the ledger in line with its visual.
-- **Option B: accept the built format.** Record a starred decision, like D-25, that the ledger keeps `Oct 15, 2025` (accepted at the v1.0.0 UI freeze), and rewrite T-UI-03 to assert that exact string. _Trade-off:_ no code change, but a deviation from `visuals/transactions-page.png` stays on record.
+**B-3: Developer decision. `DECISION NEEDED`.** Two options are valid. Directive B-2 is settled, so INT-05 must keep a hands-on check of a migrated `0002` database that holds a future-dated legacy row.
 
-### B-2 · New record versus future-dated legacy rows — DECISION NEEDED
+- **Option A (recommended): keep the worktree approach, but inside `backend/`.**
+  - Worktree at `backend/data/int05-worktree` (`git worktree add backend/data/int05-worktree 1c226d9`), then `pnpm install` inside it.
+  - The worktree backend gets its `JWT_SECRET` from the developer's `backend/.env`, copied into the worktree's `backend/` or passed inline.
+  - The database is `backend/data/int05.db`, which `*.db` in `.gitignore` already ignores. The current backend runs against that same file.
+  - Order at the end: remove the worktree (step 4) and delete `int05.db` and its `-shm` and `-wal` files, then run root `pnpm lint`, `pnpm typecheck` and `pnpm test`. While the worktree exists, `eslint .` and backend Vitest would scan its files.
+  - *Trade-off:* the step stays fully automated and inside Integration's `backend/**` scope. A second full checkout sits under `backend/` for a while, so the removal order is load-bearing.
+- **Option B: the developer produces the `0002` database before Integration.**
+  - Move steps 1–4 into a "Before you start" step for the developer, who is not bound by the agent's path rules. The output is a file at `backend/data/int05.db` with the seeded users and rows, including the future-dated one.
+  - INT-05 then starts from that file and only runs the checks.
+  - *Trade-off:* the agent's steps get simpler and touch no git state. A manual setup step is added, and the agent cannot check how the seed data was made.
 
-- **Option A: accept and document (recommended).** Add a starred decision: under `Newest First`, a new row sits below any pre-1.1.0 row dated after today. This is transitional, because no new row can be dated later than today. Add the note to contract §2.3 and plan D-16. Reword INT-05 to "at the top of the default view, unless a legacy row is dated later than today", and have INT-05 seed one such row to confirm the documented order. _Trade-off:_ a narrow, self-expiring deviation from `behavior.md` §2. If the developer wants the spec text to reflect it, that is a Clarification addendum to `behavior.md` (`rules/workflow.md` §4).
-- **Option B: order by creation instead.** Change `newest`/`oldest` to order by `createdAt`, then `id`, ignoring `date`. _Trade-off:_ the new row is always on top, but `Newest`/`Oldest` then reorder legacy rows by entry time instead of transaction date. That changes v1.0.0 D-07, contract §2.3, BE-10 and T-UA-02, and it is a visible behavior change for existing data.
+### 2. Revision prompt
 
-### `directives.md` skeleton
-
-Save as `features/transactions/plans/v1.1.0/directives.md` and fill in each `Decision`:
-
-```text
-# Directives: transactions v1.1.0
-
-## B-1 Ledger date format (15 Oct 2025 vs built Oct 15, 2025)
-Options considered: A) render `15 Oct 2025` in FE-13 (explicit month abbreviations, not bare en-GB), add Date to D-28, exact assertion in T-UI-03; B) keep `Oct 15, 2025` as a starred decision like D-25, T-UI-03 asserts the built format
-Decision: <developer to fill in>
-Apply to: FE-13, D-28, T-UI-03, §7 matrix (visuals row)
-Record as a starred (★) decision in the plan's Decision Log: yes
-
-## B-2 New record vs pre-1.1.0 rows dated after today
-Options considered: A) accept and document: starred decision, contract §2.3 note, INT-05 reworded and seeded with a future-dated legacy row; B) order newest/oldest by createdAt then id, ignoring date
-Decision: <developer to fill in>
-Apply to: D-16 or a new decision, D-22, contract §2.3, BE-10, INT-05, T-UA-02, T-UI-09
-Record as a starred (★) decision in the plan's Decision Log: yes
-```
-
-### Revision prompt
+Fill in `directives.md` first (step 3 below), then paste:
 
 ```text
 Read the file .ai/prompts/plan/plan-synthesizer.md and follow it exactly. That is your system prompt.
 
 Feature ID = transactions
 Revision run. Plan Review (features/transactions/plans/v1.1.0/review.md) returned CHANGES REQUIRED.
-Apply every decision in features/transactions/plans/v1.1.0/directives.md (B-1, B-2).
-Also apply these advisory corrections from the same review:
-- A-1: D-15, §2 step 1, BE-08 and FE-11 expect zero frontend typecheck errors after BE-08 (request
-  input types are optional `unknown` at zod 3.25.76). Keep the build order; give FE-11 a real
-  "Done when": the create and update request types include `title` and exclude `date`.
-- A-2: INT-05 names how the migration-0002 database with two users' transactions is produced, and
-  refers to backend/data/app.db, not data/app.db.
-- A-3: add a T-UI item for api/transactions-api.ts (runOperation success, schema mismatch, network
-  failure, error mapping) and extend T-UI-14 to every toTransactionFailure branch.
-- A-4: add an FDS trace to FE-11, FE-14 and INT-06.
-Revise plan.md and contract.md in place in v1.1.0/. Do not change other sections.
+Apply decision B-3 in features/transactions/plans/v1.1.0/directives.md (INT-05 scratch database location);
+directives B-1 and B-2 stay as already applied.
+Also apply these advisory fixes from the review:
+- A-5: plan.md §2 step 3 says "the four deltas only (D-28)".
+- A-6: BE-09 and FE-10 note that the per-task typecheck goes green again after BE-10 / FE-12.
+- A-7: BE-09 done-when adds: re-run `pnpm --filter backend db:generate` and confirm it reports no schema changes.
+- A-8: contract.md §4 Title rule 1 reads "empty after trim, missing, or not a string → Title is required."
+Revise plan.md and contract.md in place. Do not change other sections.
 ```
 
-After the revision, run Plan Review again in a new session.
+### 3. `directives.md` skeleton (append to the existing file)
+
+```markdown
+## B-3 INT-05 scratch database outside the repository
+
+Options considered: A) worktree at backend/data/int05-worktree, DB at backend/data/int05.db, JWT_SECRET from backend/.env, worktree and DB removed before the root gates; B) developer produces backend/data/int05.db (0002 schema, seeded users and legacy rows incl. one future-dated row) before Integration, INT-05 only verifies
+Decision: <developer to fill in>
+Apply to: INT-05, §2 step 4 (and the Integration "Before you start" if B)
+Record as a starred (★) decision in the plan's Decision Log: <developer to fill in>
+```

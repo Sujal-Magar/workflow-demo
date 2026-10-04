@@ -13,3 +13,10 @@ Options considered: A) accept and document: starred decision, contract §2.3 not
 Decision: A — accept and document: starred decision, contract §2.3 note, INT-05 reworded and seeded with a future-dated legacy row. Add a starred decision: under `Newest First`, a new row sits below any pre-1.1.0 row dated after today. This is transitional, because no new row can be dated later than today. Add the note to contract §2.3 and plan D-16. Reword INT-05 to "at the top of the default view, unless a legacy row is dated later than today", and have INT-05 seed one such row to confirm the documented order.
 Apply to: D-16 or a new decision, D-22, contract §2.3, BE-10, INT-05, T-UA-02, T-UI-09
 Record as a starred (★) decision in the plan's Decision Log: yes
+
+## B-3 INT-05 scratch database outside the repository
+
+Options considered: A) worktree at backend/data/int05-worktree, DB at backend/data/int05.db, JWT_SECRET from backend/.env, worktree and DB removed before the root gates; B) developer produces backend/data/int05.db (0002 schema, seeded users and legacy rows incl. one future-dated row) before Integration, INT-05 only verifies
+Decision: A — worktree at backend/data/int05-worktree, DB at backend/data/int05.db, JWT_SECRET from backend/.env, worktree and DB removed before the root gates. Keep the worktree inside `backend/data/int05-worktree` (`git worktree add backend/data/int05-worktree 1c226d9`), run `pnpm install` inside it, and pass `JWT_SECRET` from `backend/.env` (copied into worktree or passed inline). The database is `backend/data/int05.db`. Remove the worktree (`git worktree remove`) and delete `int05.db` (including `-shm` and `-wal` files) before running the root lint, typecheck, and test gates.
+Apply to: INT-05, §2 step 4
+Record as a starred (★) decision in the plan's Decision Log: yes

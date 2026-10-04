@@ -5,7 +5,8 @@
 - **Produced by:** Plan Synthesizer, from `fragments/frontend.md` §5 and `fragments/backend.md` §5–§6
 - **Supersedes:** `../v1.0.0/contract.md` (frozen, built through Integration). That file stays as history. This file is complete on its own: it restates every operation, not only the changed ones. §8 lists what changed.
 - **Status:** Draft. Frozen at the Developer Approval Gate (Phase 4). After that, Backend Build, Frontend Build and Integration build against this file as written. Neither side may edit it.
-- **Revision:** 2 (2026-10-04), after the second Plan Review returned CHANGES REQUIRED. §4 `Title` rule 1 now covers a present but non-string value (review A-8), matching how `Description` is built. No operation, shape, status or error code changed.
+- **Revision:** 3 (2026-10-04), after the fourth Plan Review returned CHANGES REQUIRED (`plan.md` Revision 4). No change to this document's content: directive B-5 and advisory findings A-1 to A-4 concern toast appearance, tests and traceability in `plan.md` only (D-33). No operation, shape, status, rule set or error code changed. The third Plan Review (`plan.md` Revision 3) required no contract change.
+- **Revision 2** (2026-10-04), after the second Plan Review returned CHANGES REQUIRED. §4 `Title` rule 1 now covers a present but non-string value (review A-8), matching how `Description` is built. No operation, shape, status or error code changed.
 - **Revision 1** (2026-10-04), after the first Plan Review returned CHANGES REQUIRED. §2.3 gains the note on pre-1.1.0 rows dated after today (`directives.md` B-2; `plan.md` D-30). No operation, shape, status, rule set or error code changed.
 - **Companion plan:** `plan.md` (same directory)
 

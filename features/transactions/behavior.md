@@ -9,7 +9,7 @@
 
 1. User clicks the **+ Add Transaction** button at the top right of the page.
 2. The **Add Transaction** modal appears over a darkened backdrop:
-   - Date picker defaults to empty or today's date with a calendar icon.
+   - Title input displays placeholder `Title`. There is no date picker: the transaction is dated today when it is saved.
    - Description input displays placeholder `Enter Description`.
    - Category dropdown displays placeholder `All Category`.
    - Type dropdown displays placeholder `All Types`.
@@ -17,14 +17,14 @@
 3. User fills in all required fields and clicks **Add**:
    - **Validation check**: If any required field is empty or amount is $\le 0$, inline error indicators highlight the invalid fields.
    - **On submission error**: A light red error toast notification slides in at the top right: _"Failed to add transaction. Please try again."_ Form state is preserved.
-   - **On submission success**: The modal closes, a light green success toast slides in (_"Transaction added successfully!"_), and the new record is added to the top of the table.
+   - **On submission success**: The modal closes, a light green success toast slides in (_"Transaction added successfully!"_), and the new record (dated today) is added to the top of the table.
 4. User clicks **Cancel** or outside the modal backdrop: The modal closes immediately and all unsaved input is discarded.
 
 ## 3. Edit Transaction Workflow
 
 1. User clicks the yellow pencil icon on any row in the ledger.
 2. The **Edit Transaction** modal opens with values pre-populated:
-   - Date selector pre-filled (e.g., `17 Oct 2025`).
+   - Title pre-filled (e.g., `Dinner out`). The date is not shown and cannot be changed.
    - Description pre-filled (e.g., `Dinner at Café Coffee Day`).
    - Category selector set to current category (e.g., `Food & Dining`).
    - Type selector set to current type (e.g., `Expense`).

@@ -5,6 +5,7 @@
 - **Produced by:** Plan Synthesizer, from `fragments/frontend.md` §5 and `fragments/backend.md` §5–§6
 - **Supersedes:** `../v1.0.0/contract.md` (frozen, built through Integration). That file stays as history. This file is complete on its own: it restates every operation, not only the changed ones. §8 lists what changed.
 - **Status:** Draft. Frozen at the Developer Approval Gate (Phase 4). After that, Backend Build, Frontend Build and Integration build against this file as written. Neither side may edit it.
+- **Revision:** 1 (2026-10-04), after Plan Review returned CHANGES REQUIRED. §2.3 gains the note on pre-1.1.0 rows dated after today (`directives.md` B-2; `plan.md` D-30). No operation, shape, status, rule set or error code changed.
 - **Companion plan:** `plan.md` (same directory)
 
 This document is the only source of truth for the Frontend/Backend interface of `transactions`. It is plain language on purpose and does not assume any framework. Updating the project's typed contract package to match it is a Backend Build task (`plan.md`, task BE-08).
@@ -73,6 +74,8 @@ Timeframe windows are computed in UTC, the same basis as the server-set `date`. 
 | :------ | :-------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `data`  | `Transaction[]` | The requested page. Ordered by `date`, then `createdAt`, then `id`, all descending under `"newest"` and all ascending under `"oldest"`. The `id` key is new in v1.1.0: it makes the order total, so paging never repeats or skips a row that ties on both `date` and `createdAt` (§7 C6; `plan.md` D-07, D-22). |
 | `total` | integer         | Count of all transactions matching `category` / `type` / `timeframe`, ignoring pagination. Always computed with the same filter that produced `data`. Drives the frontend's page count.                                                                                                                         |
+
+**Rows dated after today (records created before v1.1.0).** v1.0.0 accepted any valid calendar date, including future ones, and those dates are kept. Under `"newest"` such a row sorts above every row dated today, so a newly created transaction appears below it rather than at the very top of the list. This is accepted and transitional: no record created from v1.1.0 on can be dated after today, so the case ends once the calendar passes the last such date (`plan.md` D-30). The ordering keys above do not change for it.
 
 ### 2.4 `category` enum (`fds.md` §2)
 

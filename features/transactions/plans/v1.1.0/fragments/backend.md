@@ -1,5 +1,7 @@
 # Backend Fragment — `transactions` v1.1.0
 
+> **SUPERSEDED.** Stale after revision 1. Kept as an audit trail only; do not use as synthesis input. The authoritative sources are `../plan.md` and `../contract.md`.
+
 Scope: Backend + Backend-Testing only (data model, migration, repository, service, validation
 rules, route intents as plain field/rule lists, and unit/API test requirements). No formal API
 contract, no Frontend, no Integration content. A separate Frontend Fragment is drafted

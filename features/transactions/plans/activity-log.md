@@ -17,3 +17,4 @@ Multi-agent audit trail. Append-only; shared across plan versions.
 - Plan: Backend Fragment | 2026-10-04T04:48:08Z | output: v1.1.0/fragments/backend.md | result: done
 - Plan: Synthesis | 2026-10-04T04:56:21Z | output: v1.1.0/plan.md, v1.1.0/contract.md | result: done
 - Plan Review | 2026-10-04T05:03:21Z | output: v1.1.0/review.md | verdict: CHANGES REQUIRED
+- Plan: Synthesis | 2026-10-04T05:14:01Z | output: v1.1.0/plan.md, v1.1.0/contract.md | result: done — revision 1: applied directives B-1 (D-29 ★), B-2 (D-30 ★) and review advisories A-1–A-4; fragments marked SUPERSEDED

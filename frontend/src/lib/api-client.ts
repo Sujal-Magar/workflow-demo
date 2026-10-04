@@ -3,7 +3,13 @@
 import { tsRestFetchApi, type ApiFetcherArgs, type AppRoute } from "@ts-rest/core";
 import { initTsrReactQuery } from "@ts-rest/react-query/v5";
 
-import { authContract, ERROR_CODES, errorBodySchema, profileContract } from "@workflow-demo/contracts";
+import {
+  authContract,
+  ERROR_CODES,
+  errorBodySchema,
+  profileContract,
+  transactionsContract,
+} from "@workflow-demo/contracts";
 
 import { getAccessToken } from "./access-token-store";
 import { env } from "./env";
@@ -100,6 +106,14 @@ export const authApiClient = initTsrReactQuery(authContract, {
 
 /** Every `profile` route requires auth, so none belongs in `UNRETRIED_ROUTES` (plan INT-01). */
 export const profileApiClient = initTsrReactQuery(profileContract, {
+  baseUrl: env.apiBaseUrl,
+  baseHeaders: {},
+  credentials: "include",
+  api: authAwareFetcher,
+});
+
+/** Every `transactions` route requires auth, so none belongs in `UNRETRIED_ROUTES` (transactions plan INT-01). */
+export const transactionsApiClient = initTsrReactQuery(transactionsContract, {
   baseUrl: env.apiBaseUrl,
   baseHeaders: {},
   credentials: "include",

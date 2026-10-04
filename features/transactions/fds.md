@@ -87,14 +87,14 @@ The Transactions module provides the core financial ledger for the FinTrack appl
 
 ### Transaction Endpoints
 
-| API / Operation Name | Method   | Endpoint                   | Query / Body Params                                             | Success Status / Response                         | Description                                        |
-| :------------------- | :------- | :------------------------- | :-------------------------------------------------------------- | :------------------------------------------------ | :------------------------------------------------- |
-| `getTransactions`    | `GET`    | `/api/v1/transactions`     | Query: `page`, `limit`, `category`, `type`, `timeframe`, `sort` | `200 OK` (`data: Transaction[]`, `total: number`) | Returns paginated and filtered transactions ledger |
+| API / Operation Name | Method | Endpoint               | Query / Body Params                                             | Success Status / Response                         | Description                                        |
+| :------------------- | :----- | :--------------------- | :-------------------------------------------------------------- | :------------------------------------------------ | :------------------------------------------------- |
+| `getTransactions`    | `GET`  | `/api/v1/transactions` | Query: `page`, `limit`, `category`, `type`, `timeframe`, `sort` | `200 OK` (`data: Transaction[]`, `total: number`) | Returns paginated and filtered transactions ledger |
 
 _Addendum (clarification):_ `timeframe` accepts one of `"this_week"`, `"this_month"`, `"this_year"`, `"all_time"` (default `"this_month"`). It is a labelled preset, not a pair of explicit `startDate`/`endDate` query params — see the `REQ-TXN-04` addendum.
-| `createTransaction`  | `POST`   | `/api/v1/transactions`     | Body: `date`, `description`, `category`, `type`, `amount`       | `201 Created` (`Transaction` object)              | Creates a new income or expense transaction        |
-| `updateTransaction`  | `PUT`    | `/api/v1/transactions/:id` | Body: `date`, `description`, `category`, `type`, `amount`       | `200 OK` (`Transaction` object)                   | Updates an existing transaction by ID              |
-| `deleteTransaction`  | `DELETE` | `/api/v1/transactions/:id` | Path: `id`                                                      | `200 OK` (`success: true`, `id: string`)          | Permanently deletes a transaction by ID            |
+| `createTransaction` | `POST` | `/api/v1/transactions` | Body: `date`, `description`, `category`, `type`, `amount` | `201 Created` (`Transaction` object) | Creates a new income or expense transaction |
+| `updateTransaction` | `PUT` | `/api/v1/transactions/:id` | Body: `date`, `description`, `category`, `type`, `amount` | `200 OK` (`Transaction` object) | Updates an existing transaction by ID |
+| `deleteTransaction` | `DELETE` | `/api/v1/transactions/:id` | Path: `id` | `200 OK` (`success: true`, `id: string`) | Permanently deletes a transaction by ID |
 
 ## 6. Acceptance Criteria
 

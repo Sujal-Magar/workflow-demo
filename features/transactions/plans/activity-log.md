@@ -9,3 +9,5 @@ Multi-agent audit trail. Append-only; shared across plan versions.
 - Plan Review | 2026-10-02T09:30:00Z | output: v1.0.0/review.md | verdict: CHANGES REQUIRED
 - Plan: Synthesis | 2026-10-02T09:45:00Z | output: v1.0.0/plan.md, v1.0.0/contract.md | result: done
 - Plan Review | 2026-10-02T10:00:00Z | output: v1.0.0/review.md | verdict: PASS
+- Build: Backend | 2026-10-02T17:12Z | files touched: backend/** (BE-01…BE-07, transaction-constants.ts, plus incidental type-widening of require-auth.ts/validation-error.ts to support query-param validation), packages/contracts/** (transactions/*) | retries: 0 | result: done
+- Build: Frontend | 2026-10-02T17:12Z | files touched: frontend/** (FE-01…FE-09, incl. D-04's additive read-only-preferences-list.tsx import change) | retries: 0 | result: done

@@ -34,4 +34,12 @@ Record as a starred (★) decision in the plan's Decision Log: yes
 - **Decision**: Authorized by developer. The developer explicitly authorizes proceeding with Revision 4 (and further revisions if needed) should Plan Review require additional adjustments before approval.
 - **Record as a starred (★) decision in the plan's Decision Log**: no
 
+## B-5 Toast colors and icons (fds.md §4, §6 AC 7; visuals/transaction-toast-success.png, transaction-toast-error.png)
+
+Options considered: A) optional per-toast appearance in the shared toast API (default unchanged); transactions toasts render the light green / light red banner with #22C55E check-circle / #EF4444 alert-circle icons; new icons in icons.tsx; FE task, T-UI assertions, D-28 Phase 6 adds both toast visuals, §7 rows for §4 and AC 7 corrected, INT-06 notes default unchanged; B) restyle the shared toast app-wide (auth/profile change; toast.test.tsx updated; INT-06 cross-feature); C) accept the built styling as a starred decision like D-25, correct §7 to say the deviation is accepted
+Decision: A — optional per-toast appearance in the shared toast API (default unchanged). Add an optional style/appearance setting (e.g. `appearance: "banner"`) to `ToastOptions` in `toast.tsx`. When specified, a success toast renders a light green banner with a green (#22C55E) check-circle icon, and an error toast renders a light red banner with a red (#EF4444) alert-circle icon per `visuals/transaction-toast-success.png` and `transaction-toast-error.png`. Add `CheckCircleIcon` and `AlertCircleIcon` to `frontend/src/components/ui/icons.tsx`. Transactions dialogs pass the appearance option along with `TRANSACTION_TOAST_DURATION_MS`. Extend FE-15 (or add an FE task), add appearance assertions to T-UI-16 or a new T-UI test, add both toast visuals to D-28 Phase 6 list, correct §7 rows for §4 and AC 7, and note in INT-06 that default appearance and `toast.test.tsx` remain unchanged.
+Apply to: FE-15 or a new FE task, D-32 or a new decision, D-28, T-UI-16 or a new T-UI test, INT-06, §7 rows for fds.md §4 and §6 AC 7
+Record as a starred (★) decision in the plan's Decision Log: yes
+
+
 

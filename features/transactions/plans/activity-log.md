@@ -22,3 +22,4 @@ Multi-agent audit trail. Append-only; shared across plan versions.
 - Plan: Synthesis | 2026-10-04T05:26:59Z | output: v1.1.0/plan.md, v1.1.0/contract.md | result: done — revision 2: applied directive B-3 (D-31 ★; INT-05 scratch worktree and DB under backend/data/, removed before root gates) and review advisories A-5–A-8; B-1, B-2 unchanged; fragment banners now read revision 2
 - Plan Review | 2026-10-04T05:36:42Z | output: v1.1.0/review.md | verdict: CHANGES REQUIRED
 - Plan: Synthesis | 2026-10-04T05:44:51Z | output: v1.1.0/plan.md, v1.1.0/contract.md | result: done — revision 3: applied directive B-4 (D-32 ★; FE-15 per-toast duration, transactions toasts 4000 ms, default 5000 ms kept; T-UI-16; INT-06; §7 §4 row) and the corrected B-3 path; review advisories A-9, A-11, A-12, A-13; contract.md unchanged; fragment banners now read revision 3
+- Plan Review | 2026-10-04T05:53:30Z | output: v1.1.0/review.md | verdict: CHANGES REQUIRED

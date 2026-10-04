@@ -1,117 +1,117 @@
 # Plan Review: transactions (v1.1.0)
 
-- **Reviewed:** `plan.md` (Revision 2, 2026-10-04) and `contract.md` (Revision 2, 2026-10-04), against `fds.md` 1.1.0, `behavior.md`, `visuals/*.png`, `directives.md` (B-1, B-2, B-3), `rules/*` and `features/index.json`.
-- **Review type:** Re-review (the plan header records two revisions; `directives.md` exists). `reviews/` was not read.
-- **Repository evidence checked:** the baseline code at `1c226d9` (HEAD has no code changes since then): `packages/contracts/src/transactions/*`, `backend/src/features/transactions/*`, `backend/src/db/{schema/transactions.ts,migrations/*,migrate.ts,client.ts,client.test.ts}`, `backend/src/index.ts`, `backend/src/config/env.ts`, `backend/src/test-support/auth-test-harness.ts` (exports only), `frontend/src/features/transactions/**` (the files FE-10 to FE-13 change), `frontend/src/components/ui/{icons,toast}.tsx`, `frontend/src/components/ui/toast.test.tsx`, `e2e/support/auth.ts`, `playwright.config.ts`, `sonar-project.properties`, the Vitest configs, `.gitignore`, `pnpm-lock.yaml`. Package source checked: `@ts-rest/core@3.52.1` `src/lib/infer-types.d.ts` and `type-utils.d.ts` (the client request body is typed `z.input<body>`, which confirms D-15's typing claim); `drizzle-orm@0.33.0` `sqlite-core/dialect.js` (the migrator wraps all pending migrations in one `BEGIN … COMMIT` and decides what to apply only by comparing `created_at` with each journal entry's `when`, which confirms the T-UA-01 approach of a cut journal followed by a full `runMigrations`). Node 22.23.2: `process.loadEnvFile` does not overwrite a variable that is already set, so the inline `DATABASE_PATH` / `JWT_SECRET` values in INT-05 take precedence over any `.env` file.
-
----
+- **Plan under review:** `plan.md`, Revision 3 (2026-10-04)
+- **Contract under review:** `contract.md`, Revision 2 (2026-10-04)
+- **Directives applied:** `directives.md` B-1 to B-4, and the authorization to revise beyond the 3-revision bound
+- **Reviewed:** 2026-10-04T05:53:30Z
+- **Earlier review:** archived to `reviews/r3.md` without being read
 
 ## Verdict
 
-**CHANGES REQUIRED**
-
-One Blocking finding (B-4, pre-existing). The 1.1.0 change itself (title, server-set UTC date, migration `0003`, Title column, Date format, build order, INT-05 scratch database) is complete, consistent across sections and executable as written. Finding numbering continues from the earlier rounds so it does not collide with `directives.md` B-1 to B-3.
+**CHANGES REQUIRED**: one Blocking finding (B-1).
 
 ---
 
 ## Blocking Findings
 
-### B-4 · `fds.md` §4 toast auto-dismiss time (4000 ms): the built code does something else, no task changes it, no test checks it
+### B-1 · Toast colors and icons do not match `fds.md` §4, and §7 says they are covered when nothing checks them
 
-- **Plan sections:** §7 matrix row "`fds.md` §4 UI Feedback & Notification Patterns (regression only) → T-UI-04, T-UI-05, T-UI-06, T-UI-09"; §6.2 T-UI-04, T-UI-05, T-UI-06, T-UI-09; D-26 (Phase 8 tests the whole feature); INT-06 (says `icons.tsx` is the only shared file this version edits).
-- **Spec:** `fds.md` §4: "Toasts auto-dismiss after 4000ms or on user interaction." AC 7 (`fds.md` §6) depends on these toasts.
-- **What the repository shows:** every `transactions` dialog shows its toasts through the shared `ToastProvider` / `useToast` (`frontend/src/components/ui/toast.tsx`). It dismisses every toast after a single fixed constant, `TOAST_DURATION_MS = 5000` (line 7, applied at line 53), and the API offers no per-call duration. `frontend/src/components/ui/toast.test.tsx` asserts `TOAST_DURATION_MS` is `5000` ("auto-dismisses after about 5 seconds"). That value comes from the frozen `auth` plan ("auto-dismisses after about 5 seconds"). No other feature's `fds.md` or `behavior.md` states a toast duration.
-- **What the plan says:** the matrix lists §4 as "regression only", which means already satisfied and unchanged. None of the four tests it cites checks the dismiss time: they check toast text, closing and kept values. No task touches `toast.tsx`, and no decision mentions the 4000 ms figure.
-- **Severity:**
-  - **(a) Spec violation.** Built as written, every `transactions` toast stays up for 5000 ms, not the 4000 ms `fds.md` §4 specifies, and the requirement has no implementing task and no verifying test.
-  - **(c) Not executable.** D-26 tells the Phase 8 UI/E2E agent to test the whole feature from the spec ("Primary context is `fds.md`"). A test of §4 as written fails against `toast.tsx`. The fix is in a shared component that `auth` and `profile` also use, and an existing `auth` test pins it at 5000 ms. Under `test-build-mode.md` ("If fixing a defect would require changing a file that the plan's … sections also depend on, STOP"), the agent has to stop mid-phase and escalate through Diagnosis. That costs a Phase 8b loop and a return to Frontend Build after the plan is frozen.
-- **Origin:** Pre-existing. It was already in the built v1.0.0 code. No 1.1.0 revision touched it, and no directive caused it.
-- **Classification:** Developer decision. See Suggested Next Step.
+- **Origin:** Pre-existing. The gap is in the built v1.0.0 code, and the plan's wording about it was there before Revision 3. Revision 3 changed the §7 row for `fds.md` §4 under directive B-4, but kept the clause "copy and colors regression only".
+- **Plan location:** §7 matrix, rows "`fds.md` §4 UI Feedback & Notification Patterns (… copy and colors regression only)" and "`fds.md` §6 AC 7: green success / red error toasts"; D-28 (Phase 6 covers only the 1.1.0 deltas); D-32 and FE-15 (edit the same toast component and the same three dialogs); T-UI-04, T-UI-05, T-UI-06, T-UI-09, T-UI-16 (check copy, closing and timing only).
+- **Spec:** `fds.md` §4: "**Toast / Success**: Light green banner with green checkmark icon (`#22C55E`)" and "**Toast / Error**: Light red banner with red alert circle icon (`#EF4444`)"; `fds.md` §6 AC 7, "green success toasts … red error toasts"; `visuals/transaction-toast-success.png` (pale green banner, green check-circle icon, dark green text) and `visuals/transaction-toast-error.png` (pale red banner, red alert-circle icon, dark red text).
+- **Repository evidence:** every `transactions` toast goes through the shared `ToastProvider` in `frontend/src/components/ui/toast.tsx`. That component renders a success toast as a solid `bg-brand-teal` banner (`#00B894`, `frontend/tailwind.config.ts`) with white text and no icon. It renders an error toast as a solid `bg-red-600` banner with white text and no icon. The only icon is the close button (`CloseIcon`). `frontend/src/components/ui/icons.tsx` has no check-circle or alert-circle icon. The existing `toast.test.tsx` pins the current classes (`toHaveClass("bg-brand-teal")`, `toHaveClass("bg-red-600")`).
+- **Condition (a), spec violation.** If the plan is built as written, the Add, Edit and Delete toasts look different from `fds.md` §4 and from both toast visuals. The success toast is solid teal with no checkmark, and the error toast is solid red with no alert icon. Neither is the light banner with an icon that the spec describes. No step catches this:
+  - The plan has no task for the toast's appearance.
+  - No test asserts it.
+  - D-28 keeps toasts out of Phase 6.
+  - §7 records the toast colors as "regression only", which tells Build, Phase 6 and Validation that the colors already meet the spec. They do not.
+
+  Phase 9 Validation would find the deviation after Build and Test, and that sends the feature back to planning. The Advisory exception for "values that Phase 6 UI Review checks anyway" does not apply here, because D-28 keeps toasts out of Phase 6.
+- **Why the plan cannot pass this silently:** this is the same kind of gap as the 4000 ms dismiss in directive B-4. B-4 is a pre-existing `fds.md` §4 deviation in the same component that the plan now fixes. The plan handles a comparable pre-existing visual gap, the Edit amount prefix, with an explicit starred decision (D-25). Here it has neither a fix nor a recorded acceptance.
 
 ---
 
 ## Advisory Findings
 
-- **A-9 · INT-05 / D-31 / `directives.md` B-3 name `backend/.env`, which does not exist.** The developer's env file is at the repository root, `.env`. `backend/src/index.ts` loads it through its third candidate path, `path.resolve(__dirname, "../../.env")`, and it defines `JWT_SECRET` (64 characters). An agent following INT-05 step 2 will not find `backend/.env`. It can fix this within its own task without any observable change: read the value from the root `.env`, or use any throwaway secret of at least 32 characters. The worktree backend's tokens are only used against that backend and are never reused, and passwords are argon2 hashes that do not depend on the JWT secret. This is advisory because the directive's intent ("pass the developer's secret inline; do not copy a `.env` into the worktree") still works with the corrected path. Suggest the developer corrects the path in `directives.md` B-3 and the revision copies the correction into D-31 and INT-05 step 2. The current backend in INT-05 needs no change, because it loads the root `.env` itself and the inline `DATABASE_PATH` wins (`process.loadEnvFile` does not overwrite variables that are already set).
-- **A-10 · D-25 settles a disagreement between the specs, not only between the plan and the specs.** `fds.md` REQ-TXN-02 shows the Edit modal's amount as `450`; `behavior.md` §3 and `visuals/transaction-edit-modal.png` show `-₹450`. D-25 is written down and starred, so this is not a silent assumption. But `build-mode.md` says `behavior.md` and the visuals govern UI presentation, so the developer should confirm D-25 at the gate knowing that the specs disagree. If the specs should agree, add a Clarification addendum to `behavior.md` §3 (`rules/workflow.md` §4).
-- **A-11 · FE-10's typecheck note is incomplete.** After FE-10 and before FE-11, both dialogs also pass the new form output (`title`, no `date`) to `CreateTransactionRequest`, which still requires `date`. So the errors are not only the `watch("date")` / `dateValue` errors the note names. The conclusion still holds (green after FE-12), so no retry budget is at risk. It is only a wording gap.
-- **A-12 · T-UI-11 asserts "the total" after a delete, but the ledger shows no total.** `transactions-page.tsx` passes `data.total` only to `PaginationControls`. The test can only observe the row disappearing and the page count. Suggest rewording to "the row count and the page count reflect the new total" so the agent does not look for a total that is not shown.
-- **A-13 · INT-05 cleanup does not say what to do if `git worktree remove` refuses.** Git refuses to remove a worktree that has modified or untracked, non-ignored files, for example if `pnpm install` rewrites the worktree's `pnpm-lock.yaml`. The agent can decide within its own task (inspect, then `--force` on its own scratch worktree), with no effect on another phase. One line naming the allowed fallback would save a decision.
+- **A-1 · Route file outside D-26's coverage scope.** D-26 applies the 90% target to `backend/src/features/transactions/`, `packages/contracts/src/transactions/` and `frontend/src/features/transactions/`. `sonar-project.properties` measures coverage over all of `frontend/src`, so `frontend/src/app/(protected)/transactions/page.tsx` also counts. No planned test renders it, and `frontend/src/app/app-routes.test.tsx` does not mention it. The file is three statements, so it will not move the gate. A line in T-UI-01, or a note in D-26, would make the scope match what Sonar measures.
+- **A-2 · Delete failure is an inline alert, not a red toast.** `fds.md` §6 AC 7 reads "failed operations trigger red error toasts". The delete failure stays an inline `FormAlert` (FE-15, T-UI-06), carried forward from v1.0.0. That is a written v1.0.0 decision, so this is not a silent assumption. If the developer wants it confirmed at the Approval Gate, it could be starred or named in the §7 row for AC 7.
+- **A-3 · Stale reference in the plan header.** The "Sources synthesized" line calls the third Plan Review `review.md`. That file is now archived as `reviews/r3.md`. Update the reference in the next revision.
+- **A-4 · §7 row for AC 7.** That row lists only copy tests (T-UI-04, T-UI-05, T-UI-06, T-UI-09). Whatever B-1 resolves to, the row should name the test that verifies, or the decision that accepts, "green" and "red".
 
 ---
 
 ## Checklist Summary
 
-| #   | Point                         | Result   | Note                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| :-- | :---------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Coverage                      | **Fail** | `fds.md` §4 auto-dismiss time has no implementing task (B-4). Every other FDS requirement, AC and `behavior.md` step maps to a task or a regression test.                                                                                                                                                                                                                                                                         |
-| 2   | Traceability                  | Pass     | Every BE, FE and INT task and every test row cites an FDS section, requirement, contract section or decision.                                                                                                                                                                                                                                                                                                                      |
-| 3   | Cross-section consistency     | Pass     | Field names, the `title` rule and its messages, the request field set, `fieldErrors` keys, ordering keys and the D-30 exception agree across the Backend, Frontend, Integration and Testing sections and the contract.                                                                                                                                                                                                         |
-| 4   | Rule compliance               | Pass     | No new library. Layering is unchanged. The repository is the only Drizzle user. Contracts stay in `packages/contracts`. D-27 avoids an unapproved root dependency.                                                                                                                                                                                                                                                               |
-| 5   | Testability                   | **Fail** | No test verifies the 4000 ms auto-dismiss (B-4). Otherwise the tests are concrete and enough: migration (T-UA-01), repository/service/API (T-UA-02–07), component tests (T-UI-01–07, 13–15), E2E (T-UI-08–12), regression (T-UA-08, INT-06).                                                                                                                                                                                    |
-| 6   | Ambiguity carried forward     | Pass     | The 1.1.0 ambiguities (UTC "today", backfill edge cases, a sent `date`, future-dated legacy rows, Date format) are all settled in writing. The 4000 ms gap is silent, but it is recorded under points 1 and 5, not as a spec ambiguity: the FDS is clear. The `450` vs `-₹450` disagreement between the specs is handled explicitly by D-25 (A-10).                                                                           |
-| 7   | API Contract completeness     | Pass     | All four operations, the shapes, rule sets with exact messages, statuses, error codes, unknown-field policy, ordering and the server-set `date` are fully specified. Plain prose with no framework code.                                                                                                                                                                                                                       |
-| 8   | Executability                 | **Fail** | B-4 forces a stop in Phase 8 (shared `toast.tsx`, pinned by an `auth` test). The rest checks out: build order and typecheck claims (D-15, confirmed against `@ts-rest/core` types), migration generate and hand edit (BE-09), the T-UA-01 cut-journal approach (confirmed against the `drizzle-orm` migrator), path ownership, and INT-05's in-repo scratch worktree (the `backend/.env` path is wrong but the agent can fix it itself: A-9). |
+| #   | Point                         | Result | Note                                                                                                                                                                                                                                                                                                 |
+| :-- | :---------------------------- | :----- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Coverage                      | FAIL   | `fds.md` §4 toast colors and icons, and the "green" / "red" in AC 7, have no implementing task (B-1). Every other requirement and behavior maps to tasks.                                                                                                                                         |
+| 2   | Traceability                  | PASS   | Every task cites a requirement, an FDS section or a decision.                                                                                                                                                                                                                                    |
+| 3   | Cross-section consistency     | PASS   | Backend, Frontend, Integration and Testing agree on the field set, the dropped `date`, the ordering keys, the error mapping and the toast duration.                                                                                                                                          |
+| 4   | Rule compliance               | PASS   | No new library. Layering is kept. The per-toast option in D-32 stays inside the existing component.                                                                                                                                                                                          |
+| 5   | Testability                   | FAIL   | No test verifies the `fds.md` §4 toast appearance, yet §7 says it is covered (B-1). The rest of the test list is concrete and sufficient.                                                                                                                                                             |
+| 6   | Ambiguity carried forward     | PASS   | The specs are not ambiguous on toast styling. B-1 is a missed spec requirement, not an assumption about an unclear one. Earlier spec gaps (UTC, backfill, timeframe) are resolved in the FDS.                                                                                               |
+| 7   | API Contract completeness     | PASS   | All four operations, the shapes, rule sets, statuses and error codes are fully specified, in technology-agnostic prose.                                                                                                                                                                              |
+| 8   | Executability                 | PASS   | Path ownership, build order (D-15), INT-05 scratch setup and cleanup (D-31), migration generation (BE-09) and coverage outputs (`lcov` paths in `sonar-project.properties`) all check out against the repository at `1c226d9`. There are no code diffs between `1c226d9` and `HEAD`. |
+
+Points checked against the repository:
+
+- **D-15:** request schemas are `z.custom<unknown>().transform(...)` at `zod@3.25.76` and `@ts-rest/core@3.52.1`. `frontend/src/features/transactions/api/transactions-api.ts` builds its request type from `Pick<Transaction, …>`, so BE-08 alone leaves the frontend typecheck green.
+- **D-24:** every removed symbol has only the users the plan names.
+- **D-31 / INT-05:**
+  - `backend/src/index.ts` loads `.env` only from the current directory, `../.env` and `../../.env`, so the worktree needs `JWT_SECRET` passed inline.
+  - `DATABASE_PATH` is read by `loadConfig`.
+  - `.gitignore` ignores `*.db*`.
+  - `eslint.config.mjs` does not ignore `backend/data/`, so removing the worktree before the gates is required, as the plan says.
+- **T-UA-01:** `runMigrations` hard-codes `MIGRATIONS_FOLDER`, so the partial `0002` setup must call the Drizzle migrator directly on a temporary folder. That is test-only code and is allowed.
+- **T-UI-16:** `renderWithProviders` mounts the real `ToastProvider`.
+- **Contract package coverage:** `transaction-contract.ts` is loaded through `src/index.ts` by `auth-contract.test.ts`.
 
 ---
 
 ## Outside Plan Scope
 
-- `visuals/transaction-add-modal.png` and `transaction-edit-modal.png` draw the Description and Amount inputs at content width, but the built inputs are full width. This was frozen at v1.0.0 Phase 6, and 1.1.0 does not touch it.
+- In the Add modal, the built Description and Amount inputs are full width. In `transaction-add-modal.png` they are content width. This is v1.0.0 layout, not touched by 1.1.0.
 
 ---
 
 ## Suggested Next Step
 
-The specs are sound: `fds.md` §4 is clear. The finding needs a developer decision, then a plan revision.
-
-**Retry bound:** the plan header shows 2 revisions. The revision proposed here would be Revision 3. Under `rules/workflow.md` §8, any revision after that one needs the developer's explicit authorization, recorded in `directives.md`.
+**Retry bound:** the plan header shows 3 revisions. Under `rules/workflow.md` §8 another revision needs the developer's explicit authorization. That authorization is already recorded in `directives.md` ("Authorization for Revision Beyond 3-Revision Retry Bound": Revision 4 and later authorized). This would be Revision 4.
 
 ### 1. Classification
 
-**B-4 · Toast auto-dismiss time: Developer decision. `DECISION NEEDED`.**
+**B-1 · Toast colors and icons: developer decision.** `DECISION NEEDED`
 
-| Option                                                                                                                                                                                                                                                                                                                         | Trade-off                                                                                                                                                                                                                                                                                                                                                  |
-| :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **A. Per-toast duration, 4000 ms for transactions.** A new Frontend Build task gives the shared toast API an optional duration (default stays `TOAST_DURATION_MS = 5000`). The three transactions dialogs pass a named constant `TRANSACTION_TOAST_DURATION_MS = 4000`. A new component test covers it. INT-06 lists `toast.tsx` as a shared file with unchanged default behavior. | Meets `fds.md` §4 exactly. `auth` and `profile` keep their approved 5000 ms, and `toast.test.tsx` stays valid. Cost: a small change to a shared component's API, and two dismiss times in the app.                                                                                                                                                    |
-| **B. Change `TOAST_DURATION_MS` to 4000 for the whole app.**                                                                                                                                                                                                                                                                   | Smallest code change; one dismiss time everywhere. But it changes `auth` and `profile` behavior against the frozen `auth` plan's "about 5 seconds", requires editing an existing `auth`-era test (`toast.test.tsx`), and turns INT-06 into a real cross-feature change.                                                                             |
-| **C. Keep 5000 ms and change the spec.** The developer amends `fds.md` §4 to 5000 ms before approval, and the plan adds only a verifying test.                                                                                                                                                                                 | No production change. But it rewrites a stated FDS value to match the code rather than the other way round, which is a spec change, not a Clarification, and is the developer's call alone. The verifying test is still needed.                                                                                                                   |
+| Option | What it means                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Trade-off                                                                                                                                                                                                                                                                           |
+| :----- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A      | **Per-toast appearance, transactions only.** Extend D-32's `ToastOptions` with an optional appearance, for example `appearance: "banner"`. With it, a success toast renders a light green banner with a green (`#22C55E`) check-circle icon, and an error toast renders a light red banner with a red (`#EF4444`) alert-circle icon, per the two toast PNGs. Without it, toasts render exactly as they do today. Add `CheckCircleIcon` and `AlertCircleIcon` to `icons.tsx`. The transactions dialogs pass the appearance through the same shared options object as `TRANSACTION_TOAST_DURATION_MS`. Extend FE-15 or add an FE task, add appearance checks to T-UI-16 or a new T-UI test (icon present, light background, for each of the five transactions toasts), add both toast visuals to D-28's Phase 6 list, and correct the §7 rows for §4 and AC 7. INT-06 records that default appearance and `toast.test.tsx` are unchanged. | Matches the FDS and the visuals for `transactions`, consistent with how B-4 was decided. `auth` and `profile` keep their current look, so the app has two toast styles. Adds a second option to the shared API and two icons. |
+| B      | **Restyle the shared toast app-wide** to the `fds.md` §4 look, with light banners and icons.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | One consistent toast style. Neither the `auth` nor the `profile` spec defines toast styling, so nothing forbids it. But it changes how `auth` and `profile` look, needs edits to the `auth`-era `toast.test.tsx` (it asserts `bg-brand-teal` / `bg-red-600`), and INT-06 becomes a cross-feature change.             |
+| C      | **Accept the built styling.** Add a starred decision like D-25: the toast appearance predates 1.1.0, is outside the 1.1.0 changelog, and is left as built, with any change as a separate follow-up. Correct the §7 rows for §4 and AC 7 so they say the colors and icons deviate and are accepted, not "regression only".                                                                                                                                                                                                                                                                                                                                                               | Least work and stops the loop. But the deviation from explicit `fds.md` §4 text stays, and Phase 9 Validation will report it unless the developer also amends `fds.md` §4 through the change process (`rules/workflow.md` §4).                                                                 |
 
-**Recommendation: A.** It is the only option that satisfies `fds.md` §4 without changing the behavior of already approved features.
+**Recommendation:** A. It applies the FDS as written and follows the same approach the developer chose for the same component in B-4, without touching `auth` or `profile`. This is a recommendation only. The developer decides.
 
-Whichever option is chosen, the revision must also:
+The advisory findings A-1 to A-4 can go into the same revision. Each can be closed by the Synthesizer inside the plan text without a developer decision.
 
-- update the §7 matrix row for `fds.md` §4 (it is no longer "regression only");
-- add a test that checks dismissal at the chosen time with fake timers (visible just before, gone at it) and dismissal on user interaction (the close button);
-- under A, give the new task an owner (Frontend Build, `frontend/**`).
-
-**Advisories to carry in the same revision (obvious, no decision):** A-9 (D-31 and INT-05 step 2: the root `.env`, not `backend/.env`; correct `directives.md` B-3 to match), A-11 (FE-10 typecheck note wording), A-12 (T-UI-11 wording), A-13 (INT-05: name the allowed `git worktree remove --force` fallback for the scratch worktree).
-
-### 2. `directives.md` skeleton (append to `features/transactions/plans/v1.1.0/directives.md`)
-
-```markdown
-## B-4 Toast auto-dismiss after 4000ms (fds.md §4)
-
-Options considered: A) optional per-toast duration in the shared toast API (default stays 5000 ms), transactions dialogs pass TRANSACTION_TOAST_DURATION_MS = 4000, new Frontend Build task, new fake-timer component test, INT-06 lists toast.tsx as shared with unchanged default; B) change TOAST_DURATION_MS to 4000 app-wide, update toast.test.tsx, INT-06 becomes a cross-feature change; C) developer amends fds.md §4 to 5000 ms, plan adds only a verifying test
-Decision: <developer to fill in> (DECISION NEEDED; reviewer recommends A)
-Apply to: new FE task (A or B), §6.2 test list (new or extended T-UI test), §7 matrix row for fds.md §4, INT-06, §2 step 2 if a new task is added
-Record as a starred (★) decision in the plan's Decision Log: yes
-```
-
-Also correct the path in the existing **B-3** entry: `JWT_SECRET from backend/.env` → `JWT_SECRET from the repository-root .env` (A-9).
-
-### 3. Revision prompt (Plan Synthesizer; the fragments are superseded, `rules/workflow.md` §6 rule 5)
+### 2. Revision prompt
 
 ```text
 Read the file .ai/prompts/plan/plan-synthesizer.md and follow it exactly. That is your system prompt.
 
 Feature ID = transactions
-Revision run. Plan Review (features/transactions/plans/v1.1.0/review.md) returned CHANGES REQUIRED.
-Apply directive B-4 in features/transactions/plans/v1.1.0/directives.md (toast auto-dismiss after 4000 ms, fds.md §4) and the corrected B-3 path.
-Also apply these advisory findings from review.md:
-- A-9: in D-31 and INT-05 step 2, JWT_SECRET is read from the repository-root .env (backend/src/index.ts loads it via ../../.env); backend/.env does not exist.
-- A-11: FE-10's typecheck note also names the CreateTransactionRequest mismatch that lasts until FE-11; still green after FE-12.
-- A-12: T-UI-11 asserts the row count and page count after delete (the ledger shows no total).
-- A-13: INT-05 cleanup names `git worktree remove --force backend/data/int05-worktree` as the allowed fallback if the plain remove refuses.
-Revise plan.md and contract.md in place (contract.md only if a shape changes; B-4 should not change it). Record this as Revision 3 in the plan header. Do not change other sections.
+Revision run (revision 4; authorized beyond the 3-revision bound in features/transactions/plans/v1.1.0/directives.md).
+Plan Review (features/transactions/plans/v1.1.0/review.md) returned CHANGES REQUIRED.
+Apply every decision in features/transactions/plans/v1.1.0/directives.md, including the new B-5 (toast colors and icons, fds.md §4 / §6 AC 7 / visuals/transaction-toast-*.png).
+Also apply advisory findings A-1 (D-26 or T-UI-01 covers frontend/src/app/(protected)/transactions/page.tsx), A-2 (state the Delete-failure inline alert against AC 7 in the §7 row), A-3 (plan header cites reviews/r3.md for the third review) and A-4 (§7 AC 7 row names what verifies or accepts the colors).
+Revise plan.md and contract.md in place. Do not change other sections.
+```
+
+### 3. `directives.md` skeleton (append)
+
+```markdown
+## B-5 Toast colors and icons (fds.md §4, §6 AC 7; visuals/transaction-toast-success.png, transaction-toast-error.png)
+
+Options considered: A) optional per-toast appearance in the shared toast API (default unchanged); transactions toasts render the light green / light red banner with #22C55E check-circle / #EF4444 alert-circle icons; new icons in icons.tsx; FE task, T-UI assertions, D-28 Phase 6 adds both toast visuals, §7 rows for §4 and AC 7 corrected, INT-06 notes default unchanged; B) restyle the shared toast app-wide (auth/profile change; toast.test.tsx updated; INT-06 cross-feature); C) accept the built styling as a starred decision like D-25, correct §7 to say the deviation is accepted
+Decision: <developer to fill in>
+Apply to: FE-15 or a new FE task, D-32 or a new decision, D-28, T-UI-16 or a new T-UI test, INT-06, §7 rows for fds.md §4 and §6 AC 7
+Record as a starred (★) decision in the plan's Decision Log: yes
 ```

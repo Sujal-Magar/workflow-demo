@@ -18,6 +18,8 @@ export const buttonVariants = cva(
           "h-10 min-w-40 rounded-md bg-brand-teal px-6 text-base font-medium uppercase tracking-wide text-white shadow-sm hover:bg-brand-teal-dark focus-visible:ring-white focus-visible:ring-offset-brand-gradient-to",
         secondary:
           "h-10 min-w-40 rounded-md bg-slate-100 px-6 text-base font-medium text-brand-ink hover:bg-slate-200 focus-visible:ring-slate-400",
+        outline:
+          "h-10 min-w-40 rounded-md border border-brand-teal bg-white px-6 text-base font-medium uppercase tracking-wide text-brand-teal hover:bg-brand-teal/5 focus-visible:ring-brand-teal",
         destructive:
           "h-10 min-w-40 rounded-md bg-red-600 px-6 text-base font-medium text-white hover:bg-red-700 focus-visible:ring-red-600",
         link: "rounded-sm text-[15px] text-slate-600 hover:text-brand-ink hover:underline focus-visible:ring-brand-teal",

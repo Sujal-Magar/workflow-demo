@@ -96,6 +96,44 @@ export function SpinnerIcon({ className, ...props }: Readonly<IconProps>) {
   );
 }
 
+export function CalendarIcon(props: Readonly<IconProps>) {
+  return (
+    <StrokeIcon {...props}>
+      <rect x="3.5" y="5" width="17" height="15" rx="2" />
+      <path d="M3.5 9.5h17" />
+      <path d="M8 3v3.5M16 3v3.5" />
+    </StrokeIcon>
+  );
+}
+
+export function ChevronDownIcon(props: Readonly<IconProps>) {
+  return (
+    <StrokeIcon {...props}>
+      <path d="m6 9 6 6 6-6" />
+    </StrokeIcon>
+  );
+}
+
+export function EditIcon(props: Readonly<IconProps>) {
+  return (
+    <StrokeIcon {...props}>
+      <path d="M4 20h4L18.5 9.5a2.5 2.5 0 0 0-3.5-3.5L4.5 16.5Z" />
+      <path d="M13.5 7.5l3 3" />
+    </StrokeIcon>
+  );
+}
+
+export function TrashIcon(props: Readonly<IconProps>) {
+  return (
+    <StrokeIcon {...props}>
+      <path d="M4.5 7h15" />
+      <path d="M9 7V4.5h6V7" />
+      <path d="M6.5 7l1 12.5a1.5 1.5 0 0 0 1.5 1.4h6a1.5 1.5 0 0 0 1.5-1.4L17.5 7" />
+      <path d="M10.5 11v6M13.5 11v6" />
+    </StrokeIcon>
+  );
+}
+
 /** Single-colour grey "G" matching the visual references (used when Google sign-in is unavailable). */
 export function GoogleGIcon(props: Readonly<IconProps>) {
   return (

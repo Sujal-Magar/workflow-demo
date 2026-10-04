@@ -1,11 +1,6 @@
 import type { UserProfile } from "@workflow-demo/contracts";
 
-const CURRENCY_SYMBOLS: Readonly<Record<UserProfile["preferredCurrency"], string>> = {
-  NPR: "₹",
-  USD: "$",
-  EUR: "€",
-  GBP: "£",
-};
+import { CURRENCY_SYMBOLS } from "@/lib/currency";
 
 const LANGUAGE_LABELS: Readonly<Record<UserProfile["language"], { label: string; code: string }>> = {
   en_US: { label: "English", code: "EN" },

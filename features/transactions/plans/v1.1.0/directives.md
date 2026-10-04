@@ -41,5 +41,25 @@ Decision: A — optional per-toast appearance in the shared toast API (default u
 Apply to: FE-15 or a new FE task, D-32 or a new decision, D-28, T-UI-16 or a new T-UI test, INT-06, §7 rows for fds.md §4 and §6 AC 7
 Record as a starred (★) decision in the plan's Decision Log: yes
 
+## B-6 Toast slide-in (behavior.md §2; review B-1, fifth review)
+
+Options considered: A) slide-in entry animation for the banner appearance only (tailwind.config.ts keyframes, motion-safe; FE-15, D-33, T-UI-17 class assertion, D-28 Phase 6 check); B) slide-in for every toast app-wide (auth/profile change; INT-06 cross-feature); C) accept instant appearance as a starred deviation like D-25 (§7 row states it)
+Decision: A — slide-in entry animation for the banner appearance only. In `frontend/tailwind.config.ts`, define keyframes and animation for toast slide-in from the top right, applied in `toast.tsx` only when `appearance: "banner"` behind `motion-safe:`. Record in D-33. T-UI-17 asserts the animation class on banner toasts and its absence on default toasts. Add the slide-in animation check to D-28 Phase 6 UI review, and update §7 rows for `behavior.md` §2 and `fds.md` §4. `auth` and `profile` toasts remain unchanged.
+Apply to: FE-15, D-33, D-28, T-UI-17, §7 rows for behavior.md §2 and fds.md §4
+Record as a starred (★) decision in the plan's Decision Log: yes
+
+## B-7 Close button on the banner toast vs. toast visuals (review B-2, fifth review)
+
+Options considered: A) keep the × close button in the banner look, recorded as a starred deviation from visuals/transaction-toast-success.png and transaction-toast-error.png, and D-28 tells Phase 6 to expect it; B) no × in the banner look, click-anywhere-to-dismiss (semantics and keyboard path to define; T-UI-16/17 updated); C) no manual dismissal (conflicts with fds.md §4)
+Decision: A — keep the × close button in the banner look and record it as a starred deviation from the two toast visuals (`visuals/transaction-toast-success.png` and `transaction-toast-error.png`). It preserves the existing, accessible keyboard path to satisfy `fds.md` §4 ("or on user interaction"). Update D-32 and D-33 to note that while the visuals omit a dismiss control, the × button is intentionally retained. Instruct D-28 Phase 6 review to expect the close control. FE-15, T-UI-16, and T-UI-17 keep the close button.
+Apply to: D-32, D-33, FE-15, D-28, T-UI-16, T-UI-17
+Record as a starred (★) decision in the plan's Decision Log: yes
+
+## Authorization for Revision 5 (rules/workflow.md §8)
+
+Decision: Confirmed. The developer confirms that the authorization recorded under "Authorization for Revision Beyond 3-Revision Retry Bound" covers Revision 5 (and subsequent revisions if needed). Proceed with Revision 5 to apply B-6, B-7, and review advisories A-1 to A-3.
+Record as a starred (★) decision in the plan's Decision Log: no
+
+
 
 

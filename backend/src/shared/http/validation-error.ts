@@ -33,11 +33,16 @@ export function validationErrorBody(fieldErrors: FieldErrors): ErrorBody {
   };
 }
 
-/** ts-rest request-validation handler: `400 VALIDATION_ERROR` with the first message per field. */
+/**
+ * ts-rest request-validation handler: `400 VALIDATION_ERROR` with the first message per field.
+ * Combines query and body issues (`transactions`' `getTransactions` validates query params; every
+ * other existing route validates a body — the two never overlap on the same request).
+ */
 export function handleRequestValidationError(
   error: RequestValidationError,
   _request: Request,
   response: Response
 ): void {
-  response.status(HTTP_BAD_REQUEST).json(validationErrorBody(toFieldErrors(error.body)));
+  const fieldErrors = { ...toFieldErrors(error.query), ...toFieldErrors(error.body) };
+  response.status(HTTP_BAD_REQUEST).json(validationErrorBody(fieldErrors));
 }

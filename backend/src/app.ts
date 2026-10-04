@@ -17,12 +17,15 @@ import { SessionIssuer } from "./features/auth/session-issuer";
 import { ProfilePersistence } from "./features/profile/profile-persistence";
 import { createProfileRouter } from "./features/profile/profile-router";
 import { ProfileService } from "./features/profile/profile-service";
+import { createTransactionRouter } from "./features/transactions/transaction-router";
+import { TransactionRepository } from "./features/transactions/transaction-repository";
+import { TransactionService } from "./features/transactions/transaction-service";
 import type { Clock } from "./shared/clock";
 import { errorHandler, notFoundHandler } from "./shared/errors/error-handler";
 
 const JSON_BODY_LIMIT = "100kb";
 const HTTP_NO_CONTENT = 204;
-const CORS_ALLOWED_METHODS = "GET, POST, PATCH, DELETE, OPTIONS";
+const CORS_ALLOWED_METHODS = "GET, POST, PUT, PATCH, DELETE, OPTIONS";
 const CORS_ALLOWED_HEADERS = "Content-Type, Authorization";
 
 /** Everything the app needs from outside. Tests inject an in-memory database, a clock, a mailer and a Google verifier. */
@@ -85,6 +88,9 @@ export function createApp(dependencies: AppDependencies): Express {
     clock,
   });
 
+  const transactionRepository = new TransactionRepository(db);
+  const transactionService = new TransactionService({ transactionRepository, clock });
+
   const app = express();
   app.use(createCorsMiddleware(config.frontendOrigin));
   app.use(express.json({ limit: JSON_BODY_LIMIT }));
@@ -105,6 +111,12 @@ export function createApp(dependencies: AppDependencies): Express {
   app.use(
     createProfileRouter({
       profileService,
+      requireAuth: createRequireAuth(accessTokenSigner),
+    })
+  );
+  app.use(
+    createTransactionRouter({
+      transactionService,
       requireAuth: createRequireAuth(accessTokenSigner),
     })
   );

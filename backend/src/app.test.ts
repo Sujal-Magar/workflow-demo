@@ -29,7 +29,7 @@ describe("CORS (T-UA-10, contract §8)", () => {
     expect(response.headers.get("access-control-allow-credentials")).toBe("true");
     expect(response.headers.get("access-control-allow-headers")).toContain("Authorization");
     expect(response.headers.get("access-control-allow-headers")).toContain("Content-Type");
-    expect(response.headers.get("access-control-allow-methods")).toBe("GET, POST, PATCH, DELETE, OPTIONS");
+    expect(response.headers.get("access-control-allow-methods")).toBe("GET, POST, PUT, PATCH, DELETE, OPTIONS");
     expect(response.headers.get("vary")).toContain("Origin");
   });
 

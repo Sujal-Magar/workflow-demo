@@ -61,7 +61,7 @@ describe("openDatabase (T-UA-11)", () => {
 });
 
 describe("runMigrations (T-UA-11)", () => {
-  it("creates every auth and profile table on a fresh database", () => {
+  it("creates every auth, profile, and transactions table on a fresh database", () => {
     const { db, connection } = open(IN_MEMORY_DATABASE_PATH);
 
     runMigrations(db);
@@ -77,6 +77,7 @@ describe("runMigrations (T-UA-11)", () => {
       "password_change_attempts",
       "password_reset_tokens",
       "refresh_tokens",
+      "transactions",
       "user_profiles",
       "users",
     ]);
